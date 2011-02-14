@@ -1,12 +1,12 @@
-describe("bzork.Parser", function() {
-  var gameFiles = {
-    zork1: "contrib/games/zork1.z3",
-    zork2: "contrib/games/zork2.z3",
-    zork3: "contrib/games/zork3.z3",
-    ztuu:  "contrib/games/ztuu.z5"
+describe("bzork.Loader", function() {
+  var storyFiles = {
+    zork1: "contrib/stories/zork1.z3",
+    zork2: "contrib/stories/zork2.z3",
+    zork3: "contrib/stories/zork3.z3",
+    ztuu:  "contrib/stories/ztuu.z5"
   };
 
-  function fetchGameData(path) {
+  function fetchStoryData(path) {
     var data = '';
 
     // this is actually totally borked, only works in FF, and is
@@ -22,13 +22,13 @@ describe("bzork.Parser", function() {
     return Base64.decode(data);
   }
 
-  var gameData = {
-    zork1: fetchGameData(gameFiles.zork1)
+  var storyData = {
+    zork1: fetchStoryData(storyFiles.zork1)
   };
 
   beforeEach(function() {
-    this.parser = new bzork.Parser();
-    this.zork1  = this.parser.loadGame(gameData.zork1);
+    this.loader = new bzork.Loader();
+    this.zork1  = this.loader.loadStory(storyData.zork1);
   });
 
   it("should detect the Z-code version", function() {
@@ -39,7 +39,7 @@ describe("bzork.Parser", function() {
     expect(this.zork1.releaseNumber).toEqual(88);
   });
 
-  it("should detect the game serial", function() {
+  it("should detect the story serial", function() {
     expect(this.zork1.serial).toEqual("840726");
   });
 });

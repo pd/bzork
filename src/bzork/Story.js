@@ -1,0 +1,2 @@
+bzork.Story = function() {
+};
