@@ -2,6 +2,6 @@ bzork.Parser = function() {
 };
 
 bzork.Parser.prototype.loadGame = function(data) {
-  var game = bzork.Game();
+  var game = new bzork.Game();
   return game;
 };
