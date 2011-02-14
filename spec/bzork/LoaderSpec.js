@@ -32,14 +32,14 @@ describe("bzork.Loader", function() {
   });
 
   it("should detect the Z-code version", function() {
-    expect(this.zork1.zcodeVersion).toEqual(3);
+    expect(this.zork1.getZcodeVersion()).toEqual(3);
   });
 
   it("should detect the release number", function() {
-    expect(this.zork1.releaseNumber).toEqual(88);
+    expect(this.zork1.getReleaseNumber()).toEqual(88);
   });
 
   it("should detect the story serial", function() {
-    expect(this.zork1.serial).toEqual("840726");
+    expect(this.zork1.getSerial()).toEqual("840726");
   });
 });
