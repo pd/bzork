@@ -1,0 +1,2 @@
+bzork.Game = function() {
+};
