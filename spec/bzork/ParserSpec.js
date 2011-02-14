@@ -28,7 +28,7 @@ describe("bzork.Parser", function() {
 
   beforeEach(function() {
     this.parser = new bzork.Parser();
-    this.zork1  = parser.loadGame(gameData.zork1);
+    this.zork1  = this.parser.loadGame(gameData.zork1);
   });
 
   it("should detect the Z-code version", function() {
