@@ -3,9 +3,10 @@ bzork
 
 Z-machine interpreter for your browser.
 
-Using this project as a way of trying out the new JS T/BDD libraries, which
-have always been the primary source of annoyance when working with JS projects
-in the past. Jasmine looks nice, tho.
+Unless I get less lazy and essentially reimplement all of the ArrayBuffer/DataView
+code which is available in Firefox4+ and Chrome9+ (or find someone who's done it
+for me), this will only work in those browsers. I am more concerned with playing
+around with the code than I am with anyone else ever playing around with the game.
 
 Primary goal is just to see the mailbox, for now. That will take quite a while.
 Zork 1 is most readily available as a .z3, so I'm primarily aiming to support those first.
