@@ -27,8 +27,8 @@ describe("bzork.Loader", function() {
   };
 
   beforeEach(function() {
-    this.loader = new bzork.Loader();
-    this.zork1  = this.loader.loadStory(storyData.zork1);
+    this.loader = new bzork.Loader(storyData.zork1);
+    this.zork1  = this.loader.loadStory();
   });
 
   it("should detect the Z-code version", function() {
