@@ -39,5 +39,23 @@ describe('ZSCII', function() {
       var s = bzork.Zscii.toAscii(jDataView.createBuffer(0x13, 0x2d, 0xa8, 0x05));
       expect(s).toEqual("The ");
     });
+
+    it("can parse longer words", function() {
+      var buf = jDataView.createBuffer(
+        0x13, 0x53, 0x2e, 0x97,
+        0x67, 0x53, 0x1b, 0x2a,
+        0xc7, 0xc5
+      );
+      var s = bzork.Zscii.toAscii(buf);
+      expect(s).toEqual("Unfortunately");
+    });
+
+    it("can parse words with punctuation", function() {
+      var buf = jDataView.createBuffer(
+        0x13, 0xd4, 0x68, 0xb8, 0xdd, 0x40
+      );
+      var s = bzork.Zscii.toAscii(buf);
+      expect(s).toEqual("You're ");
+    });
   });
 });

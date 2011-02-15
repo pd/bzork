@@ -53,7 +53,8 @@ bzork.Zscii = (function() {
       break;
     default:
       if (zsciiState.shift)
-        result = zsciiState.alphabet[5 - zsciiState.shift][v - 6];
+        // TODO handle v1
+        result = zsciiState.alphabet[zsciiState.shift == 4 ? 1 : 2][v - 6];
       else
         result = zsciiState.alphabet[0][v - 6];
     }
@@ -86,6 +87,10 @@ bzork.Zscii = (function() {
     return result.join('');
   };
 
+  ZCharTriplet.prototype.isTerminal = function() {
+    return (this.word & 0x8000) !== 0;
+  };
+
   // Given a DataView, reads ZCharTriplets until one has the first
   // bit set marking the end of the word. These can then be converted
   // into ASCII by toString()s all the way down.
@@ -93,13 +98,14 @@ bzork.Zscii = (function() {
     this.buffer = dataview;
     this.triplets = [];
 
-    var word, offset = 0;
+    var word, zct, offset = 0;
     do {
       word = this.buffer.getUint16(offset);
-      this.triplets.push(new ZCharTriplet(word));
+      zct = new ZCharTriplet(word);
+      this.triplets.push(zct);
       offset += 2;
 
-      if (word & 0x8000)
+      if (zct.isTerminal())
         break;
     } while (true);
   };
