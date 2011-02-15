@@ -19,6 +19,7 @@ bzork.Zscii = (function() {
     alphabet: null,      // Current alphabet table
     shift: null,         // Are we following a shift character?
     shiftLock: false,    // Is shift locked? (v1&v2 only)
+    tenBit: false,       // Are we in the middle of reading a 10-bit ZSCII?
     abbrev: null         // Are we about to expand an abbreviation?
   };
 
@@ -31,6 +32,16 @@ bzork.Zscii = (function() {
     var v = this.bits,
         result;
 
+    if (zsciiState.tenBit === true) {
+      zsciiState.tenBit = this.bits << 5;
+      return;
+    } else if (zsciiState.tenBit !== false) {
+      zsciiState.tenBit |= this.bits;
+      result = bzork.Zscii.toAsciiFromZsciiCode(zsciiState.tenBit);
+      bzork.Zscii.reset();
+      return result;
+    }
+
     switch (v) {
     case 0:
       result = ' ';
@@ -38,7 +49,7 @@ bzork.Zscii = (function() {
     case 1:
       if (zsciiState.zcodeVersion === 1)
         result = "\n";
-      if (zsciiState.zcodeVersion >= 2)
+      else
         zsciiState.abbrev = v;
       break;
     case 2:
@@ -49,12 +60,17 @@ bzork.Zscii = (function() {
       break;
     case 4:
     case 5:
-      zsciiState.shift = v;
+      zsciiState.shift = v === 4 ? 1 : 2;
       break;
+    case 6:
+      if (zsciiState.shift === 2) {
+        zsciiState.tenBit = true; // Next character is the top half of 10-bit ZSCII
+        break;
+      }
     default:
       if (zsciiState.shift)
         // TODO handle v1
-        result = zsciiState.alphabet[zsciiState.shift == 4 ? 1 : 2][v - 6];
+        result = zsciiState.alphabet[zsciiState.shift][v - 6];
       else
         result = zsciiState.alphabet[0][v - 6];
     }
@@ -139,6 +155,7 @@ bzork.Zscii = (function() {
       zsciiState.abbrev = null;
       zsciiState.shift = null;
       zsciiState.shiftLock = false;
+      zsciiState.tenBit = false;
     },
 
     setAlphabet: function(alphabet) {
