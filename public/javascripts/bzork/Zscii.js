@@ -17,6 +17,7 @@ bzork.Zscii = (function() {
   var zsciiState = {
     zcodeVersion: null,  // Everything changes by Z-Code version
     alphabet: null,      // Current alphabet table
+    abbrevTable: null,   // Current abbreviations table
     shift: null,         // Are we following a shift character?
     shiftLock: false,    // Is shift locked? (v1&v2 only)
     tenBit: false,       // Are we in the middle of reading a 10-bit ZSCII?
@@ -40,6 +41,12 @@ bzork.Zscii = (function() {
       result = bzork.Zscii.toAsciiFromZsciiCode(zsciiState.tenBit);
       bzork.Zscii.reset();
       return result;
+    }
+
+    if (zsciiState.abbrev) {
+      var x = zsciiState.abbrev;
+      bzork.Zscii.reset();
+      return zsciiState.abbrevTable.get(32 * (x - 1) + v);
     }
 
     switch (v) {
@@ -142,12 +149,13 @@ bzork.Zscii = (function() {
     ZCharTriplet: ZCharTriplet,
     ZString: ZString,
 
-    init: function(version) {
+    init: function(version, abbrevTable) {
       zsciiState.zcodeVersion = version;
       if (version === 1)
         zsciiState.alphabet = DefaultAlphabets['v1'];
       else
         zsciiState.alphabet = DefaultAlphabets['v2'];
+      zsciiState.abbrevTable = abbrevTable;
       this.reset();
     },
 
