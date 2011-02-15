@@ -29,3 +29,8 @@ bzork.spec = (function() {
 
 beforeEach(function() {
 });
+
+// Sick of typing the same things over&over into chrome's JS console
+if (typeof console !== "undefined") {
+  function z1m() { return new bzork.Memory(bzork.spec.storyData['zork1']); }
+}
