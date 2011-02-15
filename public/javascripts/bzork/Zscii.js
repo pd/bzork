@@ -112,8 +112,11 @@ bzork.Zscii = (function() {
 
   ZString.prototype.toString = function() {
     var res = [];
+
     for (var i = 0; i < this.triplets.length; i++)
       res.push(this.triplets[i].toString());
+
+    bzork.Zscii.reset();
     return res.join('');
   };
 
