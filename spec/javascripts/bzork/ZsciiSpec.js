@@ -33,4 +33,11 @@ describe('ZSCII', function() {
       ]);
     }).toThrow("Alphabets must be 3 26 character strings");
   });
+
+  describe("Z-character triplets", function() {
+    it("can be parsed when all characters are in a single alphabet row", function() {
+      var s = bzork.Zscii.toAscii(jDataView.createBuffer(0x65, 0xaa, 0x80, 0xa5));
+      expect(s).toEqual("the");
+    });
+  });
 });
