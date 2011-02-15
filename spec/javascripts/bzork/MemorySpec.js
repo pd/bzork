@@ -69,7 +69,7 @@ describe("bzork.Memory.Dictionary", function() {
 
     it("should know the word separators", function() {
       var seps = this.dict.getWordSeparators();
-      expect(seps).toEqual([".", ",", '"']);
+      expect(seps).toEqual([",", ".", '"']);
     });
 
     it("should know the word size", function() {

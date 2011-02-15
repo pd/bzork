@@ -87,8 +87,8 @@ bzork.Memory.Dictionary.prototype.getWordSeparators = function() {
   var count = this.getWordSeparatorCount(),
       separators = new Array(count);
   for (var i = 0; i < count; i++)
-    separators[i] = this._memory.getUint8(i + 1);
-  return separators; // bzork.ZSCII.toASCII
+    separators[i] = bzork.Zscii.toAsciiChar(this._memory.getUint8(i + 1));
+  return separators;
 };
 
 bzork.Memory.Dictionary.prototype.getWordSize = function() {
