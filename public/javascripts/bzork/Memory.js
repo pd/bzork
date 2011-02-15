@@ -146,6 +146,12 @@ bzork.Memory.AbbrevTable.prototype.getTableEndAddr = function() {
   return this.tableStartAddr + (this.getAbbrevCount() * 2) - 1;
 };
 
+bzork.Memory.AbbrevTable.prototype.getAbbrevDataAddr = function(i) {
+  if (i < 0 || i >= this.getAbbrevCount())
+    throw "Abbreviation " + i + " out of range!";
+  return this._memory.getUint16(this.getTableStartAddr() + (i * 2)) * 2;
+};
+
 /*
   TODO, why waste time when I could load the contents during the
   bounds discovery. Need more Zscii first tho.

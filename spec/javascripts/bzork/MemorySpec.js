@@ -112,5 +112,11 @@ describe("bzork.Memory.AbbrevTable", function() {
     it("should know the end address of the data", function() {
       expect(this.abbrev.getDataEndAddr()).toEqual(0x01ef);
     });
+
+    it("should be able to retrieve the data address of abbreviations", function() {
+      expect(this.abbrev.getAbbrevDataAddr(0)).toEqual(0x40);
+      expect(this.abbrev.getAbbrevDataAddr(1)).toEqual(0x44);
+      expect(this.abbrev.getAbbrevDataAddr(23)).toEqual(0x9a);
+    });
   });
 });
