@@ -22,7 +22,10 @@ bzork.Zscii = (function() {
   };
 
   ZChar.prototype.toString = function() {
-    return zsciiAlphabet[0][this.bits - 6];
+    var v = this.bits;
+    if (v === 0)
+      return ' ';
+    return zsciiAlphabet[0][v - 6];
   };
 
   // A 2-byte word which consists of 3 5-bit "Z Characters", each
@@ -49,13 +52,21 @@ bzork.Zscii = (function() {
     this.triplets = [];
 
     var word, offset = 0;
-    while ((word = this.buffer.readUint16(offset)) & 0x8000 === 0) {
-      triplets.push(new ZCharTriplet(word));
+    do {
+      word = this.buffer.getUint16(offset);
+      this.triplets.push(new ZCharTriplet(word));
       offset += 2;
-    }
+
+      if (word & 0x8000)
+        break;
+    } while (true);
   };
 
   ZString.prototype.toString = function() {
+    var res = [];
+    for (var i = 0; i < this.triplets.length; i++)
+      res.push(this.triplets[i].toString());
+    return res.join('');
   };
 
   return {
@@ -83,7 +94,7 @@ bzork.Zscii = (function() {
 
     toAscii: function(buffer) {
       var dv = new DataView(buffer);
-      return (new ZCharTriplet(dv.getUint16(0))).toString(); // Should be ZString
+      return (new ZString(dv)).toString();
     }
   };
 })();

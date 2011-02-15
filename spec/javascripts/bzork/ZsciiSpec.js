@@ -37,7 +37,12 @@ describe('ZSCII', function() {
   describe("Z-character triplets", function() {
     it("can be parsed when all characters are in a single alphabet row", function() {
       var s = bzork.Zscii.toAscii(jDataView.createBuffer(0x65, 0xaa, 0x80, 0xa5));
-      expect(s).toEqual("the");
+      expect(s).toEqual("the ");
+    });
+
+    it("can be parsed across multiple alphabet rows", function() {
+      var s = bzork.Zscii.toAscii(jDataView.createBuffer(0x13, 0x2d, 0xa8, 0x05));
+      expect(s).toEqual("The ");
     });
   });
 });
