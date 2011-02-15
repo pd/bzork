@@ -8,6 +8,12 @@ bzork.Memory.ObjectTable = function(buffer, tableStartAddr, version) {
 };
 
 bzork.Memory.ObjectTable.prototype.get = function(i) {
+  if (!this._boundsDiscovered)
+    this._discoverBounds();
+
+  if (i < 1 || i > this.getObjectCount())
+    throw "Object " + i + " out of bounds!";
+
   var object = new bzork.Memory.Object(i),
       addr = this.getObjectAddr(i);
 
@@ -20,7 +26,7 @@ bzork.Memory.ObjectTable.prototype.get = function(i) {
   object.propertyAddr = this._memory.getUint16(addr + 7);
 
   if (this.objectHasDescription(object)) {
-    var view = new DataView(this._memory.buffer, object.propertyAddr);
+    var view = new DataView(this._memory.buffer, object.propertyAddr + 1);
     object.description = bzork.Zscii.toAscii(view);
   }
 
