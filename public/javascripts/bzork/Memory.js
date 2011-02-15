@@ -83,6 +83,16 @@ bzork.Memory.Header.prototype.getSerial = function() {
 
 bzork.Memory.Dictionary = function(buffer) {
   this._memory = buffer;
+  this._cache = {};
+};
+
+bzork.Memory.Dictionary.prototype.get = function(i) {
+  if (this._cache[i])
+    return this._cache[i];
+
+  var view = new DataView(this._memory.buffer, this.getEntryOffset(i));
+  var s = this._cache[i] = bzork.Zscii.toAscii(view);
+  return s;
 };
 
 bzork.Memory.Dictionary.prototype.getWordSeparatorCount = function() {
@@ -107,6 +117,12 @@ bzork.Memory.Dictionary.prototype.getWordCount = function() {
 
 bzork.Memory.Dictionary.prototype.getFirstEntryAddr = function() {
   return this._memory.byteOffset + 1 + this.getWordSeparatorCount() + 1 + 2;
+};
+
+bzork.Memory.Dictionary.prototype.getEntryOffset = function(i) {
+  if (i < 0 || i >= this.getWordCount())
+    throw "Word " + i + " out of bounds!";
+  return this.getFirstEntryAddr() + (this.getWordSize() * i);
 };
 
 bzork.Memory.Dictionary.prototype.getEndAddr = function() {
