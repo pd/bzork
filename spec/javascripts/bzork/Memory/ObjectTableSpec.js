@@ -12,10 +12,6 @@ describe("bzork.Memory.ObjectTable", function() {
       expect(this.objects.getEndAddr()).toEqual(0x0bb7);
     });
 
-    it("should know the start address of the object tree", function() {
-      expect(this.objects.getTreeStartAddr()).toEqual(0xffff);
-    });
-
     it("should know the number of objects stored", function() {
       expect(this.objects.getObjectCount()).toEqual(250);
     });
