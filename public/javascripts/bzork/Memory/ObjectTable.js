@@ -10,16 +10,9 @@ bzork.Memory.ObjectTable.prototype.getStartAddr = function() {
 };
 
 bzork.Memory.ObjectTable.prototype.getEndAddr = function() {
-};
-
-bzork.Memory.ObjectTable.prototype.getTreeStartAddr = function() {
   return 0xdeadbeef;
 };
 
 bzork.Memory.ObjectTable.prototype.getObjectCount = function() {
   return -1;
-};
-
-bzork.Memory.GlobalTable = function(buffer) {
-  this._memory = buffer;
 };
