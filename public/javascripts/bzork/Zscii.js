@@ -1,6 +1,6 @@
 bzork.Zscii = (function() {
   // The 2 default alphabets
-  var ZsciiAlphabets = {
+  var DefaultAlphabets = {
     v1: [
       "abcdefghijklmnopqrstuvwxyz",
       "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
@@ -13,8 +13,13 @@ bzork.Zscii = (function() {
     ]
   };
 
-  // A reference to the alphabet currently in use
-  var zsciiAlphabet = null;
+  // Globalish ZSCII interpreter state. Meh.
+  var zsciiState = {
+    alphabet: null,   // Current alphabet table
+    shift: null,      // Are we following a shift character?
+    shiftLock: false, // Is shift locked? (v1&v2 only)
+    abbrev: null      // Are we about to expand an abbreviation?
+  };
 
   // A single 5-bit "Z Character"
   var ZChar = function(bits) {
@@ -22,12 +27,43 @@ bzork.Zscii = (function() {
   };
 
   ZChar.prototype.toString = function() {
-    var v = this.bits;
-    if (v === 0)
-      return ' ';
-    if (v == 4 || v == 5)
-      return '';
-    return zsciiAlphabet[0][v - 6];
+    var v = this.bits,
+        result;
+
+    switch (v) {
+    case 0:
+      result = ' ';
+      break;
+    case 1:
+      if (zsciiState.zcodeVersion === 1)
+        result = "\n";
+      if (zsciiState.zcodeVersion >= 2)
+        zsciiState.abbrev = v;
+      break;
+    case 2:
+    case 3:
+      // TODO handle shift for v1
+      if (zsciiState.zcodeVersion >= 3)
+        zsciiState.abbrev = v;
+      break;
+    case 4:
+    case 5:
+      zsciiState.shift = v;
+      break;
+    default:
+      if (zsciiState.shift)
+        result = zsciiState.alphabet[5 - zsciiState.shift][v - 6];
+      else
+        result = zsciiState.alphabet[0][v - 6];
+    }
+
+    if (result) {
+      zsciiState.abbrev = null;
+      zsciiState.shift = null;
+      zsciiState.shiftLock = false;
+    }
+
+    return result;
   };
 
   // A 2-byte word which consists of 3 5-bit "Z Characters", each
@@ -44,9 +80,12 @@ bzork.Zscii = (function() {
 
   ZCharTriplet.prototype.toString = function() {
     var result = [];
-    for (var i = 0; i < this.zchars.length; i++)
-      result.push(this.zchars[i].toString());
-    return this.zchars.join('');
+    for (var i = 0; i < this.zchars.length; i++) {
+      var c = this.zchars[i].toString();
+      if (c)
+        result.push(c);
+    }
+    return result.join('');
   };
 
   // Given a DataView, reads ZCharTriplets until one has the first
@@ -75,13 +114,15 @@ bzork.Zscii = (function() {
   };
 
   return {
+    /// XXX DEBUG TODO RM
     ZChar: ZChar,
     ZCharTriplet: ZCharTriplet,
     ZString: ZString,
 
     setAlphabet: function(versionOrAlphabet) {
       if (typeof versionOrAlphabet == "number") {
-        zsciiAlphabet = versionOrAlphabet == 1 ? ZsciiAlphabets['v1'] : ZsciiAlphabets['v2'];
+        zsciiState.alphabet = versionOrAlphabet == 1 ?
+          DefaultAlphabets['v1'] : DefaultAlphabets['v2'];
         return;
       }
 
@@ -89,8 +130,7 @@ bzork.Zscii = (function() {
       if (typeof alphabet != "object" || alphabet.length != 3 ||
           alphabet[0].length != 26 || alphabet[1].length != 26 || alphabet[2].length != 26)
         throw "Alphabets must be 3 26 character strings";
-
-      ZsciiAlphabet = alphabet;
+      zsciiState.alphabet = alphabet;
     },
 
     toAsciiChar: function(bits) {
