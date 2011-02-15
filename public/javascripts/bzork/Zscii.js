@@ -123,6 +123,7 @@ bzork.Zscii = (function() {
         zsciiState.alphabet = DefaultAlphabets['v1'];
       else
         zsciiState.alphabet = DefaultAlphabets['v2'];
+      this.reset();
     },
 
     reset: function() {
@@ -137,6 +138,15 @@ bzork.Zscii = (function() {
           alphabet[0].length != 26 || alphabet[1].length != 26 || alphabet[2].length != 26)
         throw "Alphabets must be 3 26 character strings";
       zsciiState.alphabet = alphabet;
+    },
+
+    // Sometimes we need to bypass the alphabet entirely and simply convert the
+    // 10-bit (in practice 8-bit) ZSCII code value to its matching ASCII. Sec. 3.8.
+    toAsciiFromZsciiCode: function(bits) {
+      if (bits >= 32 && bits <= 126)
+        return String.fromCharCode(bits);
+      else
+        throw "unimplemented";
     },
 
     toAsciiChar: function(bits) {

@@ -90,7 +90,7 @@ bzork.Memory.Dictionary.prototype.getWordSeparators = function() {
   var count = this.getWordSeparatorCount(),
       separators = new Array(count);
   for (var i = 0; i < count; i++)
-    separators[i] = bzork.Zscii.toAsciiChar(this._memory.getUint8(i + 1));
+    separators[i] = bzork.Zscii.toAsciiFromZsciiCode(this._memory.getUint8(i + 1));
   return separators;
 };
 
