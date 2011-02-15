@@ -1,0 +1,2 @@
+describe("bzork.Machine", function() {
+});

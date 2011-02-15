@@ -1,6 +1,5 @@
-bzork.Loader = function(data) {
-  this.blob = data;
-  this.dataView = new jDataView(this.blob);
+bzork.Loader = function(buffer) {
+  this.dataView = new DataView(buffer);
 };
 
 bzork.Loader.prototype.loadStory = function() {
