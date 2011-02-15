@@ -10,7 +10,8 @@ bzork.Memory = function(buffer) {
   this.dictionary = new bzork.Memory.Dictionary(
     new DataView(membuf, this.header.getDictionaryAddr()));
   this.objectTable = new bzork.Memory.ObjectTable(
-    new DataView(membuf, this.header.getObjectTableAddr()));
+    new DataView(membuf, this.header.getObjectTableAddr()),
+    this.header.getZcodeVersion());
   this.globalTable = new bzork.Memory.GlobalTable(
     new DataView(membuf, this.header.getGlobalTableAddr()));
   this.abbrevTable = new bzork.Memory.AbbrevTable(
