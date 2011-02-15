@@ -13,11 +13,13 @@ bzork.spec = (function() {
   };
 
   var storyFiles = {
-    zork1: "contrib/stories/zork1.z3"
+    zork1: "contrib/stories/zork1.z3",
+    ztuu:  "contrib/stories/ztuu.z5"
   };
 
   var storyData = {
-    zork1: fetchStory(storyFiles.zork1)
+    zork1: fetchStory(storyFiles.zork1),
+    ztuu:  fetchStory(storyFiles.ztuu)
   };
 
   return {
@@ -33,6 +35,7 @@ beforeEach(function() {
 // Sick of typing the same things over&over into chrome's JS console
 if (typeof console !== "undefined") {
   function z1m() { return new bzork.Memory(bzork.spec.storyData['zork1']); }
+  function ztm() { return new bzork.Memory(bzork.spec.storyData['ztuu']); }
   function czs() {
     var dv = new DataView(jDataView.createBuffer.apply(this, arguments));
     return new bzork.Zscii.ZString(dv);
