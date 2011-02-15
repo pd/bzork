@@ -57,5 +57,15 @@ describe('ZSCII', function() {
       var s = bzork.Zscii.toAscii(buf);
       expect(s).toEqual("You're ");
     });
+
+    it("can parse words with 10-bit ZSCII codes", function() {
+      var buf = jDataView.createBuffer(0x14, 0xc1, 0x93, 0x6a);
+      var s = bzork.Zscii.toAscii(buf);
+      expect(s).toEqual("$ve");
+    });
+
+    it("can parse words which contain abbreviations", function() {
+      expect("TODO").toEqual("wall with engravings");
+    });
   });
 });
