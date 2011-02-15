@@ -12,11 +12,11 @@ bzork.Loader.prototype.loadStory = function() {
 bzork.Loader.prototype.loadHeader = function(story) {
   var dv = this.dataView;
 
-  story.header.zcodeVersion = dv.getUint8(0);
-  story.header.releaseNumber = dv.getUint16(2);
-  story.header.highMemAddr = dv.getUint16(4);
-  story.header.startPC = dv.getUint16(6);
-  story.header.dictionaryAddr = dv.getUint16(8);
+  story.header.zcodeVersion = dv.getUint8(0x0);
+  story.header.releaseNumber = dv.getUint16(0x2);
+  story.header.highMemAddr = dv.getUint16(0x4);
+  story.header.startPC = dv.getUint16(0x6);
+  story.header.dictionaryAddr = dv.getUint16(0x8);
   story.header.objectTableAddr = dv.getUint16(0xa);
   story.header.globalTableAddr = dv.getUint16(0xc);
   story.header.staticMemAddr = dv.getUint16(0xe);
