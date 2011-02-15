@@ -1,4 +1,22 @@
 bzork.Zscii = (function() {
+  // The 2 default alphabets
+  var ZsciiAlphabets = {
+    v1: [
+      "abcdefghijklmnopqrstuvwxyz",
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      " 0123456789.,!?_#'\"/\\<-:()"
+    ],
+    v2: [
+      "abcdefghijklmnopqrstuvwxyz",
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      " \n0123456789.,!?_#'\"/\\-:()"
+    ]
+  };
+
+  // A reference to the alphabet currently in use
+  var zsciiAlphabet = null;
+
+  // A single 5-bit "Z Character"
   var ZChar = function(bits) {
     this.bits = bits;
   };
@@ -27,6 +45,20 @@ bzork.Zscii = (function() {
   };
 
   return {
+    setAlphabet: function(versionOrAlphabet) {
+      if (typeof versionOrAlphabet == "number") {
+        zsciiAlphabet = versionOrAlphabet == 1 ? ZsciiAlphabets['v1'] : ZsciiAlphabets['v2'];
+        return;
+      }
+
+      var alphabet = versionOrAlphabet;
+      if (typeof alphabet != "object" || alphabet.length != 3 ||
+          alphabet[0].length != 26 || alphabet[1].length != 26 || alphabet[2].length != 26)
+        throw "Alphabets must be 3 26 character strings";
+
+      ZsciiAlphabet = alphabet;
+    },
+
     toAsciiChar: function(bits) {
       return (new ZChar(bits)).toString();
     },
