@@ -10,6 +10,9 @@ bzork.Memory = function(buffer) {
     new DataView(membuf, this.header.getObjectTableAddr()));
   this.globalTable = new bzork.Memory.GlobalTable(
     new DataView(membuf, this.header.getGlobalTableAddr()));
+  this.abbrevTable = new bzork.Memory.AbbrevTable(
+    new DataView(membuf), this.header.getAbbrevTableAddr(),
+    this.header.getZcodeVersion());
 };
 
 bzork.Memory.Header = function(buffer) {
@@ -115,6 +118,58 @@ bzork.Memory.GlobalTable = function(buffer) {
   this._memory = buffer;
 };
 
-bzork.Memory.AbbrevTable = function(buffer) {
+// Actually represents either 1 or 3 individual tables, depending on the
+// Z-Code version number. The abbreviation data is not inside of the lookup
+// tables, so this requires access to the entirety of the DataView.
+bzork.Memory.AbbrevTable = function(buffer, tableStartAddr, version) {
   this._memory = buffer;
+  this.tableStartAddr = tableStartAddr;
+  this.version = version;
 };
+
+bzork.Memory.AbbrevTable.prototype.getTableCount = function() {
+  if (this.version == 1)
+    return 0;
+  return this.version >= 3 ? 3 : 1;
+};
+
+// These are not necessarily all used, however.
+bzork.Memory.AbbrevTable.prototype.getAbbrevCount = function() {
+  return this.getTableCount() * 32;
+};
+
+bzork.Memory.AbbrevTable.prototype.getTableStartAddr = function() {
+  return this.tableStartAddr;
+};
+
+bzork.Memory.AbbrevTable.prototype.getTableEndAddr = function() {
+  return this.tableStartAddr + (this.getAbbrevCount() * 2) - 1;
+};
+
+/*
+  TODO, why waste time when I could load the contents during the
+  bounds discovery. Need more Zscii first tho.
+
+// Retrieving the data start and end points requires scanning the entire
+// table and saving the lowest and highest values. Craaaazy.
+bzork.Memory.AbbrevTable.prototype.getDataStartAddr = function() {
+  if (!this._dataBoundsDiscovered)
+    this._discoverDataBounds();
+  return this.dataStartAddr;
+};
+
+bzork.Memory.AbbrevTable.prototype.getDataEndAddr = function() {
+  return this.dataEndAddr;
+};
+
+bzork.Memory.AbbrevTable.prototype._discoverDataBounds = function() {
+  var start = 0, end = 0;
+  var addr = null;
+
+  for (i = 0; i < this.getAbbrevCount(); i++) {
+    addr = 
+  }
+
+  this._dataBoundsDiscovered = true;
+};
+*/

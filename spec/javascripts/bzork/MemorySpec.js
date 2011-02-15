@@ -85,3 +85,35 @@ describe("bzork.Memory.Dictionary", function() {
     });
   });
 });
+
+describe("bzork.Memory.AbbrevTable", function() {
+  describe("for Zork1", function() {
+    beforeEach(function() {
+      this.abbrev = new bzork.Memory(bzork.spec.storyData['zork1']).abbrevTable;
+    });
+
+    it("should know the number of tables available", function() {
+      expect(this.abbrev.getTableCount()).toEqual(3);
+    });
+
+    it("should know the number of abbreviations available", function() {
+      expect(this.abbrev.getAbbrevCount()).toEqual(96);
+    });
+
+    it("should know the start address of the tables", function() {
+      expect(this.abbrev.getTableStartAddr()).toEqual(0x01f0);
+    });
+
+    it("should know the end address of the tables", function() {
+      expect(this.abbrev.getTableEndAddr()).toEqual(0x02af);
+    });
+
+    it("should know the start address of the data", function() {
+      expect(this.abbrev.getDataStartAddr()).toEqual(0x40);
+    });
+
+    it("should know the end address of the data", function() {
+      expect(this.abbrev.getDataEndAddr()).toEqual(0x01ef);
+    });
+  });
+});

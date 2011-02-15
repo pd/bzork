@@ -9,7 +9,8 @@ bzork.Zscii = (function() {
 
   // A 2-byte word which consists of 3 5-bit "Z Characters", each
   // of which may be either a character from one of 3 available
-  // alphabets or represent an abbreviation.
+  // alphabets or represent an abbreviation. The first bit is
+  // always discarded.
   var ZCharSeq = function(word) {
     this.word = word;
     this.zchars = [];
