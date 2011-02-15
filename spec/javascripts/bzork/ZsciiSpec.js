@@ -3,7 +3,7 @@ describe('ZSCII', function() {
   beforeEach(_initZscii);
   afterEach(_initZscii);
 
-  describe("can set a custom alphabet", function() {
+  it("can set a custom alphabet", function() {
     bzork.Zscii.setAlphabet([
       "zyxwvutsrqponmlkjihgfedcba",
       "ZYXWVUTSRQPONMLKJIHGFEDCBA",
@@ -11,7 +11,7 @@ describe('ZSCII', function() {
     ]);
   });
 
-  describe("rejects invalid custom alphabets", function() {
+  it("rejects invalid custom alphabets", function() {
     expect(function() {
       bzork.Zscii.setAlphabet([]);
     }).toThrow("Alphabets must be 3 26 character strings");
