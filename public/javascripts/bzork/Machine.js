@@ -3,7 +3,7 @@ bzork.Machine = function(buffer) {
   this.pc = this.memory.header.getStartPC();
   this.stack = new bzork.Stack();
 
-  bzork.Zscii.setAlphabet(this.memory.header.getZcodeVersion());
+  bzork.Zscii.init(this.memory.header.getZcodeVersion());
 };
 
 bzork.Stack = function() {

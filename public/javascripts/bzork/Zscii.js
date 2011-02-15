@@ -15,10 +15,11 @@ bzork.Zscii = (function() {
 
   // Globalish ZSCII interpreter state. Meh.
   var zsciiState = {
-    alphabet: null,   // Current alphabet table
-    shift: null,      // Are we following a shift character?
-    shiftLock: false, // Is shift locked? (v1&v2 only)
-    abbrev: null      // Are we about to expand an abbreviation?
+    zcodeVersion: null,  // Everything changes by Z-Code version
+    alphabet: null,      // Current alphabet table
+    shift: null,         // Are we following a shift character?
+    shiftLock: false,    // Is shift locked? (v1&v2 only)
+    abbrev: null         // Are we about to expand an abbreviation?
   };
 
   // A single 5-bit "Z Character"
@@ -57,11 +58,8 @@ bzork.Zscii = (function() {
         result = zsciiState.alphabet[0][v - 6];
     }
 
-    if (result) {
-      zsciiState.abbrev = null;
-      zsciiState.shift = null;
-      zsciiState.shiftLock = false;
-    }
+    if (result)
+      bzork.Zscii.reset();
 
     return result;
   };
@@ -119,14 +117,22 @@ bzork.Zscii = (function() {
     ZCharTriplet: ZCharTriplet,
     ZString: ZString,
 
-    setAlphabet: function(versionOrAlphabet) {
-      if (typeof versionOrAlphabet == "number") {
-        zsciiState.alphabet = versionOrAlphabet == 1 ?
-          DefaultAlphabets['v1'] : DefaultAlphabets['v2'];
-        return;
-      }
+    init: function(version) {
+      zsciiState.zcodeVersion = version;
+      if (version === 1)
+        zsciiState.alphabet = DefaultAlphabets['v1'];
+      else
+        zsciiState.alphabet = DefaultAlphabets['v2'];
+    },
 
-      var alphabet = versionOrAlphabet;
+    reset: function() {
+      zsciiState.abbrev = null;
+      zsciiState.shift = null;
+      zsciiState.shiftLock = false;
+    },
+
+    setAlphabet: function(alphabet) {
+      var alphabet = alphabet;
       if (typeof alphabet != "object" || alphabet.length != 3 ||
           alphabet[0].length != 26 || alphabet[1].length != 26 || alphabet[2].length != 26)
         throw "Alphabets must be 3 26 character strings";

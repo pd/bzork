@@ -1,12 +1,7 @@
 describe('ZSCII', function() {
-  var _resetZscii = function() { bzork.Zscii.setAlphabet(3); };
-  beforeEach(_resetZscii);
-  afterEach(_resetZscii);
-
-  describe("can set the alphabet using a Z-code version number", function() {
-    bzork.Zscii.setAlphabet(1);
-    bzork.Zscii.setAlphabet(3);
-  });
+  var _initZscii = function() { bzork.Zscii.init(3); };
+  beforeEach(_initZscii);
+  afterEach(_initZscii);
 
   describe("can set a custom alphabet", function() {
     bzork.Zscii.setAlphabet([
