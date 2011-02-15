@@ -30,6 +30,14 @@ bzork.Story.prototype.getGlobalTableAddr = function() {
   return this.header.globalTableAddr;
 };
 
+bzork.Story.prototype.getStaticMemAddr = function() {
+  return this.header.staticMemAddr;
+};
+
+bzork.Story.prototype.getAbbrevTableAddr = function() {
+  return this.header.abbrevTableAddr;
+};
+
 bzork.Story.prototype.getSerial = function() {
   return this.header.serial;
 };

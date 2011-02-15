@@ -56,6 +56,10 @@ describe("bzork.Loader", function() {
       expect(this.zork1.getGlobalTableAddr()).toEqual(0x2271);
     });
 
+    it("should read the static memory base address", function() {
+      expect(this.zork1.getStaticMemAddr()).toEqual(0x2e53);
+    });
+
     it("should read the abbreviations table address", function() {
       expect(this.zork1.getAbbrevTableAddr()).toEqual(0x1f0);
     });
