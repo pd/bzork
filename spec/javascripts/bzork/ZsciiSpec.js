@@ -1,5 +1,5 @@
 describe('ZSCII', function() {
-  var _initZscii = function() { bzork.Zscii.init(3); };
+  var _initZscii = function() { bzork.Zscii.init(3, null); };
   beforeEach(_initZscii);
   afterEach(_initZscii);
 
@@ -65,7 +65,16 @@ describe('ZSCII', function() {
     });
 
     it("can parse words which contain abbreviations", function() {
-      expect("TODO").toEqual("wall with engravings");
+      // need an abbreviations table
+      new bzork.Memory(bzork.spec.storyData['zork1']);
+
+      var buf = jDataView.createBuffer(
+        0x0d, 0xc1, 0x35, 0x53,
+        0x32, 0xe6, 0x6d, 0xd3,
+        0xb3, 0x05
+      );
+      var s = bzork.Zscii.toAscii(buf);
+      expect(s).toEqual("wall with engravings");
     });
   });
 });
