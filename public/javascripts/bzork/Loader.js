@@ -22,6 +22,16 @@ bzork.Loader.prototype.loadHeader = function(story) {
   story.header.staticMemAddr = dv.getUint16(0xe);
   story.header.abbrevTableAddr = dv.getUint16(0x18);
 
+  var size = dv.getUint16(0x1a);
+  if (story.header.zcodeVersion <= 3)
+    story.header.fileSize = size * 2;
+  else if (story.header.zcodeVersion <= 5)
+    story.header.fileSize = size * 4;
+  else
+    story.header.fileSize = size * 8;
+
+  story.header.checksum = dv.getUint16(0x1c);
+
   story.header.serial = '';
   for (var i = 0; i < 6; i++)
     story.header.serial += String.fromCharCode( dv.getUint8(0x12 + i) );

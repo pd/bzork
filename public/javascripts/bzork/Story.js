@@ -38,6 +38,14 @@ bzork.Story.prototype.getAbbrevTableAddr = function() {
   return this.header.abbrevTableAddr;
 };
 
+bzork.Story.prototype.getFileSize = function() {
+  return this.header.fileSize;
+};
+
+bzork.Story.prototype.getChecksum = function() {
+  return this.header.checksum;
+};
+
 bzork.Story.prototype.getSerial = function() {
   return this.header.serial;
 };
