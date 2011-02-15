@@ -1,6 +1,3 @@
-describe("bzork.Memory", function() {
-});
-
 describe("bzork.Memory.Header", function() {
   describe("for Zork1", function() {
     beforeEach(function() {
