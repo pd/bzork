@@ -25,6 +25,8 @@ bzork.Zscii = (function() {
     var v = this.bits;
     if (v === 0)
       return ' ';
+    if (v == 4 || v == 5)
+      return '';
     return zsciiAlphabet[0][v - 6];
   };
 
@@ -47,8 +49,11 @@ bzork.Zscii = (function() {
     return this.zchars.join('');
   };
 
-  var ZString = function(buffer) {
-    this.buffer = buffer;
+  // Given a DataView, reads ZCharTriplets until one has the first
+  // bit set marking the end of the word. These can then be converted
+  // into ASCII by toString()s all the way down.
+  var ZString = function(dataview) {
+    this.buffer = dataview;
     this.triplets = [];
 
     var word, offset = 0;
