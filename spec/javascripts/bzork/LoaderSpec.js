@@ -9,17 +9,13 @@ describe("bzork.Loader", function() {
   function fetchStoryData(path) {
     var data = '';
 
-    // this is actually totally borked, only works in FF, and is
-    // just flat out silly. i'm actually getting an error response.
-    // i will deal with making this more reasonable at some point
-    // when the headache is worth it.
     jQuery.ajax({
-      url: path + ".base64",
+      url: path,
       async: false,
-      complete: function(xhr, status) { data = xhr.responseText; }
+      success: function(text) { data = text; }
     });
 
-    return Base64.decode(data);
+    return data;
   }
 
   var storyData = {
