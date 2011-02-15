@@ -36,19 +36,19 @@ describe("bzork.Memory.ObjectTable", function() {
       var obj1 = this.objects.get(1),
           obj89 = this.objects.get(89);
 
-      expect(obj1.parent).toEqual(247);
-      expect(obj1.sibling).toEqual(2);
-      expect(obj1.child).toEqual(0);
+      expect(obj1.getParent()).toEqual(247);
+      expect(obj1.getSibling()).toEqual(2);
+      expect(obj1.getChild()).toEqual(0);
 
-      expect(obj89.parent).toEqual(88);
-      expect(obj89.sibling).toEqual(0);
-      expect(obj89.child).toEqual(87);
+      expect(obj89.getParent()).toEqual(88);
+      expect(obj89.getSibling()).toEqual(0);
+      expect(obj89.getChild()).toEqual(87);
     });
 
     it("should retrieve objects with the correct property addresses", function() {
-      expect(this.objects.get(1).propertyAddr).toEqual(0x0bb8);
-      expect(this.objects.get(89).propertyAddr).toEqual(0x1388);
-      expect(this.objects.get(173).propertyAddr).toEqual(0x1b95);
+      expect(this.objects.get(1).getPropertyAddr()).toEqual(0x0bb8);
+      expect(this.objects.get(89).getPropertyAddr()).toEqual(0x1388);
+      expect(this.objects.get(173).getPropertyAddr()).toEqual(0x1b95);
     });
 
     it("should retrieve objects with the correct names", function() {
@@ -56,9 +56,9 @@ describe("bzork.Memory.ObjectTable", function() {
           obj67 = this.objects.get(67),
           obj195 = this.objects.get(195);
 
-      expect(obj1.description).toEqual("pair of hands");
-      expect(obj67.description).toEqual("Maze");
-      expect(obj195.description).toEqual("blue button");
+      expect(obj1.getDescription()).toEqual("pair of hands");
+      expect(obj67.getDescription()).toEqual("Maze");
+      expect(obj195.getDescription()).toEqual("blue button");
     });
   });
 

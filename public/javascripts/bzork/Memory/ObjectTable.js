@@ -14,27 +14,8 @@ bzork.Memory.ObjectTable.prototype.get = function(i) {
   if (i < 1 || i > this.getObjectCount())
     throw "Object " + i + " out of bounds!";
 
-  var object = new bzork.Memory.Object(i),
-      addr = this.getObjectAddr(i);
-
-  object.attributes = null;
-
-  // borked for v4+
-  object.parent = this._memory.getUint8(addr + 4);
-  object.sibling = this._memory.getUint8(addr + 5);
-  object.child = this._memory.getUint8(addr + 6);
-  object.propertyAddr = this._memory.getUint16(addr + 7);
-
-  if (this.objectHasDescription(object)) {
-    var view = new DataView(this._memory.buffer, object.propertyAddr + 1);
-    object.description = bzork.Zscii.toAscii(view);
-  }
-
-  return object;
-};
-
-bzork.Memory.ObjectTable.prototype.objectHasDescription = function(object) {
-  return this._memory.getUint8(object.propertyAddr) !== 0;
+  return new bzork.Memory.Object(i, this._memory,
+                                 this.getObjectAddr(i), this.version);
 };
 
 bzork.Memory.ObjectTable.prototype.getObjectSize = function() {
