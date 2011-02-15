@@ -128,6 +128,17 @@ bzork.Memory.AbbrevTable = function(buffer, tableStartAddr, version) {
   this._memory = buffer;
   this.tableStartAddr = tableStartAddr;
   this.version = version;
+
+  this._cache = {};
+};
+
+bzork.Memory.AbbrevTable.prototype.get = function(i) {
+  if (this._cache[i])
+    return this._cache[i];
+
+  var view = new DataView(this._memory.buffer, this.getAbbrevDataAddr(i));
+  var s = this._cache[i] = bzork.Zscii.toAscii(view);
+  return s;
 };
 
 bzork.Memory.AbbrevTable.prototype.getTableCount = function() {

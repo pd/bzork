@@ -118,5 +118,22 @@ describe("bzork.Memory.AbbrevTable", function() {
       expect(this.abbrev.getAbbrevDataAddr(1)).toEqual(0x44);
       expect(this.abbrev.getAbbrevDataAddr(23)).toEqual(0x9a);
     });
+
+    it("should throw an error when retrieving an abbreviation out of bounds", function() {
+      var abbrev = this.abbrev;
+
+      expect(function() { abbrev.get(-1); }).toThrow("Abbreviation -1 out of range!");
+      expect(function() { abbrev.get(96); }).toThrow("Abbreviation 96 out of range!");
+    });
+
+    it("should retrieve the correct strings for the abbreviations", function() {
+      expect(this.abbrev.get(0)).toEqual("the ");
+      expect(this.abbrev.get(1)).toEqual("The ");
+      expect(this.abbrev.get(21)).toEqual("through ");
+      expect(this.abbrev.get(27)).toEqual("Cyclops ");
+      expect(this.abbrev.get(49)).toEqual("staircase ");
+      expect(this.abbrev.get(87)).toEqual("Fortunately");
+      expect(this.abbrev.get(93)).toEqual("troll's ");
+    });
   });
 });

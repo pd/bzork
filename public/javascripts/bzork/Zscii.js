@@ -160,8 +160,8 @@ bzork.Zscii = (function() {
     },
 
     toAscii: function(buffer) {
-      var dv = new DataView(buffer);
-      return (new ZString(dv)).toString();
+      var view = buffer['getUint16'] ? buffer : new DataView(buffer);
+      return (new ZString(view)).toString();
     }
   };
 })();
