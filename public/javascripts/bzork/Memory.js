@@ -155,10 +155,6 @@ bzork.Memory.AbbrevTable.prototype.getAbbrevDataAddr = function(i) {
   return this._memory.getUint16(this.getTableStartAddr() + (i * 2)) * 2;
 };
 
-/*
-  TODO, why waste time when I could load the contents during the
-  bounds discovery. Need more Zscii first tho.
-
 // Retrieving the data start and end points requires scanning the entire
 // table and saving the lowest and highest values. Craaaazy.
 bzork.Memory.AbbrevTable.prototype.getDataStartAddr = function() {
@@ -168,17 +164,32 @@ bzork.Memory.AbbrevTable.prototype.getDataStartAddr = function() {
 };
 
 bzork.Memory.AbbrevTable.prototype.getDataEndAddr = function() {
+  if (!this._dataBoundsDiscovered)
+    this._discoverDataBounds();
   return this.dataEndAddr;
 };
 
 bzork.Memory.AbbrevTable.prototype._discoverDataBounds = function() {
-  var start = 0, end = 0;
   var addr = null;
 
   for (i = 0; i < this.getAbbrevCount(); i++) {
-    addr = 
+    addr = this.getAbbrevDataAddr(i);
+    if (!this.dataStartAddr || addr < this.dataStartAddr)
+      this.dataStartAddr = addr;
+    if (!this.dataEndAddr || addr > this.dataEndAddr)
+      this.dataEndAddr = addr;
   }
+
+  // Find the actual end of the final abbreviation
+  var word, offset = 0;
+  do {
+    word = this._memory.getUint16(this.dataEndAddr + offset);
+    if (word & 0x8000) {
+      this.dataEndAddr = this.dataEndAddr + offset + 1;
+      break;
+    }
+    offset += 2;
+  } while (true);
 
   this._dataBoundsDiscovered = true;
 };
-*/
