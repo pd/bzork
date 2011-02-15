@@ -3,7 +3,10 @@ bzork.Memory = function(buffer) {
       membuf = mem.buffer;
 
   this._memory = mem;
+
   this.header = new bzork.Memory.Header(new DataView(membuf, 0, 64));
+  bzork.Zscii.init(this.header.getZcodeVersion());
+
   this.dictionary = new bzork.Memory.Dictionary(
     new DataView(membuf, this.header.getDictionaryAddr()));
   this.objectTable = new bzork.Memory.ObjectTable(
