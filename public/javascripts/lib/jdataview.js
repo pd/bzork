@@ -238,7 +238,7 @@ jDataView.prototype = {
 
 	_getUint8: function (offset) {
 		if (this._isArrayBuffer) {
-			return new Int8Array(this._buffer, offset, 1)[0];
+			return new Uint8Array(this._buffer, offset, 1)[0];
 		} else {
 			return this._buffer.charCodeAt(offset) & 0xff;
 		}

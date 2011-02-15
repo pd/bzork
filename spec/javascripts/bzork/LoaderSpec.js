@@ -12,7 +12,8 @@ describe("bzork.Loader", function() {
     jQuery.ajax({
       url: path,
       async: false,
-      success: function(text) { data = text; }
+      dataType: "binary",
+      success: function(buf) { data = buf; }
     });
 
     return data;

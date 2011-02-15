@@ -9,8 +9,10 @@ bzork.Loader.prototype.loadStory = function() {
   return story;
 };
 
+_globalDv=null;
 bzork.Loader.prototype.loadHeader = function(story) {
   var dv = this.dataView;
+  _globalDv=dv;
 
   story.header.zcodeVersion = dv.getUint8(0x0);
   story.header.releaseNumber = dv.getUint16(0x2);
