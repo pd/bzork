@@ -1,9 +1,34 @@
 // Contains both a property defaults table and the object tree.
 // Objects are numbered from 1, as object 0 is a NULL object used as
 // the first parent in the tree.
-bzork.Memory.ObjectTable = function(buffer, version) {
+bzork.Memory.ObjectTable = function(buffer, tableStartAddr, version) {
   this._memory = buffer;
+  this.tableStartAddr = tableStartAddr;
   this.version = version;
+};
+
+bzork.Memory.ObjectTable.prototype.get = function(i) {
+  var object = new bzork.Memory.Object(i),
+      addr = this.getObjectAddr(i);
+
+  object.attributes = null;
+
+  // borked for v4+
+  object.parent = this._memory.getUint8(addr + 4);
+  object.sibling = this._memory.getUint8(addr + 5);
+  object.child = this._memory.getUint8(addr + 6);
+  object.propertyAddr = this._memory.getUint16(addr + 7);
+
+  if (this.objectHasDescription(object)) {
+    var view = new DataView(this._memory.buffer, object.propertyAddr);
+    object.description = bzork.Zscii.toAscii(view);
+  }
+
+  return object;
+};
+
+bzork.Memory.ObjectTable.prototype.objectHasDescription = function(object) {
+  return this._memory.getUint8(object.propertyAddr) !== 0;
 };
 
 bzork.Memory.ObjectTable.prototype.getObjectSize = function() {
@@ -28,7 +53,7 @@ bzork.Memory.ObjectTable.prototype.getPropertyAddrOffset = function() {
 };
 
 bzork.Memory.ObjectTable.prototype.getStartAddr = function() {
-  return this._memory.byteOffset;
+  return this.tableStartAddr;
 };
 
 bzork.Memory.ObjectTable.prototype.getEndAddr = function() {
@@ -65,7 +90,7 @@ bzork.Memory.ObjectTable.prototype._discoverBounds = function() {
     // bounds, too. Similar to bounds discovery for abbrevs.
     if (!dataStart || objAddr < dataStart) {
       objAddr += this.getPropertyAddrOffset();
-      dataAddr = this._memory.getUint16(objAddr - this.getStartAddr()); // ugh
+      dataAddr = this._memory.getUint16(objAddr);
       objAddr += 2;
 
       if (!dataStart || dataAddr < dataStart)
