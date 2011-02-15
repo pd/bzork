@@ -17,12 +17,12 @@ bzork.Loader.prototype.loadHeader = function(story) {
   story.header.highMemAddr = dv.getUint16(4);
   story.header.startPC = dv.getUint16(6);
   story.header.dictionaryAddr = dv.getUint16(8);
-  story.header.objectTableAddr = dv.getUint16(10);
-  story.header.globalTableAddr = dv.getUint16(12);
-  story.header.staticMemAddr = dv.getUint16(14);
-  story.header.abbrevTableAddr = dv.getUint16(24);
+  story.header.objectTableAddr = dv.getUint16(0xa);
+  story.header.globalTableAddr = dv.getUint16(0xc);
+  story.header.staticMemAddr = dv.getUint16(0xe);
+  story.header.abbrevTableAddr = dv.getUint16(0x18);
 
   story.header.serial = '';
   for (var i = 0; i < 6; i++)
-    story.header.serial += String.fromCharCode( dv.getUint8(18 + i) );
+    story.header.serial += String.fromCharCode( dv.getUint8(0x12 + i) );
 };
