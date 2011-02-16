@@ -1,7 +1,8 @@
-describe("bzork.Memory.AbbrevTable", function() {
+describe("bzork.abbrevTable", function() {
   describe("for Zork1", function() {
     beforeEach(function() {
-      this.abbrev = new bzork.Memory(bzork.spec.storyData['zork1']).abbrevTable;
+      this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
+      this.abbrev  = this.machine.abbrevTable;
     });
 
     it("should know the number of tables available", function() {

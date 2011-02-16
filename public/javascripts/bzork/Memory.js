@@ -7,9 +7,6 @@ bzork.Memory = function(bytes) {
     new DataView(membuf), this.header.getObjectTableAddr(),
     this.header.getZcodeVersion());
   this.globalTable = new bzork.Memory.GlobalTable(new DataView(membuf));
-  this.abbrevTable = new bzork.Memory.AbbrevTable(
-    new DataView(membuf), this.header.getAbbrevTableAddr(),
-    this.header.getZcodeVersion());
 
   bzork.Zscii.init(this.header.getZcodeVersion(), this.abbrevTable);
 };
