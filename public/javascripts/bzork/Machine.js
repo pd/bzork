@@ -6,11 +6,6 @@ bzork.Machine = function(storyBytes) {
   this.objectTable = new bzork.ObjectTable(this, this.header.getObjectTableAddr());
 
   this.zscii = new bzork.Zscii(this);
-  /*
-  this.globalTable = new bzork.GlobalTable(this);
-
-  this.zscii = new bzork.Zscii(this);
-  */
 };
 
 bzork.Machine.prototype.getZcodeVersion = function() {
