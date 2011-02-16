@@ -129,7 +129,7 @@ bzork.vm.Instruction.prototype.getOperands = function() {
 };
 
 bzork.vm.Instruction.prototype.stores = function() {
-  return bzork.vm.InstructionInfo.DB[this.uniqueKey()].stores;
+  return this._getInstructionInfo().stores;
 };
 
 bzork.vm.Instruction.prototype.getStoreVariable = function() {
@@ -139,7 +139,7 @@ bzork.vm.Instruction.prototype.getStoreVariable = function() {
 };
 
 bzork.vm.Instruction.prototype.branches = function() {
-  return bzork.vm.InstructionInfo.DB[this.uniqueKey()].branches;
+  return this._getInstructionInfo().branches;
 };
 
 bzork.vm.Instruction.prototype.getBranchOffset = function() {
@@ -147,6 +147,20 @@ bzork.vm.Instruction.prototype.getBranchOffset = function() {
     throw "Instruction does not branch";
   return this._machine.getUint8(this._getBranchOffsetAddr());
 }
+
+bzork.vm.Instruction.prototype.hasDanglingString = function() {
+  return this._getInstructionInfo().stringed;
+};
+
+bzork.vm.Instruction.prototype.getDanglingString = function() {
+  if (!this.hasDanglingString())
+    throw "Instruction has no embedded string";
+  return this._machine.getZsciiString(this._getStringAddr());
+};
+
+bzork.vm.Instruction.prototype._getInstructionInfo = function() {
+  return bzork.vm.InstructionInfo.DB[this.uniqueKey()];
+};
 
 bzork.vm.Instruction.prototype._getOperand = function(offset, type) {
   if (type === bzork.vm.Instruction.OpTypes.OMIT)
@@ -213,4 +227,9 @@ bzork.vm.Instruction.prototype._getBranchOffsetAddr = function() {
     return this._getStoreVariableAddr() + 1;
   else
     return this._getStoreVariableAddr();
+};
+
+bzork.vm.Instruction.prototype._getStringAddr = function() {
+  // neither print nor print_ret store or branch, so this is always safe
+  return this._getAfterOperandsAddr();
 };

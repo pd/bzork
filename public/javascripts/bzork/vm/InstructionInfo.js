@@ -1,11 +1,11 @@
-bzork.vm.InstructionInfo = function(name, stores, branches, prints, version) {
+bzork.vm.InstructionInfo = function(name, stores, branches, stringed, version) {
   if (!version)
     version = 1;
 
   this.name     = name;
   this.stores   = stores;
   this.branches = branches;
-  this.prints   = prints;
+  this.stringed = stringed;
   this.version  = version;
 };
 
@@ -16,9 +16,9 @@ bzork.vm.InstructionInfo.DB = {};
 // dump it as JSON and plop that into this file instead.
 (function() {
 
-  function addEntry(name, opcount, opcode, stores, branches, prints, version) {
-    var info = new bzork.vm.InstructionInfo(name, stores, branches, prints, version);
+  function addEntry(name, opcount, opcode, stores, branches, stringed, version) {
     var key  = opcount + ":" + opcode;
+    var info = new bzork.vm.InstructionInfo(name, stores, branches, stringed, version);
     if (bzork.vm.InstructionInfo.DB[key])
       throw "Adding duplicate entry to instruction DB: " + key;
     bzork.vm.InstructionInfo.DB[key] = info;
@@ -40,7 +40,7 @@ bzork.vm.InstructionInfo.DB = {};
     addEntry(name, opcount, opcode, true, true, false, version);
   }
 
-  function addPrint(name, opcount, opcode, version) {
+  function addStringed(name, opcount, opcode, version) {
     addEntry(name, opcount, opcode, false, false, true, version);
   }
 
@@ -52,8 +52,8 @@ bzork.vm.InstructionInfo.DB = {};
   // 0OP
   addBasic('rtrue', OP0, 0);
   addBasic('rfalse', OP0, 1);
-  addPrint('print', OP0, 2);
-  addPrint('print_ret', OP0, 3);
+  addStringed('print', OP0, 2);
+  addStringed('print_ret', OP0, 3);
   addBasic('nop', OP0, 4);
   addBranch('save', OP0, 5);
   addBranch('restore', OP0, 6);

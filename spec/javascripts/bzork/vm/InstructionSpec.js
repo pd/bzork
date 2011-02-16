@@ -4,11 +4,13 @@ describe("bzork.vm.Instruction", function() {
     return machine;
   }
 
+  // These may be padded with an extra byte where necessary
   TestInstructions = {
-    'call':    [0xe003, 0x2a39, 0x8010, 0xffff, 0x00e1], // zork 1 PC
-    'rfalse':  [0xb100],
-    'ret':     [0xab05],
-    'je':      [0x4188, 0x2b40]
+    'call':    [0xe003, 0x2a39, 0x8010, 0xffff, 0x00e1], // var, 3 large
+    'rfalse':  [0xb100], // short, 0OP
+    'ret':     [0xab05], // short, 1OP
+    'je':      [0x4188, 0x2b40], // long, 2OP var/small
+    'print':   [0xb211, 0xaa46, 0x3416, 0x459c, 0xa500] // short, 0OP + string
   };
 
   function buildInstruction(name) {
@@ -207,6 +209,32 @@ describe("bzork.vm.Instruction", function() {
     it("returns the branch offset value", function() {
       var instr = buildInstruction('je');
       expect(instr.getBranchOffset()).toEqual(0x40);
+    });
+  });
+
+  describe("hasDanglingString", function() {
+    it("recognizes instructions which have a ZString following them", function() {
+      var instr = buildInstruction('print');
+      expect(instr.hasDanglingString()).toEqual(true);
+    });
+
+    it("returns false for other instructions", function() {
+      var instr = buildInstruction('je');
+      expect(instr.hasDanglingString()).toEqual(false);
+    });
+  });
+
+  describe("getDanglingString", function() {
+    it("throws if the instruction does not have a dangling string", function() {
+      var instr = buildInstruction('je');
+      expect(function() {
+        instr.getDanglingString()
+      }).toThrow("Instruction has no embedded string");
+    });
+
+    it("returns the decoded dangling string", function() {
+      var instr = buildInstruction('print');
+      expect(instr.getDanglingString()).toEqual("Hello.\n");
     });
   });
 });

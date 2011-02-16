@@ -35,9 +35,11 @@ var StubMachine = function(version, words) {
   this.version = version;
   buf = createArrayBuffer(words);
   this.memory  = new bzork.Memory(buf);
+  this.zscii   = new bzork.Zscii(this);
 };
 
 StubMachine.prototype.getZcodeVersion = function() { return this.version; }
+StubMachine.prototype.getZsciiString = bzork.Machine.prototype.getZsciiString;
 StubMachine.prototype.getUint8 = bzork.Machine.prototype.getUint8;
 StubMachine.prototype.getUint16 = bzork.Machine.prototype.getUint16;
 
