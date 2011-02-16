@@ -63,7 +63,7 @@ bzork.vm.Instruction.prototype.getOperandCount = function() {
   case bzork.vm.Instruction.Forms.LONG:
     return bzork.vm.Instruction.OpCounts.OP2;
   case bzork.vm.Instruction.Forms.SHORT:
-    if ((opbyte & 0x30) !== 0)
+    if ((opbyte & 0x30) === 0x30)
       return bzork.vm.Instruction.OpCounts.OP0;
     else
       return bzork.vm.Instruction.OpCounts.OP1;
@@ -84,10 +84,11 @@ bzork.vm.Instruction.prototype.getOperandTypes = function() {
 
   switch (this.getForm()) {
   case bzork.vm.Instruction.Forms.SHORT:
-    return this._map2bitOperandType(opbyte & 0x30);
+    var type = this._map2bitOperandType((opbyte & 0x30) >> 4);
+    return type === bzork.vm.Instruction.OpTypes.OMIT ? [] : [type];
   case bzork.vm.Instruction.Forms.LONG:
-    return [this._map1bitOperandType(opbyte & 0x40),
-            this._map1bitOperandType(opbyte & 0x20)];
+    return [this._map1bitOperandType((opbyte & 0x40) >> 6),
+            this._map1bitOperandType((opbyte & 0x20) >> 5)];
   case bzork.vm.Instruction.Forms.VAR:
     var bitfield = this._machine.getUint8(this._addr + 1),
         types = [];
@@ -155,7 +156,7 @@ bzork.vm.Instruction.prototype._operandSize = function(type) {
 bzork.vm.Instruction.prototype._map2bitOperandType = function(bits) {
   switch (bits) {
   case 0: return bzork.vm.Instruction.OpTypes.LARGE;
-  case 1: return bzork.vm.Instruction.OpTypes.SHORT;
+  case 1: return bzork.vm.Instruction.OpTypes.SMALL;
   case 2: return bzork.vm.Instruction.OpTypes.VAR;
   case 3: return bzork.vm.Instruction.OpTypes.OMIT;
   default: throw "Invalid operand type value " + bits;
@@ -167,5 +168,5 @@ bzork.vm.Instruction.prototype._map1bitOperandType = function(bit) {
   if (bit === 1)
     return bzork.vm.Instruction.OpTypes.VAR;
   else if (bit === 0)
-    return bzork.vm.Instruction.OpTypes.SHORT;
+    return bzork.vm.Instruction.OpTypes.SMALL;
 };

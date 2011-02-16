@@ -4,22 +4,102 @@ describe("bzork.vm.Instruction", function() {
     return machine;
   }
 
-  // Returns a stub machine with the Zork 1 main routine in memory
-  function zork1PCMachine() {
-    return stubMachine([0xe003, 0x2a39, 0x8010, 0xffff, 0x00e1]);
+  TestInstructions = {
+    'call':    [0xe003, 0x2a39, 0x8010, 0xffff, 0x00e1], // zork 1 PC
+    'rfalse':  [0xb100],
+    'ret':     [0xab05],
+    'je':      [0x4188, 0x2b40]
+  };
+
+  function buildInstruction(name) {
+    var words = TestInstructions[name];
+    if (typeof words === "undefined")
+      throw "Unknown test instruction name " + name;
+    return new bzork.vm.Instruction(stubMachine(words), 0);
   }
 
-  it("recognizes short form instructions", function() {
-    var machine = stubMachine([0xb100]);
-    var instr   = new bzork.vm.Instruction(machine, 0);
+  describe("getForm", function() {
+    it("recognizes short form instructions", function() {
+      var instr = buildInstruction('rfalse');
+      expect(instr.getForm()).toEqual(bzork.vm.Instruction.Forms.SHORT);
+    });
 
-    expect(instr.getForm()).toEqual(bzork.vm.Instruction.Forms.SHORT);
+    it("recognizes variable form instructions", function() {
+      var instr = buildInstruction('call');
+      expect(instr.getForm()).toEqual(bzork.vm.Instruction.Forms.VAR);
+    });
+
+    it("recognizes long form instructions", function() {
+      var instr = buildInstruction('je');
+      expect(instr.getForm()).toEqual(bzork.vm.Instruction.Forms.LONG);
+    });
+
+    xit("recognizes extended form instructions", function() {
+      // TODO need to look at ztuu.z5
+    });
   });
 
-  it("recognizes variable form instructions", function() {
-    var machine = zork1PCMachine();
-    var instr   = new bzork.vm.Instruction(machine, 0);
+  describe("getOperandCount", function() {
+    it("knows long forms are always 2OP", function() {
+      var instr = buildInstruction('je');
+      expect(instr.getOperandCount()).toEqual(bzork.vm.Instruction.OpCounts.OP2);
+    });
 
-    expect(instr.getForm()).toEqual(bzork.vm.Instruction.Forms.VAR);
+    it("recognizes 0OP short forms", function() {
+      var instr = buildInstruction('rfalse');
+      expect(instr.getOperandCount()).toEqual(bzork.vm.Instruction.OpCounts.OP0);
+    });
+
+    it("recognizes 1OP short forms", function() {
+      var instr = buildInstruction('ret');
+      expect(instr.getOperandCount()).toEqual(bzork.vm.Instruction.OpCounts.OP1);
+    });
+
+    it("recognizes VAROP variable forms", function() {
+      var instr = buildInstruction('call');
+      expect(instr.getOperandCount()).toEqual(bzork.vm.Instruction.OpCounts.VAR);
+    });
+
+    xit("recognizes 2OP variable forms", function() {
+      // TODO find one
+      var instr = buildInstruction('no idea what one is yet');
+      expect(instr.getOperandCount()).toEqual(bzork.vm.Instruction.OpCounts.OP2);
+    });
+
+    xit("knows extended forms are always VAROP", function() {
+      // TODO ztuu.z5
+    });
+  });
+
+  describe("getOperandTypes", function() {
+    it("knows 0OP forms have no operands", function() {
+      var instr = buildInstruction('rfalse');
+      expect(instr.getOperandTypes()).toEqual([]);
+    });
+
+    it("recognizes long forms with a variable then a small constant operand", function() {
+      var instr = buildInstruction('je');
+      expect(instr.getOperandTypes()).toEqual([bzork.vm.Instruction.OpTypes.VAR,
+                                               bzork.vm.Instruction.OpTypes.SMALL]);
+    });
+
+    xit("recognizes long forms with a small constant then variable operand", function() {
+      // TODO find one
+    });
+
+    xit("recognizes long forms with 2 small constant operands", function() {
+      // TODO find one
+    });
+
+    xit("recognizes long forms with 2 variable operands", function() {
+      // TODO find one
+    });
+  });
+
+  describe("getOperands", function() {
+    it("knows 0OP forms have no operands", function() {
+      var instr = buildInstruction('rfalse');
+      expect(instr.getOperands()).toEqual([]);
+    });
   });
 });
