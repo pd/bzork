@@ -8,6 +8,10 @@ bzork.Machine = function(storyBytes) {
   this.zscii = new bzork.Zscii(this);
 };
 
+bzork.Machine.prototype.getStartPC = function() {
+  return this.header.getStartPC();
+};
+
 bzork.Machine.prototype.getZcodeVersion = function() {
   return this.header.getZcodeVersion();
 };
