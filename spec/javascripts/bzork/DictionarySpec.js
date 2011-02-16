@@ -1,7 +1,8 @@
-describe("bzork.Memory.Dictionary", function() {
+describe("bzork.Dictionary", function() {
   describe("for Zork1", function() {
     beforeEach(function() {
-      this.dict = new bzork.Memory(bzork.spec.storyData['zork1']).dictionary;
+      this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
+      this.dict = this.machine.dictionary;
     });
 
     it("should know the word separator count", function() {
