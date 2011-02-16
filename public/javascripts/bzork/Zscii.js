@@ -1,195 +1,190 @@
-bzork.Zscii = (function() {
-  // The 2 default alphabets
-  var DefaultAlphabets = {
-    v1: [
-      "abcdefghijklmnopqrstuvwxyz",
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-      " 0123456789.,!?_#'\"/\\<-:()"
-    ],
-    v2: [
-      "abcdefghijklmnopqrstuvwxyz",
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-      " \n0123456789.,!?_#'\"/\\-:()"
-    ]
-  };
+bzork.Zscii = function(machine) {
+  this._machine = machine;
+  this.alphabet = this.determineAlphabet();
+  this.resetState();
+};
 
-  // Globalish ZSCII interpreter state. Meh.
-  var zsciiState = {
-    zcodeVersion: null,  // Everything changes by Z-Code version
-    alphabet: null,      // Current alphabet table
-    abbrevTable: null,   // Current abbreviations table
-    shift: null,         // Are we following a shift character?
-    shiftLock: false,    // Is shift locked? (v1&v2 only)
-    tenBit: false,       // Are we in the middle of reading a 10-bit ZSCII?
-    abbrev: null         // Are we about to expand an abbreviation?
-  };
+bzork.Zscii.prototype.resetState = function() {
+  this.shift = null;      // Are we following a shift character?
+  this.shiftLock = false; // Is shift locked? (v1&v2 only)
+  this.tenBit = false;    // Are we in the middle of reading a 10-bit ZSCII?
+  this.abbrev = null;     // Are we about to expand an abbreviation?
+};
 
-  // A single 5-bit "Z Character"
-  var ZChar = function(bits) {
-    this.bits = bits;
-  };
+bzork.Zscii.prototype.determineAlphabet = function() {
+  var version = this._machine.getZcodeVersion();
 
-  ZChar.prototype.toString = function() {
-    var v = this.bits,
-        result;
+  // XXX TODO v5+ can have custom alphabets
+  if (version === 1)
+    return bzork.Zscii.DefaultAlphabets['v1'];
+  else
+    return bzork.Zscii.DefaultAlphabets['v2'];
+};
 
-    if (zsciiState.tenBit === true) {
-      zsciiState.tenBit = this.bits << 5;
-      return;
-    } else if (zsciiState.tenBit !== false) {
-      zsciiState.tenBit |= this.bits;
-      result = bzork.Zscii.toAsciiFromZsciiCode(zsciiState.tenBit);
-      bzork.Zscii.reset();
-      return result;
-    }
+bzork.Zscii.prototype.getString = function(offset) {
+  var words = [];
+  var word, cnt = 0;
 
-    if (zsciiState.abbrev) {
-      var x = zsciiState.abbrev;
-      bzork.Zscii.reset();
-      return zsciiState.abbrevTable.get(32 * (x - 1) + v);
-    }
+  do {
+    word = this._machine.getUint16(offset + (cnt * 2));
+    words.push(word);
+    cnt++;
+  } while ((word & 0x8000) === 0);
 
-    switch (v) {
-    case 0:
-      result = ' ';
-      break;
-    case 1:
-      if (zsciiState.zcodeVersion === 1)
-        result = "\n";
-      else
-        zsciiState.abbrev = v;
-      break;
-    case 2:
-    case 3:
-      // TODO handle shift for v1
-      if (zsciiState.zcodeVersion >= 3)
-        zsciiState.abbrev = v;
-      break;
-    case 4:
-    case 5:
-      zsciiState.shift = v === 4 ? 1 : 2;
-      break;
-    case 6:
-      if (zsciiState.shift === 2) {
-        zsciiState.tenBit = true; // Next character is the top half of 10-bit ZSCII
-        break;
-      }
-    default:
-      if (zsciiState.shift)
-        // TODO handle v1
-        result = zsciiState.alphabet[zsciiState.shift][v - 6];
-      else
-        result = zsciiState.alphabet[0][v - 6];
-    }
+  return this.decodeString(words);
+};
 
-    if (result)
-      bzork.Zscii.reset();
+bzork.Zscii.prototype.getChar = function(offset) {
+  var c = this._machine.getUint8(offset);
+  return this.decodeChar(c);
+};
 
+bzork.Zscii.prototype.decodeString = function(words) {
+  var zstring = new bzork.Zscii.ZString(this, words);
+  return zstring.decode();
+};
+
+bzork.Zscii.prototype.decodeChar = function(c) {
+  if (c >= 32 && c <= 126)
+    return String.fromCharCode(c);
+  else
+    throw "unimplemented";
+};
+
+// Proxy methods for Machine
+bzork.Zscii.prototype.getAbbrev = function(i) {
+  return this._machine.getAbbrev(i);
+};
+
+bzork.Zscii.prototype.getZcodeVersion = function() {
+  return this._machine.getZcodeVersion();
+};
+
+// A ZString is a sequence of ZCharTriplets in memory.
+// The ZString is terminated when the first bit of a triplet
+// is set.
+bzork.Zscii.ZString = function(zscii, words) {
+  this.zscii = zscii;
+  this.triplets = [];
+  for (var i = 0; i < words.length; i++)
+    this.triplets.push( new bzork.Zscii.ZCharTriplet(zscii, words[i]) );
+};
+
+bzork.Zscii.ZString.prototype.decode = function() {
+  var result = [];
+  for (var i = 0; i < this.triplets.length; i++)
+    result.push(this.triplets[i].decode());
+  this.zscii.resetState();
+  return result.join('');
+};
+
+// A ZCharTriplet is a 2-byte word value which contains 3
+// 5-bit ZChars. The ZChars can represent either individual
+// entries in one of the story's alphabets, a 10-bit ZSCII
+// value (which maps closely to ASCII), or an abbreviation.
+// A triplet might expand to a number of characters, in practice.
+bzork.Zscii.ZCharTriplet = function(zscii, word) {
+  this.zscii = zscii;
+  this.word = word;
+  this.zchars = [
+    new bzork.Zscii.ZChar(zscii, (word >> 10) & 0x1f),
+    new bzork.Zscii.ZChar(zscii, (word >> 5) & 0x1f),
+    new bzork.Zscii.ZChar(zscii, word & 0x1f)
+  ];
+};
+
+bzork.Zscii.ZCharTriplet.prototype.decode = function() {
+  var result = [];
+  for (var i = 0; i < this.zchars.length; i++) {
+    var c = this.zchars[i].decode();
+    if (c)
+      result.push(c);
+  }
+  return result.join('');
+};
+
+bzork.Zscii.ZCharTriplet.prototype.isTerminal = function() {
+  return (this.word & 0x8000) !== 0;
+};
+
+// A 5-bit "Z Character"
+bzork.Zscii.ZChar = function(zscii, bits) {
+  this.zscii = zscii;
+  this.bits = bits;
+};
+
+bzork.Zscii.ZChar.prototype.decode = function() {
+  var c = this.bits,
+      zscii = this.zscii,
+      version = zscii.getZcodeVersion(),
+      result;
+
+  if (zscii.tenBit === true) {
+    zscii.tenBit = c << 5;
+    return;
+  } else if (zscii.tenBit !== false) {
+    zscii.tenBit |= c;
+    result = zscii.decodeChar(zscii.tenBit);
+    zscii.resetState();
     return result;
-  };
+  }
 
-  // A 2-byte word which consists of 3 5-bit "Z Characters", each
-  // of which may be either a character from one of 3 available
-  // alphabets or represent an abbreviation. If the first bit is
-  // set, the end of the word has been reached.
-  var ZCharTriplet = function(word) {
-    this.word = word;
-    this.zchars = []
-    this.zchars[0] = new ZChar((word >> 10) & 0x1f);
-    this.zchars[1] = new ZChar((word >> 5) & 0x1f);
-    this.zchars[2] = new ZChar(word & 0x1f);
-  };
+  if (zscii.abbrev) {
+    var x = zscii.abbrev;
+    zscii.resetState();
+    return zscii.getAbbrev(32 * (x - 1) + c);
+  }
 
-  ZCharTriplet.prototype.toString = function() {
-    var result = [];
-    for (var i = 0; i < this.zchars.length; i++) {
-      var c = this.zchars[i].toString();
-      if (c)
-        result.push(c);
+  switch (c) {
+  case 0:
+    result = ' ';
+    break;
+  case 1:
+    if (zscii.getZcodeVersion() === 1)
+      result = "\n";
+    else
+      zscii.abbrev = c;
+    break;
+  case 2:
+  case 3:
+    if (zscii.getZcodeVersion() >= 3)
+      zscii.abbrev = c;
+    break;
+  case 4:
+    zscii.shift = 1;
+    break;
+  case 5:
+    zscii.shift = 2;
+    break;
+  case 6:
+    if (zscii.shift === 2) {
+      zscii.tenBit = true;
+      break;
     }
-    return result.join('');
-  };
+  default:
+    if (zscii.shift)
+      result = zscii.alphabet[zscii.shift][c - 6];
+    else
+      result = zscii.alphabet[0][c - 6];
+    break;
+  }
 
-  ZCharTriplet.prototype.isTerminal = function() {
-    return (this.word & 0x8000) !== 0;
-  };
+  if (result)
+    zscii.resetState();
 
-  // Given a DataView, reads ZCharTriplets until one has the first
-  // bit set marking the end of the word. These can then be converted
-  // into ASCII by toString()s all the way down.
-  var ZString = function(dataview) {
-    this.buffer = dataview;
-    this.triplets = [];
+  return result;
+};
 
-    var word, zct, offset = 0;
-    do {
-      word = this.buffer.getUint16(offset);
-      zct = new ZCharTriplet(word);
-      this.triplets.push(zct);
-      offset += 2;
-
-      if (zct.isTerminal())
-        break;
-    } while (true);
-  };
-
-  ZString.prototype.toString = function() {
-    var res = [];
-
-    for (var i = 0; i < this.triplets.length; i++)
-      res.push(this.triplets[i].toString());
-
-    bzork.Zscii.reset();
-    return res.join('');
-  };
-
-  return {
-    /// XXX DEBUG TODO RM
-    ZChar: ZChar,
-    ZCharTriplet: ZCharTriplet,
-    ZString: ZString,
-
-    init: function(version, abbrevTable) {
-      zsciiState.zcodeVersion = version;
-      if (version === 1)
-        zsciiState.alphabet = DefaultAlphabets['v1'];
-      else
-        zsciiState.alphabet = DefaultAlphabets['v2'];
-      zsciiState.abbrevTable = abbrevTable;
-      this.reset();
-    },
-
-    reset: function() {
-      zsciiState.abbrev = null;
-      zsciiState.shift = null;
-      zsciiState.shiftLock = false;
-      zsciiState.tenBit = false;
-    },
-
-    setAlphabet: function(alphabet) {
-      var alphabet = alphabet;
-      if (typeof alphabet != "object" || alphabet.length != 3 ||
-          alphabet[0].length != 26 || alphabet[1].length != 26 || alphabet[2].length != 26)
-        throw "Alphabets must be 3 26 character strings";
-      zsciiState.alphabet = alphabet;
-    },
-
-    // Sometimes we need to bypass the alphabet entirely and simply convert the
-    // 10-bit (in practice 8-bit) ZSCII code value to its matching ASCII. Sec. 3.8.
-    toAsciiFromZsciiCode: function(bits) {
-      if (bits >= 32 && bits <= 126)
-        return String.fromCharCode(bits);
-      else
-        throw "unimplemented";
-    },
-
-    toAsciiChar: function(bits) {
-      return (new ZChar(bits)).toString();
-    },
-
-    toAscii: function(buffer) {
-      var view = buffer['getUint16'] ? buffer : new DataView(buffer);
-      return (new ZString(view)).toString();
-    }
-  };
-})();
+// The 2 default alphabets
+bzork.Zscii.DefaultAlphabets = {
+  v1: [
+    "abcdefghijklmnopqrstuvwxyz",
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    " 0123456789.,!?_#'\"/\\<-:()"
+  ],
+  v2: [
+    "abcdefghijklmnopqrstuvwxyz",
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    " \n0123456789.,!?_#'\"/\\-:()"
+  ]
+};

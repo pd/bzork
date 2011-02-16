@@ -6,7 +6,7 @@ bzork.AbbrevTable = function(machine, tableAddr) {
 };
 
 bzork.AbbrevTable.prototype.get = function(i) {
-  return this._machine.getZscii(this.getAbbrevDataAddr(i));
+  return this._machine.getZsciiString(this.getAbbrevDataAddr(i));
 };
 
 bzork.AbbrevTable.prototype.getTableCount = function() {

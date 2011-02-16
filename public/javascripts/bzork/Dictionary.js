@@ -4,7 +4,7 @@ bzork.Dictionary = function(machine, addr) {
 };
 
 bzork.Dictionary.prototype.get = function(i) {
-  return this._machine.getZscii(this.getEntryOffset(i));
+  return this._machine.getZsciiString(this.getEntryOffset(i));
 };
 
 bzork.Dictionary.prototype.getWordSeparatorCount = function() {
@@ -15,7 +15,7 @@ bzork.Dictionary.prototype.getWordSeparators = function() {
   var count = this.getWordSeparatorCount(),
       separators = new Array(count);
   for (var i = 0; i < count; i++)
-    separators[i] = bzork.Zscii.toAsciiFromZsciiCode(this.getUint8(i + 1));
+    separators[i] = this._machine.decodeZsciiChar(this.getUint8(i + 1));
   return separators;
 };
 
