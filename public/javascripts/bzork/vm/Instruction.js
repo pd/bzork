@@ -24,6 +24,10 @@ bzork.vm.Instruction.OpTypes = {
   OMIT:  3
 };
 
+bzork.vm.Instruction.prototype.uniqueKey = function() {
+  return this.getOperandCount() + ":" + this.getOpcode();
+};
+
 bzork.vm.Instruction.prototype.getOpcodeByte = function() {
   return this._machine.getUint8(this._addr);
 };
@@ -101,18 +105,10 @@ bzork.vm.Instruction.prototype.getOperandTypes = function() {
 };
 
 bzork.vm.Instruction.prototype.getOperands = function() {
-  var offset = 0,
+  var offset = this._getOperandsAddr(),
       form = this.getForm(),
       optypes = this.getOperandTypes(),
       operands = [];
-
-  offset = this._addr + 1; // beginning of instruction + opcode
-  if (form === bzork.vm.Instruction.Forms.EXT)
-    offset += 1; // 2-byte opcode for extended form
-  if (form === bzork.vm.Instruction.Forms.VAR ||
-      form === bzork.vm.Instruction.Forms.EXT)
-    // operand types bit field; could be 2 for "double vars" in v5+; see 4.4.3.1
-    offset += 1;
 
   switch (this.getOperandCount()) {
   case bzork.vm.Instruction.OpCounts.OP0:
@@ -131,6 +127,26 @@ bzork.vm.Instruction.prototype.getOperands = function() {
     return operands;
   }
 };
+
+bzork.vm.Instruction.prototype.stores = function() {
+  return bzork.vm.InstructionInfo.DB[this.uniqueKey()].stores;
+};
+
+bzork.vm.Instruction.prototype.getStoreVariable = function() {
+  if (!this.stores())
+    throw "Instruction does not store";
+  return this._machine.getUint8(this._getStoreVariableAddr());
+};
+
+bzork.vm.Instruction.prototype.branches = function() {
+  return bzork.vm.InstructionInfo.DB[this.uniqueKey()].branches;
+};
+
+bzork.vm.Instruction.prototype.getBranchOffset = function() {
+  if (!this.branches())
+    throw "Instruction does not branch";
+  return this._machine.getUint8(this._getBranchOffsetAddr());
+}
 
 bzork.vm.Instruction.prototype._getOperand = function(offset, type) {
   if (type === bzork.vm.Instruction.OpTypes.OMIT)
@@ -166,4 +182,35 @@ bzork.vm.Instruction.prototype._map1bitOperandType = function(bit) {
     return bzork.vm.Instruction.OpTypes.VAR;
   else if (bit === 0)
     return bzork.vm.Instruction.OpTypes.SMALL;
+};
+
+bzork.vm.Instruction.prototype._getOperandsAddr = function() {
+  var addr = this._addr + 1; // skip opcode
+
+  var form = this.getForm();
+  if (form === bzork.vm.Instruction.Forms.EXT)
+    addr += 1; // 2 byte opcode for extended forms
+  if (form === bzork.vm.Instruction.Forms.VAR || form === bzork.vm.Instruction.Forms.EXT)
+    addr += 1; // operand types bitfield
+
+  return addr;
+};
+
+bzork.vm.Instruction.prototype._getAfterOperandsAddr = function() {
+  var addr = this._getOperandsAddr(),
+      optypes = this.getOperandTypes();
+  for (var i = 0; i < optypes.length; i++)
+    addr += this._operandSize(optypes[i]);
+  return addr;
+};
+
+bzork.vm.Instruction.prototype._getStoreVariableAddr = function() {
+  return this._getAfterOperandsAddr();
+};
+
+bzork.vm.Instruction.prototype._getBranchOffsetAddr = function() {
+  if (this.stores())
+    return this._getStoreVariableAddr() + 1;
+  else
+    return this._getStoreVariableAddr();
 };

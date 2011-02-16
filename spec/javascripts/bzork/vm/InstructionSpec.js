@@ -157,4 +157,56 @@ describe("bzork.vm.Instruction", function() {
       expect(instr.getOperands()).toEqual([0x2a39, 0x8010, 0xffff]);
     });
   });
+
+  describe("stores", function() {
+    it("returns true if the instruction stores", function() {
+      var instr = buildInstruction('call');
+      expect(instr.stores()).toEqual(true);
+    });
+
+    it("returns false if the instruction does not store", function() {
+      var instr = buildInstruction('rfalse');
+      expect(instr.stores()).toEqual(false);
+    });
+  });
+
+  describe("getStoreVariable", function() {
+    it("throws if the instruction does not store", function() {
+      var instr = buildInstruction('rfalse');
+      expect(function() {
+        instr.getStoreVariable()
+      }).toThrow("Instruction does not store");
+    });
+
+    it("returns the store variable number", function() {
+      var instr = buildInstruction('call');
+      expect(instr.getStoreVariable()).toEqual(0);
+    });
+  });
+
+  describe("branches", function() {
+    it("returns true if the instruction branches", function() {
+      var instr = buildInstruction('je');
+      expect(instr.branches()).toEqual(true);
+    });
+
+    it("returns false if the instruction does not branch", function() {
+      var instr = buildInstruction('rfalse');
+      expect(instr.branches()).toEqual(false);
+    });
+  });
+
+  describe("getBranchOffset", function() {
+    it("throws if the instruction does not branch", function() {
+      var instr = buildInstruction('rfalse');
+      expect(function() {
+        instr.getBranchOffset()
+      }).toThrow("Instruction does not branch");
+    });
+
+    it("returns the branch offset value", function() {
+      var instr = buildInstruction('je');
+      expect(instr.getBranchOffset()).toEqual(0x40);
+    });
+  });
 });
