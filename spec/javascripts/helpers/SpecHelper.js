@@ -29,8 +29,34 @@ bzork.spec = (function() {
   };
 })();
 
-beforeEach(function() {
-});
+// A fake Machine instance which does little more than answer
+// what version it is and access the underlying memory.
+var StubMachine = function(version, words) {
+  this.version = version;
+  buf = createArrayBuffer(words);
+  this.memory  = new bzork.Memory(buf);
+};
+
+StubMachine.prototype.getZcodeVersion = function() { return this.version; }
+StubMachine.prototype.getUint8 = bzork.Machine.prototype.getUint8;
+StubMachine.prototype.getUint16 = bzork.Machine.prototype.getUint16;
+
+// Handy wrapper around jDataView.createBuffer(), just so I
+// can specify things in words rather than bytes.
+function createArrayBuffer(_) {
+  var bytes = [],
+      words = arguments[0];
+
+  if (arguments.length > 1 || typeof words !== "object")
+    words = arguments;
+
+  for (var i = 0; i < words.length; i++) {
+    bytes.push( (words[i] >> 8) & 0xff );
+    bytes.push( words[i] & 0xff );
+  }
+
+  return jDataView.createBuffer.apply(this, bytes);
+}
 
 // Sick of typing the same things over&over into chrome's JS console
 if (typeof console !== "undefined") {
