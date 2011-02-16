@@ -100,6 +100,11 @@ describe("bzork.vm.Instruction", function() {
       expect(instr.getOperandTypes()).toEqual([]);
     });
 
+    it("recognizes short forms with a variable operand", function() {
+      var instr = buildInstruction('ret');
+      expect(instr.getOperandTypes()).toEqual([bzork.vm.Instruction.OpTypes.VAR]);
+    });
+
     it("recognizes long forms with a variable then a small constant operand", function() {
       var instr = buildInstruction('je');
       expect(instr.getOperandTypes()).toEqual([bzork.vm.Instruction.OpTypes.VAR,
@@ -135,6 +140,21 @@ describe("bzork.vm.Instruction", function() {
     it("knows 0OP forms have no operands", function() {
       var instr = buildInstruction('rfalse');
       expect(instr.getOperands()).toEqual([]);
+    });
+
+    it("extracts the operands for 1OP short forms", function() {
+      var instr = buildInstruction('ret');
+      expect(instr.getOperands()).toEqual([5]);
+    });
+
+    it("extracts the operands for var/small long forms", function() {
+      var instr = buildInstruction('je');
+      expect(instr.getOperands()).toEqual([0x88, 0x2b]);
+    });
+
+    it("extracts the operands for VAROP var forms", function() {
+      var instr = buildInstruction('call');
+      expect(instr.getOperands()).toEqual([0x2a39, 0x8010, 0xffff]);
     });
   });
 });

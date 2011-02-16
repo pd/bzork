@@ -106,9 +106,13 @@ bzork.vm.Instruction.prototype.getOperands = function() {
       optypes = this.getOperandTypes(),
       operands = [];
 
+  offset = this._addr + 1; // beginning of instruction + opcode
+  if (form === bzork.vm.Instruction.Forms.EXT)
+    offset += 1; // 2-byte opcode for extended form
   if (form === bzork.vm.Instruction.Forms.VAR ||
       form === bzork.vm.Instruction.Forms.EXT)
-    offset += 1; // could be +=2 for "double variable" VARs, see 4.4.3.1
+    // operand types bit field; could be 2 for "double vars" in v5+; see 4.4.3.1
+    offset += 1;
 
   switch (this.getOperandCount()) {
   case bzork.vm.Instruction.OpCounts.OP0:
@@ -118,7 +122,10 @@ bzork.vm.Instruction.prototype.getOperands = function() {
   case bzork.vm.Instruction.OpCounts.OP2:
   case bzork.vm.Instruction.OpCounts.VAR:
     for (var i = 0; i < optypes.length; i++) {
-      operands.push( this._getOperand(offset, optypes[i]) );
+      var op = this._getOperand(offset, optypes[i]);
+      if (!op)
+        break;
+      operands.push(op);
       offset += this._operandSize(optypes[i]);
     }
     return operands;
@@ -128,16 +135,6 @@ bzork.vm.Instruction.prototype.getOperands = function() {
 bzork.vm.Instruction.prototype._getOperand = function(offset, type) {
   if (type === bzork.vm.Instruction.OpTypes.OMIT)
     return undefined;
-
-  var form = this.getForm();
-
-  // offset is from the beginning of the operand values,
-  // but we need the full offset into memory
-  offset += this._addr; // beginning of instruction
-  if (form === bzork.vm.Instruction.Forms.VAR ||
-      form === bzork.vm.Instruction.Forms.EXT)
-    offset += 1; // operand types bit field
-
   if (type === bzork.vm.Instruction.OpTypes.LARGE)
     return this._machine.getUint16(offset);
   else
