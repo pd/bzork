@@ -31,9 +31,9 @@ bzork.vm.Instruction.prototype.getOpcodeByte = function() {
 bzork.vm.Instruction.prototype.getForm = function() {
   var opbyte = this.getOpcodeByte();
 
-  if ((opbyte & 0xc0) !== 0)
+  if ((opbyte & 0xc0) === 0xc0)
     return bzork.vm.Instruction.Forms.VAR;
-  else if ((opbyte & 0x80) !== 0)
+  else if ((opbyte & 0x80) === 0x80)
     return bzork.vm.Instruction.Forms.SHORT;
   else if (this._machine.getZcodeVersion() >= 5 && opbyte == 0xbe)
     return bzork.vm.Instruction.Forms.EXT;
