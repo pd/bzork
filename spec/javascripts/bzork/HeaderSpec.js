@@ -1,7 +1,8 @@
-describe("bzork.Memory.Header", function() {
+describe("bzork.Header", function() {
   describe("for Zork1", function() {
     beforeEach(function() {
-      this.header = new bzork.Memory(bzork.spec.storyData['zork1']).header;
+      this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
+      this.header  = this.machine.header;
     });
 
     it("should have Z-code version 3", function() {

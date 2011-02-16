@@ -1,8 +1,7 @@
-bzork.Memory = function(buffer) {
-  var mem = new DataView(buffer),
-      membuf = mem.buffer;
+bzork.Memory = function(bytes) {
+  this.dataView = new DataView(bytes);
 
-  this._memory = mem;
+  var membuf = this.dataView.buffer;
 
   this.header = new bzork.Memory.Header(new DataView(membuf, 0, 64));
   this.dictionary = new bzork.Memory.Dictionary(
@@ -16,4 +15,12 @@ bzork.Memory = function(buffer) {
     this.header.getZcodeVersion());
 
   bzork.Zscii.init(this.header.getZcodeVersion(), this.abbrevTable);
+};
+
+bzork.Memory.prototype.getUint8 = function(offset) {
+  return this.dataView.getUint8(offset);
+};
+
+bzork.Memory.prototype.getUint16 = function(offset) {
+  return this.dataView.getUint16(offset);
 };
