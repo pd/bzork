@@ -39,6 +39,29 @@ describe("bzork.vm.Instruction", function() {
     });
   });
 
+  describe("getOpcode", function() {
+    it("extracts the opcode of short form instructions", function() {
+      var rfalse = buildInstruction('rfalse'),
+          ret = buildInstruction('ret');
+      expect(rfalse.getOpcode()).toEqual(0x1);
+      expect(ret.getOpcode()).toEqual(0xb);
+    });
+
+    it("extracts the opcode of long form instructions", function() {
+      var je = buildInstruction('je');
+      expect(je.getOpcode()).toEqual(1);
+    });
+
+    it("extracts the opcode of var form instructions", function() {
+      var call = buildInstruction('call');
+      expect(call.getOpcode()).toEqual(0);
+    });
+
+    xit("recognizes the opcode of extended form instructions", function() {
+      // TODO .z5
+    });
+  });
+
   describe("getOperandCount", function() {
     it("knows long forms are always 2OP", function() {
       var instr = buildInstruction('je');
