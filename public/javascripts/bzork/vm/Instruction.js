@@ -120,7 +120,7 @@ bzork.vm.Instruction.prototype.getOperands = function() {
   case bzork.vm.Instruction.OpCounts.VAR:
     for (var i = 0; i < optypes.length; i++) {
       var op = this._getOperand(offset, optypes[i]);
-      if (!op)
+      if (typeof op === "undefined")
         break;
       operands.push(op);
       offset += this._operandSize(optypes[i]);

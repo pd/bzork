@@ -10,6 +10,7 @@ describe("bzork.vm.Instruction", function() {
     'rfalse':  [0xb100], // short, 0OP
     'ret':     [0xab05], // short, 1OP
     'je':      [0x4188, 0x2b40], // long, 2OP var/small
+    'inc_chk': [0x0502, 0x00d4], // long, 2OP small/small
     'print':   [0xb211, 0xaa46, 0x3416, 0x459c, 0xa500], // short, 0OP + string
     'mul':     [0xd62f, 0x03e8, 0x0200] // var, 2OP large/var
   };
@@ -117,8 +118,10 @@ describe("bzork.vm.Instruction", function() {
       // TODO find one
     });
 
-    xit("recognizes long forms with 2 small constant operands", function() {
-      // TODO find one
+    it("recognizes long forms with 2 small constant operands", function() {
+      var instr = buildInstruction('inc_chk');
+      expect(instr.getOperandTypes()).toEqual([bzork.vm.Instruction.OpTypes.SMALL,
+                                               bzork.vm.Instruction.OpTypes.SMALL]);
     });
 
     xit("recognizes long forms with 2 variable operands", function() {
@@ -158,6 +161,11 @@ describe("bzork.vm.Instruction", function() {
     it("extracts the operands for var/small long forms", function() {
       var instr = buildInstruction('je');
       expect(instr.getOperands()).toEqual([0x88, 0x2b]);
+    });
+
+    it("extracts the operands for small/small long forms", function() {
+      var instr = buildInstruction('inc_chk');
+      expect(instr.getOperands()).toEqual([2, 0]);
     });
 
     it("extracts the operands for 2OP var forms", function() {
