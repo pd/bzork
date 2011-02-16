@@ -24,6 +24,14 @@ bzork.Machine.prototype.getUint16 = function(offset) {
   return this.memory.getUint16(offset);
 };
 
+bzork.Machine.prototype.setUint8 = function(offset, value) {
+  this.memory.setUint8(offset, value);
+};
+
+bzork.Machine.prototype.setUint16 = function(offset, value) {
+  this.memory.setUint16(offset, value);
+};
+
 bzork.Machine.prototype.getZsciiString = function(offset) {
   return this.zscii.getString(offset);
 };
