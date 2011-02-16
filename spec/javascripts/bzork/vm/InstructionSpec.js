@@ -117,6 +117,18 @@ describe("bzork.vm.Instruction", function() {
     xit("recognizes long forms with 2 variable operands", function() {
       // TODO find one
     });
+
+    it("recognizes var forms with 3 large operands", function() {
+      var instr = buildInstruction('call');
+      expect(instr.getOperandTypes()).toEqual([bzork.vm.Instruction.OpTypes.LARGE,
+                                               bzork.vm.Instruction.OpTypes.LARGE,
+                                               bzork.vm.Instruction.OpTypes.LARGE,
+                                               bzork.vm.Instruction.OpTypes.OMIT]);
+    });
+
+    xit("recognizes other var forms ...", function() {
+      // TODO find some
+    });
   });
 
   describe("getOperands", function() {
