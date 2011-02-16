@@ -95,8 +95,9 @@ bzork.vm.Instruction.prototype.getOperandTypes = function() {
             this._map1bitOperandType((opbyte & 0x20) >> 5)];
   case bzork.vm.Instruction.Forms.VAR:
     var bitfield = this._machine.getUint8(this._addr + 1),
-        types = [];
-    for (var n = 6; n >= 0; n -= 2) {
+        types = [],
+        limit = this.getOperandCount() === bzork.vm.Instruction.OpCounts.OP2 ? 4 : 0;
+    for (var n = 6; n >= limit; n -= 2) {
       var bits = (bitfield >> n) & 0x3;
       types.push(this._map2bitOperandType(bits));
     }
