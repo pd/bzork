@@ -146,7 +146,12 @@ bzork.vm.Instruction.prototype.branches = function() {
 bzork.vm.Instruction.prototype.getBranchOffset = function() {
   if (!this.branches())
     throw "Instruction does not branch";
-  return this._machine.getUint8(this._getBranchOffsetAddr());
+
+  var offset = this._machine.getUint8(this._getBranchOffsetAddr());
+  if (this._getBranchOffsetSize() === 1)
+    return this._machine.getUint8(this._getBranchOffsetAddr());
+  else
+    return this._machine.getUint16(this._getBranchOffsetAddr());
 }
 
 bzork.vm.Instruction.prototype.hasDanglingString = function() {
@@ -228,6 +233,14 @@ bzork.vm.Instruction.prototype._getBranchOffsetAddr = function() {
     return this._getStoreVariableAddr() + 1;
   else
     return this._getStoreVariableAddr();
+};
+
+bzork.vm.Instruction.prototype._getBranchOffsetSize = function() {
+  var byte = this._machine.getUint8(this._getBranchOffsetAddr());
+  if ((byte & 0x40) === 0x40)
+    return 1;
+  else
+    return 2;
 };
 
 bzork.vm.Instruction.prototype._getStringAddr = function() {

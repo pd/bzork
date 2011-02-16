@@ -10,6 +10,7 @@ describe("bzork.vm.Instruction", function() {
     'rfalse':  [0xb100], // short, 0OP
     'ret':     [0xab05], // short, 1OP
     'je':      [0x4188, 0x2b40], // long, 2OP var/small
+    'je2':     [0x4188, 0x2b30, 0xff00], // hand-crafted for 2-byte branch offset, prolly invalid
     'inc_chk': [0x0502, 0x00d4], // long, 2OP small/small
     'print':   [0xb211, 0xaa46, 0x3416, 0x459c, 0xa500], // short, 0OP + string
     'mul':     [0xd62f, 0x03e8, 0x0200] // var, 2OP large/var
@@ -225,9 +226,14 @@ describe("bzork.vm.Instruction", function() {
       }).toThrow("Instruction does not branch");
     });
 
-    it("returns the branch offset value", function() {
+    it("returns 1-byte branch offset values", function() {
       var instr = buildInstruction('je');
       expect(instr.getBranchOffset()).toEqual(0x40);
+    });
+
+    it("returns 1-byte branch offset values", function() {
+      var instr = buildInstruction('je2');
+      expect(instr.getBranchOffset()).toEqual(0x30ff);
     });
   });
 
