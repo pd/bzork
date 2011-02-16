@@ -36,4 +36,12 @@ beforeEach(function() {
 if (typeof console !== "undefined") {
   function z1m() { return new bzork.Machine(bzork.spec.storyData['zork1']); }
   function ztm() { return new bzork.Machine(bzork.spec.storyData['ztuu']); }
+
+  function z1i(addr) {
+    var m = z1m();
+    if (addr)
+      return new bzork.vm.Instruction(m, addr);
+    else
+      return new bzork.vm.Instruction(m, m.getStartPC());
+  }
 }
