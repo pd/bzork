@@ -3,10 +3,10 @@ bzork.Machine = function(storyBytes) {
   this.header = new bzork.Header(this);
   this.dictionary = new bzork.Dictionary(this, this.header.getDictionaryAddr());
   this.abbrevTable = new bzork.AbbrevTable(this, this.header.getAbbrevTableAddr());
+  this.objectTable = new bzork.ObjectTable(this, this.header.getObjectTableAddr());
 
   this.zscii = new bzork.Zscii(this);
   /*
-  this.objectTable = new bzork.ObjectTable(this);
   this.globalTable = new bzork.GlobalTable(this);
 
   this.zscii = new bzork.Zscii(this);

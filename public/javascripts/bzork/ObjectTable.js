@@ -1,68 +1,63 @@
-// Contains both a property defaults table and the object tree.
-// Objects are numbered from 1, as object 0 is a NULL object used as
-// the first parent in the tree.
-bzork.Memory.ObjectTable = function(buffer, tableStartAddr, version) {
-  this._memory = buffer;
-  this.tableStartAddr = tableStartAddr;
-  this.version = version;
+bzork.ObjectTable = function(machine, tableAddr) {
+  this._machine = machine;
+  this._addr = tableAddr;
 };
 
-bzork.Memory.ObjectTable.prototype.get = function(i) {
+bzork.ObjectTable.prototype.get = function(i) {
   if (!this._boundsDiscovered)
     this._discoverBounds();
 
   if (i < 1 || i > this.getObjectCount())
     throw "Object " + i + " out of bounds!";
 
-  return new bzork.Memory.Object(i, this._memory,
-                                 this.getObjectAddr(i), this.version);
+  return new bzork.Object(this._machine, i, this.getObjectAddr(i));
 };
 
-bzork.Memory.ObjectTable.prototype.getObjectSize = function() {
-  if (this.version <= 3)
+bzork.ObjectTable.prototype.getObjectSize = function() {
+  if (this.getZcodeVersion() <= 3)
     return 9;
   else
     return 14;
 };
 
-bzork.Memory.ObjectTable.prototype.getMaxProperties = function() {
-  if (this.version <= 3)
+bzork.ObjectTable.prototype.getMaxProperties = function() {
+  if (this.getZcodeVersion() <= 3)
     return 32;
   else
     return 64;
 };
 
-bzork.Memory.ObjectTable.prototype.getPropertyAddrOffset = function() {
-  if (this.version <= 3)
+bzork.ObjectTable.prototype.getPropertyAddrOffset = function() {
+  if (this.getZcodeVersion() <= 3)
     return 7;
   else
     return 12;
 };
 
-bzork.Memory.ObjectTable.prototype.getStartAddr = function() {
-  return this.tableStartAddr;
+bzork.ObjectTable.prototype.getStartAddr = function() {
+  return this._addr;
 };
 
-bzork.Memory.ObjectTable.prototype.getEndAddr = function() {
+bzork.ObjectTable.prototype.getEndAddr = function() {
   if (!this._boundsDiscovered)
     this._discoverBounds();
   return this.tableEndAddr;
 };
 
-bzork.Memory.ObjectTable.prototype.getObjectCount = function() {
+bzork.ObjectTable.prototype.getObjectCount = function() {
   if (!this._boundsDiscovered)
     this._discoverBounds();
   return this.objectCount;
 };
 
-bzork.Memory.ObjectTable.prototype.getObjectAddr = function(i) {
+bzork.ObjectTable.prototype.getObjectAddr = function(i) {
   var offset = this.getStartAddr();
   offset += (this.getMaxProperties() - 1) * 2;
   offset += (i - 1) * this.getObjectSize();
   return offset;
 };
 
-bzork.Memory.ObjectTable.prototype._discoverBounds = function() {
+bzork.ObjectTable.prototype._discoverBounds = function() {
   var tableStart = this.getStartAddr(),
       tableEnd, dataStart, dataEnd,
       objectCount = 0;
@@ -77,7 +72,7 @@ bzork.Memory.ObjectTable.prototype._discoverBounds = function() {
     // bounds, too. Similar to bounds discovery for abbrevs.
     if (!dataStart || objAddr < dataStart) {
       objAddr += this.getPropertyAddrOffset();
-      dataAddr = this._memory.getUint16(objAddr);
+      dataAddr = this._machine.getUint16(objAddr);
       objAddr += 2;
 
       if (!dataStart || dataAddr < dataStart)
@@ -95,4 +90,8 @@ bzork.Memory.ObjectTable.prototype._discoverBounds = function() {
   this.dataEndAddr = dataEnd; // XXX TODO wrong but fk it for now
 
   this._boundsDiscovered = true;
+};
+
+bzork.ObjectTable.prototype.getZcodeVersion = function() {
+  return this._machine.getZcodeVersion();
 };

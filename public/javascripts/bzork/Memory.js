@@ -1,12 +1,5 @@
 bzork.Memory = function(bytes) {
   this.dataView = new DataView(bytes);
-  var membuf = this.dataView.buffer;
-
-  this.header = new bzork.Memory.Header(new DataView(membuf, 0, 64));
-  this.objectTable = new bzork.Memory.ObjectTable(
-    new DataView(membuf), this.header.getObjectTableAddr(),
-    this.header.getZcodeVersion());
-  this.globalTable = new bzork.Memory.GlobalTable(new DataView(membuf));
 };
 
 bzork.Memory.prototype.getUint8 = function(offset) {

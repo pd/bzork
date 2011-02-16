@@ -1,7 +1,8 @@
-describe("bzork.Memory.ObjectTable", function() {
+describe("bzork.ObjectTable", function() {
   describe("for Zork1", function() {
     beforeEach(function() {
-      this.objects = new bzork.Memory(bzork.spec.storyData['zork1']).objectTable;
+      this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
+      this.objects = this.machine.objectTable;
     });
 
     it("should have a maximum of 32 properties", function() {
@@ -64,7 +65,8 @@ describe("bzork.Memory.ObjectTable", function() {
 
   describe("for ZTUU", function() {
     beforeEach(function() {
-      this.objects = new bzork.Memory(bzork.spec.storyData['ztuu']).objectTable;
+      this.machine = new bzork.Machine(bzork.spec.storyData['ztuu']);
+      this.objects = this.machine.objectTable;
     });
 
     it("should have a maximum of 64 properties", function() {
