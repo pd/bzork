@@ -15,36 +15,34 @@ describe('ZSCII', function() {
   });
 
   it("can decode longer words", function() {
-    var buf = [
-      0x1353, 0x2e97,
-      0x6753, 0x1b2a,
-      0xc7c5
-    ];
-    var s = this.zscii.decodeString(buf);
+    var s = this.zscii.decodeString([
+      0x1353, 0x2e97, 0x6753, 0x1b2a, 0xc7c5
+    ]);
     expect(s).toEqual("Unfortunately");
   });
 
   it("can decode words with punctuation", function() {
-    var buf = [
-      0x13d4, 0x68b8, 0xdd40
-    ];
-    var s = this.zscii.decodeString(buf);
+    var s = this.zscii.decodeString([0x13d4, 0x68b8, 0xdd40]);
     expect(s).toEqual("You're ");
   });
 
   it("can decode words with 10-bit ZSCII codes", function() {
-    var buf = [0x14c1, 0x936a];
-    var s = this.zscii.decodeString(buf);
+    var s = this.zscii.decodeString([0x14c1, 0x936a]);
     expect(s).toEqual("$ve");
   });
 
   it("can decode words which contain abbreviations", function() {
-    var buf = [
-      0x0dc1, 0x3553,
-      0x32e6, 0x6dd3,
-      0xb305
-    ];
-    var s = this.zscii.decodeString(buf);
+    var s = this.zscii.decodeString([
+      0x0dc1, 0x3553, 0x32e6, 0x6dd3, 0xb305
+    ]);
     expect(s).toEqual("wall with engravings");
+  });
+
+  it("can decode characters directly out of memory", function() {
+    expect(this.zscii.getChar(0x3b22)).toEqual(",");
+  });
+
+  it("can decode strings directly out of memory", function() {
+    expect(this.zscii.getString(0x94)).toEqual("appears ");
   });
 });
