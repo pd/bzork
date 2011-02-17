@@ -23,4 +23,23 @@ describe("bzork.vm.Routine", function() {
       expect(this.r285.getFirstInstructionAddr()).toEqual(0xa3e7);
     });
   });
+
+  describe("for ZTUU", function() {
+    beforeEach(function() {
+      this.machine = new bzork.Machine(bzork.spec.storyData['ztuu']);
+      this.r003 = new bzork.vm.Routine(this.machine, 0x48a8);
+    });
+
+    it("should know the number of locals used", function() {
+      expect(this.r003.getNumLocals()).toEqual(4);
+    });
+
+    it("should always use 0 as the default value of locals", function() {
+      expect(this.r003.getLocalValues()).toEqual([0, 0, 0, 0]);
+    });
+
+    it("should know the address of its first instruction", function() {
+      expect(this.r003.getFirstInstructionAddr()).toEqual(0x48a9);
+    });
+  });
 });
