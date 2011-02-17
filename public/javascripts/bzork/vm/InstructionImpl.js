@@ -5,24 +5,20 @@
 //
 // Whether this is a good idea or a maintenance nightmare remains to
 // be seen. But it's definitely a fun refactor.
-bzork.vm.InstructionImpl = (function() {
-  function get2bitOpType(bits) {
-    switch (bits & 0x3) {
-    case 0: return bzork.vm.Instruction.OpTypes.LARGE;
-    case 1: return bzork.vm.Instruction.OpTypes.SMALL;
-    case 2: return bzork.vm.Instruction.OpTypes.VAR;
-    case 3: return bzork.vm.Instruction.OpTypes.OMIT;
-    }
-  }
+bzork.vm.InstructionImpl = {
+  Forms: {},    // Accessors that vary by form (getOpcode() etc)
+  Methods: {}   // Implementations of run() for each instruction,
+                // keyed by instruction name
+};
 
-  function get1bitOpType(bit) {
-    bit = bit & 0x1;
-    return (bit & 0x1) === 1 ? bzork.vm.Instruction.OpTypes.VAR :
-      bzork.vm.Instruction.OpTypes.SMALL;
-  }
+// The opcode, operand count, etc are stored differently within an
+// instruction depending on its form. Rather than lots of switch()
+// statements, we can simply pull in the relevant implementation
+// when we create the instruction instance.
+(function() {
+  var forms = bzork.vm.InstructionImpl.Forms;
 
-  // Form-specific instruction accessors
-  var longFormMethods = {
+  forms.LONG = {
     getOpcode: function() { return this.getOpcodeByte() & 0x1f; },
     getOperandCount: function() { return bzork.vm.Instruction.OpCounts.OP2; },
     getOperandTypes: function() {
@@ -33,7 +29,7 @@ bzork.vm.InstructionImpl = (function() {
     _getOperandsAddr: function() { return this._addr + 1; }
   };
 
-  var shortFormMethods = {
+  forms.SHORT = {
     getOpcode: function() { return this.getOpcodeByte() & 0xf; },
     getOperandCount: function() {
       var opbyte = this.getOpcodeByte();
@@ -50,7 +46,7 @@ bzork.vm.InstructionImpl = (function() {
     _getOperandsAddr: function() { return this._addr + 1; }
   };
 
-  var extFormMethods = {
+  forms.EXT = {
     getOpcode: function() { return this._machine.getUint8(this._addr + 1); },
     getOperandCount: function() { return bzork.vm.Instruction.OpCounts.VAR; },
     getOperandTypes: function() {
@@ -65,7 +61,7 @@ bzork.vm.InstructionImpl = (function() {
     _getOperandsAddr: function() { return this._addr + 3; }
   };
 
-  var varFormMethods = {
+  forms.VAR = {
     getOpcode: function() { return this.getOpcodeByte() & 0x1f; },
     getOperandCount: function() {
       var opbyte = this.getOpcodeByte();
@@ -107,12 +103,37 @@ bzork.vm.InstructionImpl = (function() {
     }
   };
 
-  return {
-    Forms: {
-      LONG: longFormMethods,
-      SHORT: shortFormMethods,
-      EXT: extFormMethods,
-      VAR: varFormMethods
+  function get2bitOpType(bits) {
+    switch (bits & 0x3) {
+    case 0: return bzork.vm.Instruction.OpTypes.LARGE;
+    case 1: return bzork.vm.Instruction.OpTypes.SMALL;
+    case 2: return bzork.vm.Instruction.OpTypes.VAR;
+    case 3: return bzork.vm.Instruction.OpTypes.OMIT;
     }
-  };
+  }
+
+  function get1bitOpType(bit) {
+    bit = bit & 0x1;
+    return (bit & 0x1) === 1 ? bzork.vm.Instruction.OpTypes.VAR :
+      bzork.vm.Instruction.OpTypes.SMALL;
+  }
+}());
+
+(function() {
+
+  function addMethod(opname, fn) {
+    if (bzork.vm.InstructionImpl.Methods[opname])
+      throw "Can not redefine implementation of instruction " + opname;
+    bzork.vm.InstructionImpl.Methods[opname] = fn;
+  }
+
+  // 0OP
+  addMethod('rtrue', function() {
+    this.returnFromRoutine(true);
+  });
+
+  addMethod('rfalse', function() {
+    this.returnFromRoutine(false);
+  });
+
 }());

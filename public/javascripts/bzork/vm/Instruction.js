@@ -4,10 +4,14 @@ bzork.vm.Instruction = function(machine, addr) {
   this._stealImplMethods();
 };
 
-bzork.vm.Instruction.prototype.uniqueKey = function() {
-  var operandCount = this._is8OP && this._is8OP() ? bzork.vm.Instruction.OpCounts.VAR :
-    this.getOperandCount();
-  return operandCount + ":" + this.getOpcode();
+bzork.vm.Instruction.prototype.run = function() {
+  var name = this.getName(),
+      method = bzork.vm.InstructionImpl.Methods[name];
+
+  if (typeof method === "undefined")
+    throw "Unimplemented instruction: " + name;
+
+  method.apply(this);
 };
 
 bzork.vm.Instruction.prototype.getName = function() {
@@ -119,7 +123,13 @@ bzork.vm.Instruction.prototype._stealImplMethods = function() {
 };
 
 bzork.vm.Instruction.prototype._getInstructionInfo = function() {
-  return bzork.vm.InstructionDB[this.uniqueKey()];
+  return bzork.vm.InstructionDB[this._uniqueKey()];
+};
+
+bzork.vm.Instruction.prototype._uniqueKey = function() {
+  var operandCount = this._is8OP && this._is8OP() ? bzork.vm.Instruction.OpCounts.VAR :
+    this.getOperandCount();
+  return operandCount + ":" + this.getOpcode();
 };
 
 bzork.vm.Instruction.prototype._getOperand = function(offset, type) {
