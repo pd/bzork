@@ -172,18 +172,6 @@ bzork.vm.Instruction.prototype._operandSize = function(type) {
     return 1;
 };
 
-bzork.vm.Instruction.prototype._getOperandsAddr = function() {
-  var addr = this._addr + 1; // skip opcode
-
-  var form = this.getForm();
-  if (form === bzork.vm.Instruction.Forms.EXT)
-    addr += 1; // 2 byte opcode for extended forms
-  if (form === bzork.vm.Instruction.Forms.VAR || form === bzork.vm.Instruction.Forms.EXT)
-    addr += 1; // operand types bitfield
-
-  return addr;
-};
-
 bzork.vm.Instruction.prototype._getAfterOperandsAddr = function() {
   var addr = this._getOperandsAddr(),
       optypes = this.getOperandTypes();
