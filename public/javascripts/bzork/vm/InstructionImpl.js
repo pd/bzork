@@ -30,6 +30,9 @@ bzork.vm.InstructionImpl = (function() {
           var opbyte = this.getOpcodeByte();
           return [get1bitOpType((opbyte & 0x40) >> 6),
                   get1bitOpType((opbyte & 0x20) >> 5)];
+        },
+        _getOperandsAddr: function() {
+          return this._addr + 1;
         }
       },
 
@@ -46,11 +49,19 @@ bzork.vm.InstructionImpl = (function() {
           var opbyte = this.getOpcodeByte(),
               type   = get2bitOpType((opbyte & 0x30) >> 4);
           return type === bzork.vm.Instruction.OpTypes.OMIT ? [] : [type];
+        },
+        _getOperandsAddr: function() {
+          return this._addr + 1;
         }
       },
 
       EXT: {
-        // TODO
+        getOpcode: function() { return this._machine.getUint8(this._addr + 1); },
+        getOperandCount: function() { return bzork.vm.Instruction.OpCounts.VAR; },
+        getOperandTypes: function() { /* meh */ },
+        _getOperandsAddr: function() {
+          return this._addr + 3;
+        }
       },
 
       VAR: {
@@ -71,6 +82,11 @@ bzork.vm.InstructionImpl = (function() {
             types.push(get2bitOpType(bits));
           }
           return types;
+        },
+        _getOperandsAddr: function() {
+          if (this.getName() === "call_vs2" || this.getName() === "call_vn2")
+            return this._addr + 3;
+          return this._addr + 2;
         }
       }
     }

@@ -29,6 +29,10 @@ bzork.vm.Instruction.prototype.uniqueKey = function() {
   return this.getOperandCount() + ":" + this.getOpcode();
 };
 
+bzork.vm.Instruction.prototype.getName = function() {
+  return this._getInstructionInfo().name;
+};
+
 bzork.vm.Instruction.prototype.getLength = function() {
   if (this.hasDanglingString()) {
     var i = 0, word;

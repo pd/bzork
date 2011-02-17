@@ -24,6 +24,13 @@ describe("bzork.vm.Instruction", function() {
     return new bzork.vm.Instruction(stubMachine(words), 0);
   }
 
+  it("should know its name", function() {
+    expect(buildInstruction('call').getName()).toEqual('call');
+    expect(buildInstruction('rfalse').getName()).toEqual('rfalse');
+    expect(buildInstruction('je2').getName()).toEqual('je');
+    expect(buildInstruction('inc_chk').getName()).toEqual('inc_chk');
+  });
+
   it("should know its length", function() {
     expect(buildInstruction('call').getLength()).toEqual(9);
     expect(buildInstruction('rfalse').getLength()).toEqual(1);
