@@ -173,9 +173,10 @@ bzork.vm.Instruction.prototype.getBranchOffset = function() {
 
   var offset = this._machine.getUint8(this._getBranchOffsetAddr());
   if (this._getBranchOffsetSize() === 1)
-    return this._machine.getUint8(this._getBranchOffsetAddr());
-  else
-    return this._machine.getUint16(this._getBranchOffsetAddr());
+    return this._machine.getUint8(this._getBranchOffsetAddr()) & 0x3f;
+
+  var val = this._machine.getUint16(this._getBranchOffsetAddr()) & 0x3fff;
+  return bzork.Math.toSigned14bit(val);
 }
 
 bzork.vm.Instruction.prototype.hasDanglingString = function() {
