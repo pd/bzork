@@ -9,6 +9,107 @@ bzork.vm.InstructionInfo = function(name, stores, branches, stringed, version) {
   this.version  = version;
 };
 
+bzork.vm.InstructionInfo.Opcodes = {
+  // 0OP
+  rtrue: 0,
+  rfalse: 1,
+  print: 2,
+  print_ret: 3,
+  nop: 4,
+  save: 5,
+  restore: 6,
+  restart: 7,
+  ret_popped: 8,
+  pop: 9,
+  quit: 10,
+  new_line: 11,
+  show_status: 12,
+  verify: 13,
+  pirate: 15,
+
+  // 1OP
+  jz: 0,
+  get_sibling: 1,
+  get_child: 2,
+  get_parent: 3,
+  get_prop_len: 4,
+  inc: 5,
+  dec: 6,
+  print_addr: 7,
+  call_1s: 8,
+  remove_obj: 9,
+  print_obj: 10,
+  ret: 11,
+  jump: 12,
+  print_paddr: 13,
+  load: 14,
+  not: 15,
+
+  // 2OP
+  je: 1,
+  jl: 2,
+  jg: 3,
+  dec_chk: 4,
+  inc_chk: 5,
+  jin: 6,
+  test: 7,
+  or: 8,
+  and: 9,
+  test_attr: 10,
+  set_attr: 11,
+  clear_attr: 12,
+  store: 13,
+  insert_obj: 14,
+  loadw: 15,
+  loadb: 16,
+  get_prop: 17,
+  get_prop_addr: 18,
+  get_next_prop: 19,
+  add: 20,
+  sub: 21,
+  mul: 22,
+  div: 23,
+  mod: 24,
+  call_2s: 25,
+  call_2n: 26,
+  set_colour: 27,
+  'throw': 28,
+
+  // VAROP
+  call: 0,
+  storew: 1,
+  storeb: 2,
+  put_prop: 3,
+  sread: 4,
+  print_char: 5,
+  print_num: 6,
+  random: 7,
+  push: 8,
+  pull: 9,
+  split_window: 10,
+  set_window: 11,
+  call_vs2: 12,
+  erase_window: 13,
+  erase_line: 14,
+  set_cursor: 15,
+  get_cursor: 16,
+  set_text_style: 17,
+  buffer_mode: 18,
+  output_stream: 19,
+  input_stream: 20,
+  sound_effect: 21,
+  read_char: 22,
+  scan_table: 23,
+  not: 24,
+  call_vn: 25,
+  call_vn2: 26,
+  tokenise: 27,
+  encode_text: 28,
+  copy_table: 29,
+  print_table: 30,
+  check_arg_count: 31
+};
+
 bzork.vm.InstructionInfo.DB = {};
 
 // Load all of the opcodes in the standard into the DB
@@ -16,32 +117,35 @@ bzork.vm.InstructionInfo.DB = {};
 // dump it as JSON and plop that into this file instead.
 (function() {
 
-  function addEntry(name, opcount, opcode, stores, branches, stringed, version) {
+  function addEntry(name, opcount, stores, branches, stringed, version) {
+    var opcode = bzork.vm.InstructionInfo.Opcodes[name];
     var key  = opcount + ":" + opcode;
     var info = new bzork.vm.InstructionInfo(name, stores, branches, stringed, version);
+
     if (bzork.vm.InstructionInfo.DB[key])
       throw "Adding duplicate entry to instruction DB: " + key;
+
     bzork.vm.InstructionInfo.DB[key] = info;
   }
 
-  function addBasic(name, opcount, opcode, version) {
-    addEntry(name, opcount, opcode, false, false, false, version);
+  function addBasic(name, opcount, version) {
+    addEntry(name, opcount, false, false, false, version);
   }
 
-  function addStore(name, opcount, opcode, version) {
-    addEntry(name, opcount, opcode, true, false, false, version);
+  function addStore(name, opcount, version) {
+    addEntry(name, opcount, true, false, false, version);
   }
 
-  function addBranch(name, opcount, opcode, version) {
-    addEntry(name, opcount, opcode, false, true, false, version);
+  function addBranch(name, opcount, version) {
+    addEntry(name, opcount, false, true, false, version);
   }
 
-  function addBranchAndStore(name, opcount, opcode, version) {
-    addEntry(name, opcount, opcode, true, true, false, version);
+  function addBranchAndStore(name, opcount, version) {
+    addEntry(name, opcount, true, true, false, version);
   }
 
-  function addStringed(name, opcount, opcode, version) {
-    addEntry(name, opcount, opcode, false, false, true, version);
+  function addStringed(name, opcount, version) {
+    addEntry(name, opcount, false, false, true, version);
   }
 
   var OP0 = bzork.vm.Instruction.OpCounts.OP0,
@@ -50,102 +154,102 @@ bzork.vm.InstructionInfo.DB = {};
       VAROP = bzork.vm.Instruction.OpCounts.VAR;
 
   // 0OP
-  addBasic('rtrue', OP0, 0);
-  addBasic('rfalse', OP0, 1);
-  addStringed('print', OP0, 2);
-  addStringed('print_ret', OP0, 3);
-  addBasic('nop', OP0, 4);
-  addBranch('save', OP0, 5);
-  addBranch('restore', OP0, 6);
-  addBasic('restart', OP0, 7);
-  addBasic('ret_popped', OP0, 8);
-  addBasic('pop', OP0, 9);
-  addBasic('quit', OP0, 10);
-  addBasic('new_line', OP0, 11);
-  addBasic('show_status', OP0, 12);
-  addBranch('verify', OP0, 13);
-  addBranch('pirate', OP0, 15);
+  addBasic('rtrue', OP0);
+  addBasic('rfalse', OP0);
+  addStringed('print', OP0);
+  addStringed('print_ret', OP0);
+  addBasic('nop', OP0);
+  addBranch('save', OP0);
+  addBranch('restore', OP0);
+  addBasic('restart', OP0);
+  addBasic('ret_popped', OP0);
+  addBasic('pop', OP0);
+  addBasic('quit', OP0);
+  addBasic('new_line', OP0);
+  addBasic('show_status', OP0);
+  addBranch('verify', OP0);
+  addBranch('pirate', OP0);
 
   // 1OP
-  addBranch('jz', OP1, 0);
-  addBranchAndStore('get_sibling', OP1, 1);
-  addBranchAndStore('get_child', OP1, 2);
-  addStore('get_parent', OP1, 3);
-  addStore('get_prop_len', OP1, 4);
-  addBasic('inc', OP1, 5);
-  addBasic('dec', OP1, 6);
-  addBasic('print_addr', OP1, 7);
-  addStore('call_1s', OP1, 8, 4);
-  addBasic('remove_obj', OP1, 9);
-  addBasic('print_obj', OP1, 10);
-  addBasic('ret', OP1, 11);
-  addBasic('jump', OP1, 12);
-  addBasic('print_paddr', OP1, 13);
-  addStore('load', OP1, 14);
-  addStore('not', OP1, 15);
+  addBranch('jz', OP1);
+  addBranchAndStore('get_sibling', OP1);
+  addBranchAndStore('get_child', OP1);
+  addStore('get_parent', OP1);
+  addStore('get_prop_len', OP1);
+  addBasic('inc', OP1);
+  addBasic('dec', OP1);
+  addBasic('print_addr', OP1);
+  addStore('call_1s', OP1, 4);
+  addBasic('remove_obj', OP1);
+  addBasic('print_obj', OP1);
+  addBasic('ret', OP1);
+  addBasic('jump', OP1);
+  addBasic('print_paddr', OP1);
+  addStore('load', OP1);
+  addStore('not', OP1);
 
   // 2OP
-  addBranch("je", OP2, 1);
-  addBranch("jl", OP2, 2);
-  addBranch("jg", OP2, 3);
-  addBranch("dec_chk", OP2, 4);
-  addBranch("inc_chk", OP2, 5);
-  addBranch("jin", OP2, 6);
-  addBranch("test", OP2, 7);
-  addStore("or", OP2, 8);
-  addStore("and", OP2, 9);
-  addBranch("test_attr", OP2, 10);
-  addBasic("set_attr", OP2, 11);
-  addBasic("clear_attr", OP2, 12);
-  addBasic("store", OP2, 13);
-  addBasic("insert_obj", OP2, 14);
-  addStore("loadw", OP2, 15);
-  addStore("loadb", OP2, 16);
-  addStore("get_prop", OP2, 17);
-  addStore("get_prop_addr", OP2, 18);
-  addStore("get_next_prop", OP2, 19);
-  addStore("add", OP2, 20);
-  addStore("sub", OP2, 21);
-  addStore("mul", OP2, 22);
-  addStore("div", OP2, 23);
-  addStore("mod", OP2, 24);
-  addStore("call_2s", OP2, 25, 4);
-  addBasic("call_2n", OP2, 26, 5);
-  addBasic("set_colour", OP2, 27, 5);
-  addBasic("throw", OP2, 28, 5);
+  addBranch("je", OP2);
+  addBranch("jl", OP2);
+  addBranch("jg", OP2);
+  addBranch("dec_chk", OP2);
+  addBranch("inc_chk", OP2);
+  addBranch("jin", OP2);
+  addBranch("test", OP2);
+  addStore("or", OP2);
+  addStore("and", OP2);
+  addBranch("test_attr", OP2);
+  addBasic("set_attr", OP2);
+  addBasic("clear_attr", OP2);
+  addBasic("store", OP2);
+  addBasic("insert_obj", OP2);
+  addStore("loadw", OP2);
+  addStore("loadb", OP2);
+  addStore("get_prop", OP2);
+  addStore("get_prop_addr", OP2);
+  addStore("get_next_prop", OP2);
+  addStore("add", OP2);
+  addStore("sub", OP2);
+  addStore("mul", OP2);
+  addStore("div", OP2);
+  addStore("mod", OP2);
+  addStore("call_2s", OP2, 4);
+  addBasic("call_2n", OP2, 5);
+  addBasic("set_colour", OP2, 5);
+  addBasic("throw", OP2, 5);
 
   // VAROP
-  addStore("call", VAROP, 0);
-  addBasic("storew", VAROP, 1);
-  addBasic("storeb", VAROP, 2);
-  addBasic("put_prop", VAROP, 3);
-  addBasic("sread", VAROP, 4);
-  addBasic("print_char", VAROP, 5);
-  addBasic("print_num", VAROP, 6);
-  addStore("random", VAROP, 7);
-  addBasic("push", VAROP, 8);
-  addBasic("pull", VAROP, 9);
-  addBasic("split_window", VAROP, 10, 3)
-  addBasic("set_window", VAROP, 11, 3);
-  addStore("call_vs2", VAROP, 12, 4);
-  addBasic("erase_window", VAROP, 13, 4);
-  addBasic("erase_line", VAROP, 14, 4);
-  addBasic("set_cursor", VAROP, 15, 4);
-  addBasic("get_cursor", VAROP, 16, 4);
-  addBasic("set_text_style", VAROP, 17, 4);
-  addBasic("buffer_mode", VAROP, 18, 4);
-  addBasic("output_stream", VAROP, 19, 3);
-  addBasic("input_stream", VAROP, 20, 3);
-  addBasic("sound_effect", VAROP, 21, 3);
-  addStore("read_char", VAROP, 22, 4);
-  addBranchAndStore("scan_table", VAROP, 23, 4);
-  addStore("not", VAROP, 24, 5);
-  addBasic("call_vn", VAROP, 25, 5);
-  addBasic("call_vn2", VAROP, 26, 5);
-  addBasic("tokenise", VAROP, 27, 5);
-  addBasic("encode_text", VAROP, 28, 5);
-  addBasic("copy_table", VAROP, 29, 5);
-  addBasic("print_table", VAROP, 30, 5);
-  addBranch("check_arg_count", VAROP, 31, 5);
+  addStore("call", VAROP);
+  addBasic("storew", VAROP);
+  addBasic("storeb", VAROP);
+  addBasic("put_prop", VAROP);
+  addBasic("sread", VAROP);
+  addBasic("print_char", VAROP);
+  addBasic("print_num", VAROP);
+  addStore("random", VAROP);
+  addBasic("push", VAROP);
+  addBasic("pull", VAROP);
+  addBasic("split_window", VAROP, 3)
+  addBasic("set_window", VAROP, 3);
+  addStore("call_vs2", VAROP, 4);
+  addBasic("erase_window", VAROP, 4);
+  addBasic("erase_line", VAROP, 4);
+  addBasic("set_cursor", VAROP, 4);
+  addBasic("get_cursor", VAROP, 4);
+  addBasic("set_text_style", VAROP, 4);
+  addBasic("buffer_mode", VAROP, 4);
+  addBasic("output_stream", VAROP, 3);
+  addBasic("input_stream", VAROP, 3);
+  addBasic("sound_effect", VAROP, 3);
+  addStore("read_char", VAROP, 4);
+  addBranchAndStore("scan_table", VAROP, 4);
+  addStore("not", VAROP, 5);
+  addBasic("call_vn", VAROP, 5);
+  addBasic("call_vn2", VAROP, 5);
+  addBasic("tokenise", VAROP, 5);
+  addBasic("encode_text", VAROP, 5);
+  addBasic("copy_table", VAROP, 5);
+  addBasic("print_table", VAROP, 5);
+  addBranch("check_arg_count", VAROP, 5);
 
 })();
