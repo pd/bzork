@@ -4,60 +4,76 @@ bzork.Zscii = function(machine) {
   this.resetState();
 };
 
-bzork.Zscii.prototype.resetState = function() {
-  this.shift = null;      // Are we following a shift character?
-  this.shiftLock = false; // Is shift locked? (v1&v2 only)
-  this.tenBit = false;    // Are we in the middle of reading a 10-bit ZSCII?
-  this.abbrev = null;     // Are we about to expand an abbreviation?
+// The 2 default alphabets
+bzork.Zscii.DefaultAlphabets = {
+  v1: [
+    "abcdefghijklmnopqrstuvwxyz",
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    " 0123456789.,!?_#'\"/\\<-:()"
+  ],
+  v2: [
+    "abcdefghijklmnopqrstuvwxyz",
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    " \n0123456789.,!?_#'\"/\\-:()"
+  ]
 };
 
-bzork.Zscii.prototype.determineAlphabet = function() {
-  var version = this._machine.getZcodeVersion();
+bzork.Zscii.prototype = {
+  resetState: function() {
+    this.shift = null;      // Are we following a shift character?
+    this.shiftLock = false; // Is shift locked? (v1&v2 only)
+    this.tenBit = false;    // Are we in the middle of reading a 10-bit ZSCII?
+    this.abbrev = null;     // Are we about to expand an abbreviation?
+  },
 
-  // XXX TODO v5+ can have custom alphabets
-  if (version === 1)
-    return bzork.Zscii.DefaultAlphabets['v1'];
-  else
-    return bzork.Zscii.DefaultAlphabets['v2'];
-};
+  determineAlphabet: function() {
+    var version = this._machine.getZcodeVersion();
 
-bzork.Zscii.prototype.getString = function(offset) {
-  var words = [];
-  var word, cnt = 0;
+    // XXX TODO v5+ can have custom alphabets
+    if (version === 1)
+      return bzork.Zscii.DefaultAlphabets['v1'];
+    else
+      return bzork.Zscii.DefaultAlphabets['v2'];
+  },
 
-  do {
-    word = this._machine.getUint16(offset + (cnt * 2));
-    words.push(word);
-    cnt++;
-  } while ((word & 0x8000) === 0);
+  getString: function(offset) {
+    var words = [];
+    var word, cnt = 0;
 
-  return this.decodeString(words);
-};
+    do {
+      word = this._machine.getUint16(offset + (cnt * 2));
+      words.push(word);
+      cnt++;
+    } while ((word & 0x8000) === 0);
 
-bzork.Zscii.prototype.getChar = function(offset) {
-  var c = this._machine.getUint8(offset);
-  return this.decodeChar(c);
-};
+    return this.decodeString(words);
+  },
 
-bzork.Zscii.prototype.decodeString = function(words) {
-  var zstring = new bzork.Zscii.ZString(this, words);
-  return zstring.decode();
-};
+  getChar: function(offset) {
+    var c = this._machine.getUint8(offset);
+    return this.decodeChar(c);
+  },
 
-bzork.Zscii.prototype.decodeChar = function(c) {
-  if (c >= 32 && c <= 126)
-    return String.fromCharCode(c);
-  else
-    throw "unimplemented";
-};
+  decodeString: function(words) {
+    var zstring = new bzork.Zscii.ZString(this, words);
+    return zstring.decode();
+  },
 
-// Proxy methods for Machine
-bzork.Zscii.prototype.getAbbrev = function(i) {
-  return this._machine.getAbbrev(i);
-};
+  decodeChar: function(c) {
+    if (c >= 32 && c <= 126)
+      return String.fromCharCode(c);
+    else
+      throw "unimplemented";
+  },
 
-bzork.Zscii.prototype.getZcodeVersion = function() {
-  return this._machine.getZcodeVersion();
+  // Proxy methods for Machine
+  getAbbrev: function(i) {
+    return this._machine.getAbbrev(i);
+  },
+
+  getZcodeVersion: function() {
+    return this._machine.getZcodeVersion();
+  }
 };
 
 // A ZString is a sequence of ZCharTriplets in memory.
@@ -70,12 +86,14 @@ bzork.Zscii.ZString = function(zscii, words) {
     this.triplets.push( new bzork.Zscii.ZCharTriplet(zscii, words[i]) );
 };
 
-bzork.Zscii.ZString.prototype.decode = function() {
-  var result = [];
-  for (var i = 0; i < this.triplets.length; i++)
-    result.push(this.triplets[i].decode());
-  this.zscii.resetState();
-  return result.join('');
+bzork.Zscii.ZString.prototype = {
+  decode: function() {
+    var result = [];
+    for (var i = 0; i < this.triplets.length; i++)
+      result.push(this.triplets[i].decode());
+    this.zscii.resetState();
+    return result.join('');
+  }
 };
 
 // A ZCharTriplet is a 2-byte word value which contains 3
@@ -93,18 +111,20 @@ bzork.Zscii.ZCharTriplet = function(zscii, word) {
   ];
 };
 
-bzork.Zscii.ZCharTriplet.prototype.decode = function() {
-  var result = [];
-  for (var i = 0; i < this.zchars.length; i++) {
-    var c = this.zchars[i].decode();
-    if (c)
-      result.push(c);
-  }
-  return result.join('');
-};
+bzork.Zscii.ZCharTriplet.prototype = {
+  decode: function() {
+    var result = [];
+    for (var i = 0; i < this.zchars.length; i++) {
+      var c = this.zchars[i].decode();
+      if (c)
+        result.push(c);
+    }
+    return result.join('');
+  },
 
-bzork.Zscii.ZCharTriplet.prototype.isTerminal = function() {
-  return (this.word & 0x8000) !== 0;
+  isTerminal: function() {
+    return (this.word & 0x8000) !== 0;
+  }
 };
 
 // A 5-bit "Z Character"
@@ -113,78 +133,66 @@ bzork.Zscii.ZChar = function(zscii, bits) {
   this.bits = bits;
 };
 
-bzork.Zscii.ZChar.prototype.decode = function() {
-  var c = this.bits,
-      zscii = this.zscii,
-      version = zscii.getZcodeVersion(),
-      result;
+bzork.Zscii.ZChar.prototype = {
+  decode: function() {
+    var c = this.bits,
+        zscii = this.zscii,
+        version = zscii.getZcodeVersion(),
+        result;
 
-  if (zscii.tenBit === true) {
-    zscii.tenBit = c << 5;
-    return;
-  } else if (zscii.tenBit !== false) {
-    zscii.tenBit |= c;
-    result = zscii.decodeChar(zscii.tenBit);
-    zscii.resetState();
-    return result;
-  }
+    if (zscii.tenBit === true) {
+      zscii.tenBit = c << 5;
+      return;
+    } else if (zscii.tenBit !== false) {
+      zscii.tenBit |= c;
+      result = zscii.decodeChar(zscii.tenBit);
+      zscii.resetState();
+      return result;
+    }
 
-  if (zscii.abbrev) {
-    var x = zscii.abbrev;
-    zscii.resetState();
-    return zscii.getAbbrev(32 * (x - 1) + c);
-  }
+    if (zscii.abbrev) {
+      var x = zscii.abbrev;
+      zscii.resetState();
+      return zscii.getAbbrev(32 * (x - 1) + c);
+    }
 
-  switch (c) {
-  case 0:
-    result = ' ';
-    break;
-  case 1:
-    if (zscii.getZcodeVersion() === 1)
-      result = "\n";
-    else
-      zscii.abbrev = c;
-    break;
-  case 2:
-  case 3:
-    if (zscii.getZcodeVersion() >= 3)
-      zscii.abbrev = c;
-    break;
-  case 4:
-    zscii.shift = 1;
-    break;
-  case 5:
-    zscii.shift = 2;
-    break;
-  case 6:
-    if (zscii.shift === 2) {
-      zscii.tenBit = true;
+    switch (c) {
+    case 0:
+      result = ' ';
+      break;
+    case 1:
+      if (zscii.getZcodeVersion() === 1)
+        result = "\n";
+      else
+        zscii.abbrev = c;
+      break;
+    case 2:
+    case 3:
+      if (zscii.getZcodeVersion() >= 3)
+        zscii.abbrev = c;
+      break;
+    case 4:
+      zscii.shift = 1;
+      break;
+    case 5:
+      zscii.shift = 2;
+      break;
+    case 6:
+      if (zscii.shift === 2) {
+        zscii.tenBit = true;
+        break;
+      }
+    default:
+      if (zscii.shift)
+        result = zscii.alphabet[zscii.shift][c - 6];
+      else
+        result = zscii.alphabet[0][c - 6];
       break;
     }
-  default:
-    if (zscii.shift)
-      result = zscii.alphabet[zscii.shift][c - 6];
-    else
-      result = zscii.alphabet[0][c - 6];
-    break;
+
+    if (result)
+      zscii.resetState();
+
+    return result;
   }
-
-  if (result)
-    zscii.resetState();
-
-  return result;
-};
-
-// The 2 default alphabets
-bzork.Zscii.DefaultAlphabets = {
-  v1: [
-    "abcdefghijklmnopqrstuvwxyz",
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    " 0123456789.,!?_#'\"/\\<-:()"
-  ],
-  v2: [
-    "abcdefghijklmnopqrstuvwxyz",
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    " \n0123456789.,!?_#'\"/\\-:()"
-  ]
 };
