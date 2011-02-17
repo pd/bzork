@@ -108,7 +108,6 @@ bzork.vm.Instruction.prototype.getBranchOffset = function() {
   if (!this.branches())
     throw "Instruction does not branch";
 
-  var offset = this._machine.getUint8(this._getBranchOffsetAddr());
   if (this._getBranchOffsetSize() === 1)
     return this._machine.getUint8(this._getBranchOffsetAddr()) & 0x3f;
 
