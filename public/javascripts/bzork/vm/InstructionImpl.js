@@ -31,9 +31,7 @@ bzork.vm.InstructionImpl = (function() {
           return [get1bitOpType((opbyte & 0x40) >> 6),
                   get1bitOpType((opbyte & 0x20) >> 5)];
         },
-        _getOperandsAddr: function() {
-          return this._addr + 1;
-        }
+        _getOperandsAddr: function() { return this._addr + 1; }
       },
 
       SHORT: {
@@ -50,18 +48,13 @@ bzork.vm.InstructionImpl = (function() {
               type   = get2bitOpType((opbyte & 0x30) >> 4);
           return type === bzork.vm.Instruction.OpTypes.OMIT ? [] : [type];
         },
-        _getOperandsAddr: function() {
-          return this._addr + 1;
-        }
+        _getOperandsAddr: function() { return this._addr + 1; }
       },
 
       EXT: {
         getOpcode: function() { return this._machine.getUint8(this._addr + 1); },
         getOperandCount: function() { return bzork.vm.Instruction.OpCounts.VAR; },
-        getOperandTypes: function() { /* meh */ },
-        _getOperandsAddr: function() {
-          return this._addr + 3;
-        }
+        _getOperandsAddr: function() { return this._addr + 3; }
       },
 
       VAR: {
@@ -72,16 +65,6 @@ bzork.vm.InstructionImpl = (function() {
             return bzork.vm.Instruction.OpCounts.VAR;
           else
             return bzork.vm.Instruction.OpCounts.OP2;
-        },
-        getOperandTypes: function() {
-          var bitfield = this._machine.getUint8(this._addr + 1),
-              types = [],
-              limit = this.getOperandCount() === bzork.vm.Instruction.OpCounts.OP2 ? 4 : 0;
-          for (var n = 6; n >= limit; n -= 2) {
-            var bits = (bitfield >> n) & 0x3;
-            types.push(get2bitOpType(bits));
-          }
-          return types;
         },
         _getOperandsAddr: function() {
           if (this.getName() === "call_vs2" || this.getName() === "call_vn2")
