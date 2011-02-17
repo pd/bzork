@@ -257,12 +257,16 @@ describe("bzork.vm.Instruction", function() {
       }).toThrow("Instruction does not branch");
     });
 
+    xit("returns the actual branch offset value, not the full byte/2-bytes", function() {
+      // TODO needs sign conversion + example instructions
+    });
+
     it("returns 1-byte branch offset values", function() {
       var instr = buildInstruction('je');
       expect(instr.getBranchOffset()).toEqual(0x40);
     });
 
-    it("returns 1-byte branch offset values", function() {
+    it("returns 2-byte branch offset values", function() {
       var instr = buildInstruction('je2');
       expect(instr.getBranchOffset()).toEqual(0x30ff);
     });
