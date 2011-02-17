@@ -1,3 +1,5 @@
+// Huge map of instructions, keyed by opcount:opcode, that contains
+// whether the instruction stores a variable, branches, etc.
 bzork.vm.InstructionDB = {};
 
 (function() {

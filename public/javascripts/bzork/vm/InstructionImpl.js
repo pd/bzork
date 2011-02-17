@@ -11,11 +11,26 @@ bzork.vm.InstructionImpl = {};
 
   // 0OP
   addMethod('rtrue', function() {
-    this.returnFromRoutine(true);
+    this.returnFromRoutine(1);
   });
 
   addMethod('rfalse', function() {
-    this.returnFromRoutine(false);
+    this.returnFromRoutine(0);
+  });
+
+  // VAROP
+  addMethod('call', function() {
+    var operands = this.getOperands(),
+        routineAddr = operands[0];
+
+    if (routineAddr === 0)
+      this.returnFromRoutine(0);
+
+    var args = [];
+    for (var i = 1; i < operands.length; i++)
+      args.push(operands[i]);
+
+    this._machine.call(routineAddr, this._addr + this.getLength(), args);
   });
 
 }());

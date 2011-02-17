@@ -16,5 +16,9 @@ bzork.vm.Stack.prototype = {
 
   size: function() {
     return this.sp;
+  },
+
+  isEmpty: function() {
+    return this.size() === 0;
   }
 };

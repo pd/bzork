@@ -4,6 +4,14 @@ describe("bzork.vm.Stack", function() {
     expect(stack.size()).toEqual(0);
   });
 
+  it("should know if it's empty", function() {
+    var stack = new bzork.vm.Stack();
+    expect(stack.isEmpty()).toEqual(true);
+
+    stack.push(0xff);
+    expect(stack.isEmpty()).toEqual(false);
+  });
+
   it("should grow when values are pushed on", function() {
     var stack = new bzork.vm.Stack();
     stack.push(0xff);

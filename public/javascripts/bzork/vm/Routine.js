@@ -1,9 +1,32 @@
+// Represents a routine about to be called, its local variables,
+// and the CPU state that will need to be restored when this
+// routine returns.
 bzork.vm.Routine = function(machine, addr) {
   this._machine = machine;
   this._addr = addr;
+
+  this.originalSP = undefined;
+  this.returnAddr = undefined;
+  this.locals = [];
 };
 
 bzork.vm.Routine.prototype = {
+  getOriginalSP: function() {
+    return this.getOriginalSP;
+  },
+
+  setOriginalSP: function(sp) {
+    this.originalSP = sp;
+  },
+
+  getReturnAddr: function() {
+    return this.returnAddr;
+  },
+
+  setReturnAddr: function(addr) {
+    this.returnAddr = addr;
+  },
+
   getNumLocals: function() {
     return this._machine.getUint8(this._addr);
   },
