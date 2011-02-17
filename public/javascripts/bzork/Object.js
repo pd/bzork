@@ -15,15 +15,15 @@ bzork.Object = function(machine, id, addr) {
 
 bzork.Object.prototype = {
   getParent: function() {
-    return this._getId(0);
+    return this._getRelative(0);
   },
 
   getSibling: function() {
-    return this._getId(1);
+    return this._getRelative(1);
   },
 
   getChild: function() {
-    return this._getId(2);
+    return this._getRelative(2);
   },
 
   getPropertyAddr: function() {
@@ -40,7 +40,7 @@ bzork.Object.prototype = {
     return this._machine.getZsciiString(this.getPropertyAddr() + 1);
   },
 
-  _getId: function(i) {
+  _getRelative: function(i) {
     var fn = this._idSize == 1 ? 'getUint8' : 'getUint16';
     return this._machine[fn](this._addr + this._attributesSize + (i * this._idSize));
   }
