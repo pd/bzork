@@ -69,22 +69,18 @@ bzork.vm.Instruction.prototype.getOperands = function() {
       optypes = this.getOperandTypes(),
       operands = [];
 
-  switch (this.getOperandCount()) {
-  case bzork.vm.Instruction.OpCounts.OP0:
+  if (optypes.length === 0)
     return [];
-  case bzork.vm.Instruction.OpCounts.OP1:
-    return [this._getOperand(offset, optypes[0])];
-  case bzork.vm.Instruction.OpCounts.OP2:
-  case bzork.vm.Instruction.OpCounts.VAR:
-    for (var i = 0; i < optypes.length; i++) {
-      var op = this._getOperand(offset, optypes[i]);
-      if (typeof op === "undefined")
-        break;
-      operands.push(op);
-      offset += this._operandSize(optypes[i]);
-    }
-    return operands;
+
+  for (var i = 0; i < optypes.length; i++) {
+    var op = this._getOperand(offset, optypes[i]);
+    if (typeof op === "undefined")
+      break;
+    operands.push(op);
+    offset += this._operandSize(optypes[i]);
   }
+
+  return operands;
 };
 
 bzork.vm.Instruction.prototype.stores = function() {
