@@ -36,4 +36,11 @@ describe("bzork.vm.Stack", function() {
       new bzork.vm.Stack().pop()
     }).toThrow("Can not pop empty stack");
   });
+
+  it("should allow peeking at the top value", function() {
+    var stack = new bzork.vm.Stack();
+    stack.push(0xff);
+    stack.push(0x01);
+    expect(stack.peek()).toEqual(0x01);
+  });
 });

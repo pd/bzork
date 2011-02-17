@@ -14,6 +14,10 @@ bzork.vm.Stack.prototype = {
     return this.stack[--this.sp];
   },
 
+  peek: function() {
+    return this.stack[this.sp - 1];
+  },
+
   size: function() {
     return this.sp;
   },
