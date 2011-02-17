@@ -4,7 +4,7 @@ bzork.Machine = function(storyBytes) {
   this.dictionary = new bzork.Dictionary(this, this.header.getDictionaryAddr());
   this.abbrevTable = new bzork.AbbrevTable(this, this.header.getAbbrevTableAddr());
   this.objectTable = new bzork.ObjectTable(this, this.header.getObjectTableAddr());
-
+  this.globalTable = new bzork.GlobalTable(this, this.header.getGlobalTableAddr());
   this.zscii = new bzork.Zscii(this);
 };
 
