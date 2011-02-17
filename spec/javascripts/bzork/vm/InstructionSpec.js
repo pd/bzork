@@ -1,26 +1,31 @@
 describe("bzork.vm.Instruction", function() {
-  function stubMachine(words) {
-    var machine = new StubMachine(3, words);
+  function stubMachine(words, version) {
+    var machine = new StubMachine(version || 3, words);
     return machine;
   }
 
   // These may be padded with an extra byte where necessary
   TestInstructions = {
-    'call':    [0xe003, 0x2a39, 0x8010, 0xffff, 0x00e1], // var, 3 large
-    'rfalse':  [0xb100], // short, 0OP
-    'ret':     [0xab05], // short, 1OP
-    'je':      [0x4188, 0x2b40], // long, 2OP var/small, branch on false
-    'jet':     [0x4188, 0x2bc0], // long, 2OP var/small, branch on true
-    'je2':     [0x4188, 0x2b30, 0xff00], // hand-crafted for 2-byte branch offset, prolly invalid
-    'inc_chk': [0x0502, 0x00d4], // long, 2OP small/small
-    'print':   [0xb211, 0xaa46, 0x3416, 0x459c, 0xa500], // short, 0OP + string
-    'mul':     [0xd62f, 0x03e8, 0x0200] // var, 2OP large/var
+    'call':     [0xe003, 0x2a39, 0x8010, 0xffff, 0x00e1], // var, 3 large
+    'rfalse':   [0xb100], // short, 0OP
+    'ret':      [0xab05], // short, 1OP
+    'je':       [0x4188, 0x2b40], // long, 2OP var/small, branch on false
+    'jet':      [0x4188, 0x2bc0], // long, 2OP var/small, branch on true
+    'je2':      [0x4188, 0x2b30, 0xff00], // hand-crafted for 2-byte branch offset, prolly invalid
+    'inc_chk':  [0x0502, 0x00d4], // long, 2OP small/small
+    'print':    [0xb211, 0xaa46, 0x3416, 0x459c, 0xa500], // short, 0OP + string
+    'mul':      [0xd62f, 0x03e8, 0x0200], // var, 2OP large/var
+    'save':     {v:5, w:[0xbe00, 0xffff]}, // ext, 3OP
+    'call_vs2': {v:5, w:[0xecaa, 0xab01, 0x0304, 0x0506, 0x0708, 0x0900]} // var, 8OP
   };
 
   function buildInstruction(name) {
     var words = TestInstructions[name];
     if (typeof words === "undefined")
       throw "Unknown test instruction name " + name;
+
+    if (words['v'])
+      return new bzork.vm.Instruction(stubMachine(words.w, words.v), 0);
     return new bzork.vm.Instruction(stubMachine(words), 0);
   }
 
@@ -58,8 +63,9 @@ describe("bzork.vm.Instruction", function() {
       expect(instr.getForm()).toEqual(bzork.vm.Instruction.Forms.LONG);
     });
 
-    xit("recognizes extended form instructions", function() {
-      // TODO need to look at ztuu.z5
+    it("recognizes extended form instructions", function() {
+      var instr = buildInstruction('save');
+      expect(instr.getForm()).toEqual(bzork.vm.Instruction.Forms.EXT);
     });
   });
 
@@ -81,8 +87,9 @@ describe("bzork.vm.Instruction", function() {
       expect(call.getOpcode()).toEqual(0);
     });
 
-    xit("recognizes the opcode of extended form instructions", function() {
-      // TODO .z5
+    it("recognizes the opcode of extended form instructions", function() {
+      var save = buildInstruction('save');
+      expect(save.getOpcode()).toEqual(0);
     });
   });
 
@@ -112,8 +119,15 @@ describe("bzork.vm.Instruction", function() {
       expect(instr.getOperandCount()).toEqual(bzork.vm.Instruction.OpCounts.OP2);
     });
 
-    xit("knows extended forms are always VAROP", function() {
-      // TODO ztuu.z5
+    it("recognizes 8OP variable forms", function() {
+      var instr = buildInstruction('call_vs2');
+      window.instr = instr
+      expect(instr.getOperandCount()).toEqual(8);
+    });
+
+    it("knows extended forms are always VAROP", function() {
+      var instr = buildInstruction('save');
+      expect(instr.getOperandCount()).toEqual(bzork.vm.Instruction.OpCounts.VAR);
     });
   });
 
@@ -162,8 +176,19 @@ describe("bzork.vm.Instruction", function() {
                                                bzork.vm.Instruction.OpTypes.VAR]);
     });
 
-    xit("recognizes other var forms ...", function() {
-      // TODO find some
+    it("recognizes 8OP var forms", function() {
+      var instr = buildInstruction('call_vs2'),
+          optypes = instr.getOperandTypes();
+
+      for (var i = 0; i < 7; i++)
+        expect(instr.getOperandTypes()[i]).toEqual(bzork.vm.Instruction.OpTypes.VAR);
+      expect(instr.getOperandTypes()[7]).toEqual(bzork.vm.Instruction.OpTypes.OMIT);
+    });
+
+    it("recognizes ext forms", function() {
+      var instr = buildInstruction('save');
+      for (var i = 0; i < 4; i++)
+        expect(instr.getOperandTypes()[i]).toEqual(bzork.vm.Instruction.OpTypes.OMIT);
     });
   });
 
@@ -197,11 +222,24 @@ describe("bzork.vm.Instruction", function() {
       var instr = buildInstruction('call');
       expect(instr.getOperands()).toEqual([0x2a39, 0x8010, 0xffff]);
     });
+
+    it("extracts the operands for 8OP var forms", function() {
+      var instr = buildInstruction('call_vs2');
+      expect(instr.getOperands()).toEqual([0x01, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]);
+    });
+
+    it("extracts the operands for ext forms", function() {
+      var instr = buildInstruction('save');
+      expect(instr.getOperands()).toEqual([]);
+    });
   });
 
   describe("stores", function() {
     it("returns true if the instruction stores", function() {
       var instr = buildInstruction('call');
+      expect(instr.stores()).toEqual(true);
+
+      instr = buildInstruction('call_vs2');
       expect(instr.stores()).toEqual(true);
     });
 

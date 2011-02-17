@@ -26,7 +26,9 @@ bzork.vm.Instruction.OpTypes = {
 };
 
 bzork.vm.Instruction.prototype.uniqueKey = function() {
-  return this.getOperandCount() + ":" + this.getOpcode();
+  var operandCount = this._is8OP && this._is8OP() ? bzork.vm.Instruction.OpCounts.VAR :
+    this.getOperandCount();
+  return operandCount + ":" + this.getOpcode();
 };
 
 bzork.vm.Instruction.prototype.getName = function() {
@@ -58,12 +60,12 @@ bzork.vm.Instruction.prototype.getOpcodeByte = function() {
 bzork.vm.Instruction.prototype.getForm = function() {
   var opbyte = this.getOpcodeByte();
 
+  if (this._machine.getZcodeVersion() >= 5 && opbyte == 0xbe)
+    return bzork.vm.Instruction.Forms.EXT;
   if ((opbyte & 0xc0) === 0xc0)
     return bzork.vm.Instruction.Forms.VAR;
   if ((opbyte & 0x80) === 0x80)
     return bzork.vm.Instruction.Forms.SHORT;
-  if (this._machine.getZcodeVersion() >= 5 && opbyte == 0xbe)
-    return bzork.vm.Instruction.Forms.EXT;
   return bzork.vm.Instruction.Forms.LONG;
 };
 
