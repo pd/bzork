@@ -1,7 +1,7 @@
 bzork.vm.Instruction = function(machine, addr) {
   this._machine = machine;
   this._addr = addr;
-  this._stealImplMethods();
+  this._decorateByForm();
 };
 
 bzork.vm.Instruction.prototype = {
@@ -115,10 +115,26 @@ bzork.vm.Instruction.prototype = {
     return this._machine.getZsciiString(this._getStringAddr());
   },
 
-  // Ganks a number of methods from bzork.vm.InstructionImpl
-  // based on the form of this instruction
-  _stealImplMethods: function() {
-    var methods = bzork.vm.InstructionImpl.Forms[this.getForm()];
+  // Decorates this object with form-specific accessor methods.
+  // See InstructionForms.js
+  _decorateByForm: function() {
+    var methods = undefined;
+
+    switch (this.getForm()) {
+    case bzork.vm.Instruction.Forms.LONG:
+      methods = bzork.vm.LongInstruction;
+      break;
+    case bzork.vm.Instruction.Forms.SHORT:
+      methods = bzork.vm.ShortInstruction;
+      break;
+    case bzork.vm.Instruction.Forms.EXT:
+      methods = bzork.vm.ExtInstruction;
+      break;
+    case bzork.vm.Instruction.Forms.VAR:
+      methods = bzork.vm.VarInstruction;
+      break;
+    }
+
     for (method in methods)
       this[method] = methods[method];
   },
