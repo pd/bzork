@@ -28,6 +28,22 @@ bzork.vm.Instruction.prototype.uniqueKey = function() {
   return this.getOperandCount() + ":" + this.getOpcode();
 };
 
+bzork.vm.Instruction.prototype.getLength = function() {
+  if (this.hasDanglingString()) {
+    var i = 0, word;
+    do {
+      word = this._machine.getUint16(this._getStringAddr() + i);
+      i += 2;
+    } while ((word & 0x8000) === 0);
+    return this._getStringAddr() + i;
+  } else if (this.branches())
+    return this._getBranchOffsetAddr() + this._getBranchOffsetSize();
+  else if (this.stores())
+    return this._getStoreVariableAddr() + 1;
+  else
+    return this._getAfterOperandsAddr();
+};
+
 bzork.vm.Instruction.prototype.getOpcodeByte = function() {
   return this._machine.getUint8(this._addr);
 };

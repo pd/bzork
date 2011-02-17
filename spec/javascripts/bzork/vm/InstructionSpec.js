@@ -23,6 +23,17 @@ describe("bzork.vm.Instruction", function() {
     return new bzork.vm.Instruction(stubMachine(words), 0);
   }
 
+  it("should know its length", function() {
+    expect(buildInstruction('call').getLength()).toEqual(9);
+    expect(buildInstruction('rfalse').getLength()).toEqual(1);
+    expect(buildInstruction('ret').getLength()).toEqual(2);
+    expect(buildInstruction('je').getLength()).toEqual(4);
+    expect(buildInstruction('je2').getLength()).toEqual(5);
+    expect(buildInstruction('inc_chk').getLength()).toEqual(4);
+    expect(buildInstruction('print').getLength()).toEqual(9);
+    expect(buildInstruction('mul').getLength()).toEqual(6);
+  });
+
   describe("getForm", function() {
     it("recognizes short form instructions", function() {
       var instr = buildInstruction('rfalse');
