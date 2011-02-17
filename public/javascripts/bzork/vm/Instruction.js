@@ -56,12 +56,11 @@ bzork.vm.Instruction.prototype.getForm = function() {
 
   if ((opbyte & 0xc0) === 0xc0)
     return bzork.vm.Instruction.Forms.VAR;
-  else if ((opbyte & 0x80) === 0x80)
+  if ((opbyte & 0x80) === 0x80)
     return bzork.vm.Instruction.Forms.SHORT;
-  else if (this._machine.getZcodeVersion() >= 5 && opbyte == 0xbe)
+  if (this._machine.getZcodeVersion() >= 5 && opbyte == 0xbe)
     return bzork.vm.Instruction.Forms.EXT;
-  else
-    return bzork.vm.Instruction.Forms.LONG;
+  return bzork.vm.Instruction.Forms.LONG;
 };
 
 bzork.vm.Instruction.prototype.getOperands = function() {
