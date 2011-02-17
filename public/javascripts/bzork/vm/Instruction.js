@@ -5,9 +5,11 @@ bzork.vm.Instruction = function(machine, addr) {
 };
 
 bzork.vm.Instruction.prototype = {
+  // Retrieves the actual implementation of the instruction
+  // and then executes it in the context of this object.
   run: function() {
     var name = this.getName(),
-        method = bzork.vm.InstructionImpl.Methods[name];
+        method = bzork.vm.InstructionImpl[name];
 
     if (typeof method === "undefined")
       throw "Unimplemented instruction: " + name;
