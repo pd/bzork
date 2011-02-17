@@ -55,19 +55,6 @@ bzork.vm.Instruction.prototype.getOpcodeByte = function() {
   return this._machine.getUint8(this._addr);
 };
 
-// This works for VAR and EXT forms. LONG and SHORT forms
-// will replace this method with simpler ones from InstructionImpl
-bzork.vm.Instruction.prototype.getOperandTypes = function() {
-  var bitfield = this._machine.getUint8(this._addr + 1),
-      types = [],
-      limit = this.getOperandCount() === bzork.vm.Instruction.OpCounts.OP2 ? 4 : 0;
-  for (var n = 6; n >= limit; n -= 2) {
-    var bits = (bitfield >> n) & 0x3;
-    types.push(get2bitOpType(bits));
-  }
-  return types;
-};
-
 bzork.vm.Instruction.prototype.getForm = function() {
   var opbyte = this.getOpcodeByte();
 
