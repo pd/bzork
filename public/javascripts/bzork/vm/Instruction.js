@@ -12,17 +12,17 @@ bzork.vm.Instruction.Forms = {
 };
 
 bzork.vm.Instruction.OpCounts = {
-  OP0: 'OP0',
-  OP1: 'OP1',
-  OP2: 'OP2',
-  VAR: 'VAR'
+  OP0: 0,
+  OP1: 1,
+  OP2: 2,
+  VAR: 3
 };
 
 bzork.vm.Instruction.OpTypes = {
-  LARGE: 'LARGE',
-  SMALL: 'SMALL',
-  VAR:   'VAR',
-  OMIT:  'OMIT'
+  LARGE: 0,
+  SMALL: 1,
+  VAR:   2,
+  OMIT:  3
 };
 
 bzork.vm.Instruction.prototype.uniqueKey = function() {
