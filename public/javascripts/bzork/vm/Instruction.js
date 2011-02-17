@@ -1,27 +1,28 @@
 bzork.vm.Instruction = function(machine, addr) {
   this._machine = machine;
   this._addr = addr;
+  this._stealImplMethods();
 };
 
 bzork.vm.Instruction.Forms = {
-  LONG:  0,
-  SHORT: 1,
-  EXT:   2,
-  VAR:   3
+  LONG:  'LONG',
+  SHORT: 'SHORT',
+  EXT:   'EXT',
+  VAR:   'VAR'
 };
 
 bzork.vm.Instruction.OpCounts = {
-  OP0: 0,
-  OP1: 1,
-  OP2: 2,
-  VAR: 3
+  OP0: 'OP0',
+  OP1: 'OP1',
+  OP2: 'OP2',
+  VAR: 'VAR'
 };
 
 bzork.vm.Instruction.OpTypes = {
-  LARGE: 0,
-  SMALL: 1,
-  VAR:   2,
-  OMIT:  3
+  LARGE: 'LARGE',
+  SMALL: 'SMALL',
+  VAR:   'VAR',
+  OMIT:  'OMIT'
 };
 
 bzork.vm.Instruction.prototype.uniqueKey = function() {
@@ -36,7 +37,9 @@ bzork.vm.Instruction.prototype.getLength = function() {
       i += 2;
     } while ((word & 0x8000) === 0);
     return this._getStringAddr() + i;
-  } else if (this.branches())
+  }
+
+  if (this.branches())
     return this._getBranchOffsetAddr() + this._getBranchOffsetSize();
   else if (this.stores())
     return this._getStoreVariableAddr() + 1;
@@ -61,69 +64,8 @@ bzork.vm.Instruction.prototype.getForm = function() {
     return bzork.vm.Instruction.Forms.LONG;
 };
 
-bzork.vm.Instruction.prototype.getOpcode = function() {
-  var opbyte = this.getOpcodeByte();
-
-  switch (this.getForm()) {
-  case bzork.vm.Instruction.Forms.LONG:
-    return opbyte & 0x1f;
-  case bzork.vm.Instruction.Forms.SHORT:
-    return opbyte & 0xf;
-  case bzork.vm.Instruction.Forms.VAR:
-    return opbyte & 0x1f;
-  case bzork.vm.Instruction.Forms.EXT:
-    return this._machine.getUint8(this._addr + 1); // ugh
-  }
-};
-
-bzork.vm.Instruction.prototype.getOperandCount = function() {
-  var opbyte = this.getOpcodeByte();
-
-  switch (this.getForm()) {
-  case bzork.vm.Instruction.Forms.LONG:
-    return bzork.vm.Instruction.OpCounts.OP2;
-  case bzork.vm.Instruction.Forms.SHORT:
-    if ((opbyte & 0x30) === 0x30)
-      return bzork.vm.Instruction.OpCounts.OP0;
-    else
-      return bzork.vm.Instruction.OpCounts.OP1;
-  case bzork.vm.Instruction.Forms.VAR:
-    if ((opbyte & 0x20) !== 0)
-      return bzork.vm.Instruction.OpCounts.VAR;
-    else
-      return bzork.vm.Instruction.OpCounts.OP2;
-  case bzork.vm.Instruction.Forms.EXT:
-    return bzork.vm.Instruction.OpCounts.VAR;
-  default:
-    throw "Impossible!";
-  }
-};
-
-bzork.vm.Instruction.prototype.getOperandTypes = function() {
-  var opbyte = this.getOpcodeByte();
-
-  switch (this.getForm()) {
-  case bzork.vm.Instruction.Forms.SHORT:
-    var type = this._map2bitOperandType((opbyte & 0x30) >> 4);
-    return type === bzork.vm.Instruction.OpTypes.OMIT ? [] : [type];
-  case bzork.vm.Instruction.Forms.LONG:
-    return [this._map1bitOperandType((opbyte & 0x40) >> 6),
-            this._map1bitOperandType((opbyte & 0x20) >> 5)];
-  case bzork.vm.Instruction.Forms.VAR:
-    var bitfield = this._machine.getUint8(this._addr + 1),
-        types = [],
-        limit = this.getOperandCount() === bzork.vm.Instruction.OpCounts.OP2 ? 4 : 0;
-    for (var n = 6; n >= limit; n -= 2) {
-      var bits = (bitfield >> n) & 0x3;
-      types.push(this._map2bitOperandType(bits));
-    }
-    return types;
-  }
-};
-
 bzork.vm.Instruction.prototype.getOperands = function() {
   var offset = this._getOperandsAddr(),
-      form = this.getForm(),
       optypes = this.getOperandTypes(),
       operands = [];
 
@@ -189,6 +131,14 @@ bzork.vm.Instruction.prototype.getDanglingString = function() {
   return this._machine.getZsciiString(this._getStringAddr());
 };
 
+// Ganks a number of methods from bzork.vm.InstructionImpl
+// based on the form of this instruction
+bzork.vm.Instruction.prototype._stealImplMethods = function() {
+  var methods = bzork.vm.InstructionImpl.Forms[this.getForm()];
+  for (method in methods)
+    this[method] = methods[method];
+};
+
 bzork.vm.Instruction.prototype._getInstructionInfo = function() {
   return bzork.vm.InstructionInfo.DB[this.uniqueKey()];
 };
@@ -209,24 +159,6 @@ bzork.vm.Instruction.prototype._operandSize = function(type) {
     return 0;
   else
     return 1;
-};
-
-bzork.vm.Instruction.prototype._map2bitOperandType = function(bits) {
-  switch (bits) {
-  case 0: return bzork.vm.Instruction.OpTypes.LARGE;
-  case 1: return bzork.vm.Instruction.OpTypes.SMALL;
-  case 2: return bzork.vm.Instruction.OpTypes.VAR;
-  case 3: return bzork.vm.Instruction.OpTypes.OMIT;
-  default: throw "Invalid operand type value " + bits;
-  }
-};
-
-bzork.vm.Instruction.prototype._map1bitOperandType = function(bit) {
-  bit = bit & 0x1;
-  if (bit === 1)
-    return bzork.vm.Instruction.OpTypes.VAR;
-  else if (bit === 0)
-    return bzork.vm.Instruction.OpTypes.SMALL;
 };
 
 bzork.vm.Instruction.prototype._getOperandsAddr = function() {
