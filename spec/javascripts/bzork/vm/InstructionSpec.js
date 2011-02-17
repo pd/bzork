@@ -9,7 +9,8 @@ describe("bzork.vm.Instruction", function() {
     'call':    [0xe003, 0x2a39, 0x8010, 0xffff, 0x00e1], // var, 3 large
     'rfalse':  [0xb100], // short, 0OP
     'ret':     [0xab05], // short, 1OP
-    'je':      [0x4188, 0x2b40], // long, 2OP var/small
+    'je':      [0x4188, 0x2b40], // long, 2OP var/small, branch on false
+    'jet':     [0x4188, 0x2bc0], // long, 2OP var/small, branch on true
     'je2':     [0x4188, 0x2b30, 0xff00], // hand-crafted for 2-byte branch offset, prolly invalid
     'inc_chk': [0x0502, 0x00d4], // long, 2OP small/small
     'print':   [0xb211, 0xaa46, 0x3416, 0x459c, 0xa500], // short, 0OP + string
@@ -226,6 +227,25 @@ describe("bzork.vm.Instruction", function() {
     it("returns false if the instruction does not branch", function() {
       var instr = buildInstruction('rfalse');
       expect(instr.branches()).toEqual(false);
+    });
+  });
+
+  describe("branchesOn", function() {
+    it("throws if the instruction does not branch", function() {
+      var instr = buildInstruction('rfalse');
+      expect(function() {
+        instr.branchesOn()
+      }).toThrow("Instruction does not branch");
+    });
+
+    it("returns true if the instruction branches on true", function() {
+      var instr = buildInstruction('jet');
+      expect(instr.branchesOn()).toEqual(true);
+    });
+
+    it("returns false if the instruction branches on false", function() {
+      var instr = buildInstruction('je');
+      expect(instr.branchesOn()).toEqual(false);
     });
   });
 

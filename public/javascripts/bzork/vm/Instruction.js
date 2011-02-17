@@ -159,6 +159,14 @@ bzork.vm.Instruction.prototype.branches = function() {
   return this._getInstructionInfo().branches;
 };
 
+bzork.vm.Instruction.prototype.branchesOn = function() {
+  if (!this.branches())
+    throw "Instruction does not branch";
+
+  var byte = this._machine.getUint8(this._getBranchOffsetAddr());
+  return (byte & 0x80) === 0x80;
+};
+
 bzork.vm.Instruction.prototype.getBranchOffset = function() {
   if (!this.branches())
     throw "Instruction does not branch";
