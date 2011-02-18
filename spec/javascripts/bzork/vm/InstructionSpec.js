@@ -339,6 +339,22 @@ describe("bzork.vm.Instruction", function() {
     });
   });
 
+  describe("getSignedOperand", function() {
+    it("returns the signed value of operand n", function() {
+      var instr = buildInstruction('je');
+      expect(instr.getSignedOperand(1)).toEqual(0x2b);
+    });
+
+    it("returns the signed value of the variable named by operand n for VAR types", function() {
+      var instr = buildInstruction('je'),
+          machine = instr._machine;
+
+      spyOn(machine, 'getVariable').andReturn(0xffff);
+      expect(instr.getSignedOperand(0)).toEqual(-1);
+      expect(machine.getVariable).toHaveBeenCalledWith(0x88);
+    });
+  });
+
   // Mock-less specs
 
   describe("next", function() {

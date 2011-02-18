@@ -10,6 +10,7 @@ var StubMachine = function(version, words) {
 StubMachine.prototype = {
   getZcodeVersion: function() { return this.version; },
   getStartPC: function() { return 0; },
+  getVariable: bzork.Machine.prototype.getVariable,
   getZsciiString: bzork.Machine.prototype.getZsciiString,
   getUint8: bzork.Machine.prototype.getUint8,
   getUint16: bzork.Machine.prototype.getUint16

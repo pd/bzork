@@ -21,6 +21,19 @@ bzork.vm.Instruction.prototype = {
     this._machine.increasePC(this.getLength());
   },
 
+  getSignedOperand: function(i) {
+    var optypes = this.getOperandTypes(),
+        operands = this.getOperands(),
+        val;
+
+    if (optypes[i] === bzork.vm.Instruction.OpTypes.VAR)
+      val = this._machine.getVariable(operands[i]);
+    else
+      val = operands[i];
+
+    return bzork.Math.toInt16(val);
+  },
+
   getName: function() {
     return this._getInstructionInfo().name;
   },

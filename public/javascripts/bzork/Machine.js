@@ -33,6 +33,10 @@ bzork.Machine.prototype = {
     this.cpu.setPC(this.cpu.getPC() + length);
   },
 
+  getVariable: function(i) {
+    return this.cpu.getVariable(i);
+  },
+
   // Header proxy methods
   getStartPC: function() {
     return this.header.getStartPC();
