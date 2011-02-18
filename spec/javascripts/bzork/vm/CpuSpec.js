@@ -36,45 +36,58 @@ describe("bzork.vm.Cpu", function() {
 
     it("should grow the routine stack", function() {
       var cpu = buildCpu('rfalse');
-      cpu.callRoutine(1, 0, []);
+      cpu.callRoutine(1, 0, false, []);
       expect(cpu.routineStack.size()).toEqual(1);
     });
 
     it("should set the PC to the routine's first instruction", function() {
       var cpu = buildCpu('rfalse');
-      cpu.callRoutine(1, 0, []);
+      cpu.callRoutine(1, 0, false, []);
       expect(cpu.getPC()).toEqual(0x3);
 
       cpu = buildCpu('ret');
-      cpu.callRoutine(2, 0, []);
+      cpu.callRoutine(2, 0, false, []);
       expect(cpu.getPC()).toEqual(0x9);
     });
 
     it("should set the routine's originalSP to the current SP", function() {
       var cpu = buildCpu('rfalse');
       cpu.stack.push(0x1); // just for fun
-      var routine = cpu.callRoutine(1, 0, []);
+      var routine = cpu.callRoutine(1, 0, false, []);
       expect(routine.getOriginalSP()).toEqual(1);
     });
 
     it("should set the return addr to the given addr", function() {
       var cpu = buildCpu('rfalse');
-      var routine = cpu.callRoutine(1, 0xff93, []);
+      var routine = cpu.callRoutine(1, 0xff93, false, []);
       expect(routine.getReturnAddr()).toEqual(0xff93);
     });
 
     it("should set the routine's locals to their default values", function() {
       var cpu = buildCpu('ret');
-      var routine = cpu.callRoutine(2, 0, []);
+      var routine = cpu.callRoutine(2, 0, false, []);
       expect(routine.getLocal(1)).toEqual(0x000a);
       expect(routine.getLocal(2)).toEqual(0xffff);
     });
 
     it("should then set the routine's locals to the arguments given", function() {
       var cpu = buildCpu('ret');
-      var routine = cpu.callRoutine(2, 0, [0xcafe, 0xbabe]);
+      var routine = cpu.callRoutine(2, 0, false, [0xcafe, 0xbabe]);
       expect(routine.getLocal(1)).toEqual(0xcafe);
       expect(routine.getLocal(2)).toEqual(0xbabe);
+    });
+
+    it("should tell the routine not to store its result if storeVariable is false", function() {
+      var cpu = buildCpu('ret');
+      var routine = cpu.callRoutine(2, 0, false, []);
+      expect(routine.storesResult()).toEqual(false);
+    });
+
+    it("should tell the routine where it should later store its result", function() {
+      var cpu = buildCpu('ret');
+      var routine = cpu.callRoutine(2, 0, 19, []);
+      expect(routine.storesResult()).toEqual(true);
+      expect(routine.getStoreVariable()).toEqual(19);
     });
   });
 });

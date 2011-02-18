@@ -18,12 +18,13 @@ bzork.vm.Cpu.prototype = {
     return this.stack.size();
   },
 
-  callRoutine: function(packedAddr, returnAddr, args) {
+  callRoutine: function(packedAddr, returnAddr, storeVariable, args) {
     var routine = new bzork.vm.Routine(this._machine,
                                        this._unpackRoutineAddr(packedAddr));
 
     routine.setOriginalSP(this.getSP());
     routine.setReturnAddr(returnAddr);
+    routine.setStoreVariable(storeVariable);
 
     var localDefaults = routine.getLocalDefaults();
     for (var i = 1; i <= localDefaults.length; i++)
@@ -44,8 +45,8 @@ bzork.vm.Cpu.prototype = {
     this.setSP(routine.getOriginalSP());
     this.setPC(routine.getReturnAddr());
 
-    if (routine.returnsVariable())
-      this.setVariable(routine.getReturnVariable(), value);
+    if (routine.storesResult())
+      this.setVariable(routine.getStoreVariable(), value);
   },
 
   _unpackRoutineAddr: function(addr) {

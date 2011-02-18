@@ -27,6 +27,21 @@ bzork.vm.Routine.prototype = {
     this.returnAddr = addr;
   },
 
+  getStoreVariable: function() {
+    if (!this.storesResult())
+      throw "Can not access storeVariable on routine which does not store";
+    return this.storeVariable;
+  },
+
+  // Set to false to indicate this routine should not store its result
+  setStoreVariable: function(i) {
+    this.storeVariable = i;
+  },
+
+  storesResult: function() {
+    return this.storeVariable !== false;
+  },
+
   // Locals are indexed from 1, local 0 is the stack.
   getLocal: function(i) {
     return this.locals[i - 1];

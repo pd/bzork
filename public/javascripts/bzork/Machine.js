@@ -25,8 +25,8 @@ bzork.Machine.prototype = {
   },
 
   // CPU proxy methods
-  call: function(packedAddr, returnAddr, args) {
-    return this.cpu.callRoutine(packedAddr, returnAddr, args);
+  call: function(packedAddr, returnAddr, storeVariable, args) {
+    return this.cpu.callRoutine(packedAddr, returnAddr, storeVariable, args);
   },
 
   // Header proxy methods

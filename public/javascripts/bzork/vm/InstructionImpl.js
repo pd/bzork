@@ -30,7 +30,8 @@ bzork.vm.InstructionImpl = {};
     for (var i = 1; i < operands.length; i++)
       args.push(operands[i]);
 
-    this._machine.call(routineAddr, this._addr + this.getLength(), args);
+    this._machine.call(routineAddr, this._addr + this.getLength(),
+                       this.getStoreVariable(), args);
   });
 
 }());
