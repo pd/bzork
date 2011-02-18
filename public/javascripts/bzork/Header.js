@@ -60,5 +60,13 @@ bzork.Header.prototype = {
     for (var i = 0; i < 6; i++)
       serial.push( String.fromCharCode(this._machine.getUint8(0x12 + i)) );
     return serial.join('');
+  },
+
+  getRoutineOffset: function() {
+    return this._machine.getUint16(0x28);
+  },
+
+  getStringOffset: function() {
+    return this._machine.getUint16(0x2a);
   }
 };

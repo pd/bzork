@@ -74,5 +74,13 @@ describe("bzork.Header", function() {
     it("should know the file size", function() {
       expect(this.header.getFileSize()).toEqual(0x1cc90);
     });
+
+    it("should know the unscaled routine offset value", function() {
+      expect(this.header.getRoutineOffset()).toEqual(0xd13);
+    });
+
+    it("should know the unscaled string offset value", function() {
+      expect(this.header.getStringOffset()).toEqual(0xd13);
+    });
   });
 });
