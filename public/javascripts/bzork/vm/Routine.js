@@ -27,6 +27,15 @@ bzork.vm.Routine.prototype = {
     this.returnAddr = addr;
   },
 
+  // Locals are indexed from 1, local 0 is the stack.
+  getLocal: function(i) {
+    return this.locals[i - 1];
+  },
+
+  setLocal: function(i, val) {
+    this.locals[i - 1] = val;
+  },
+
   getNumLocals: function() {
     return this._machine.getUint8(this._addr);
   },
