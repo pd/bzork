@@ -53,4 +53,26 @@ describe("bzork.Header", function() {
       expect(this.header.getSerial()).toEqual("840726");
     });
   });
+
+  describe("for ZTUU", function() {
+    beforeEach(function() {
+      this.machine = new bzork.Machine(bzork.spec.storyData['ztuu']);
+      this.header  = this.machine.header;
+    });
+
+    it("should know the file size", function() {
+      expect(this.header.getFileSize()).toEqual(0x1907c);
+    });
+  });
+
+  describe("for a z6 game", function() {
+    beforeEach(function() {
+      this.machine = new bzork.Machine(bzork.spec.storyData['z6']);
+      this.header  = this.machine.header;
+    });
+
+    it("should know the file size", function() {
+      expect(this.header.getFileSize()).toEqual(0x1cc90);
+    });
+  });
 });

@@ -76,5 +76,16 @@ describe("bzork.ObjectTable", function() {
     it("should have an object size of 14", function() {
       expect(this.objects.getObjectSize()).toEqual(14);
     });
+
+    it("should retrieve objects with the correct property address", function() {
+      expect(this.objects.get(54).getPropertyAddr()).toEqual(0x1053);
+    });
+
+    it("should retrieve objects with the correct tree information", function() {
+      var obj = this.objects.get(54);
+      expect(obj.getParent()).toEqual(53);
+      expect(obj.getSibling()).toEqual(56);
+      expect(obj.getChild()).toEqual(55);
+    });
   });
 });

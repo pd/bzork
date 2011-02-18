@@ -1,4 +1,10 @@
 describe("bzork.abbrevTable", function() {
+  it("should know Z-code version 1 has no abbreviations", function() {
+    var machine = new StubMachine(1, [0xabcd, 0xef01]);
+    var abbrev  = new bzork.AbbrevTable(machine, 0);
+    expect(abbrev.getTableCount()).toEqual(0);
+  });
+
   describe("for Zork1", function() {
     beforeEach(function() {
       this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
