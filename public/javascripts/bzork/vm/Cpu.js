@@ -52,10 +52,23 @@ bzork.vm.Cpu.prototype = {
       this.setVariable(routine.getStoreVariable(), value);
   },
 
+  getVariable: function(i) {
+    if (i === 0) {
+      if (this.getSP() <= this.routineStack.peek().getOriginalSP())
+        throw "Stack underflow error";
+      return this.stack.pop();
+    }
+
+    if (i >= 16)
+      return this._machine.getGlobal(i);
+    else
+      return this.routineStack.peek().getLocal(i);
+  },
+
   setVariable: function(i, val) {
     if (i === 0)
       this.stack.push(val);
-    else if (i >= 17)
+    else if (i >= 16)
       this._machine.setGlobal(i, val);
     else
       this.routineStack.peek().setLocal(i, val);

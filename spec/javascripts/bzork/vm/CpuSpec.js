@@ -173,6 +173,37 @@ describe("bzork.vm.Cpu", function() {
     });
   });
 
+  describe("getVariable", function() {
+    it("should pop the top value off the stack if getting variable 0", function() {
+      this.cpu.stack.push(0x01);
+      this.cpu.callRoutine(0x4eee, 0, false, []);
+      this.cpu.stack.push(0x02);
+      expect(this.cpu.getVariable(0)).toEqual(0x02);
+      expect(this.cpu.getSP()).toEqual(1);
+    });
+
+    it("should not pop values beyond the current routine's original SP", function() {
+      this.cpu.stack.push(0x01);
+      this.cpu.callRoutine(0x4eee, 0, false, []);
+
+      var cpu = this.cpu;
+      expect(function() {
+        cpu.getVariable(0)
+      }).toThrow("Stack underflow error");
+    });
+
+    it("should get the global variable value for vars >= 16", function() {
+      this.machine.setGlobal(17, 0xbeef);
+      expect(this.cpu.getVariable(17)).toEqual(0xbeef);
+    });
+
+    it("should get the local variable value for vars > 0 && < 16", function() {
+      var routine = this.cpu.callRoutine(0x4eee, 0, false, []);
+      routine.setLocal(1, 0x0a0b);
+      expect(this.cpu.getVariable(1)).toEqual(0x0a0b);
+    });
+  });
+
   describe("setVariable", function() {
     it("should push to the stack if setting variable 0", function() {
       this.cpu.setVariable(0, 0xdead);
