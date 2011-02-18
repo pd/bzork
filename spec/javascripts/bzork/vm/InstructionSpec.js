@@ -309,7 +309,7 @@ describe("bzork.vm.Instruction", function() {
 
     it("returns 2-byte branch offset values", function() {
       var instr = buildInstruction('je2');
-      expect(instr.getBranchOffset()).toEqual(-3839); // hand-crafted, ignore funky value
+      expect(instr.getBranchOffset()).toEqual(-3841); // hand-crafted, ignore funky value
     });
   });
 
