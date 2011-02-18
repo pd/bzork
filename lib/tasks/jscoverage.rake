@@ -5,7 +5,7 @@ task 'jscoverage' do
     "/__JASMINE_ROOT__/",
     "/__spec__/"
   ]
-  cmd = "jscoverage-server --proxy --verbose"
+  cmd = "jscoverage-server --proxy --verbose --report-dir=doc/jscoverage"
 
   puts "Launching jscoverage proxy server:"
   puts "\t#{cmd} \\"
