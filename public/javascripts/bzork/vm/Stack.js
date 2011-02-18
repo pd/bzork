@@ -24,5 +24,11 @@ bzork.vm.Stack.prototype = {
 
   isEmpty: function() {
     return this.size() === 0;
+  },
+
+  shrinkTo: function(size) {
+    if (size > this.sp)
+      throw "Can not shrink stack upwards";
+    this.sp = size;
   }
 };

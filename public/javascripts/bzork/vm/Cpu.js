@@ -18,6 +18,13 @@ bzork.vm.Cpu.prototype = {
     return this.stack.size();
   },
 
+  setSP: function(sp) {
+    return this.stack.shrinkTo(sp);
+  },
+
+  setVariable: function(i, val) {
+  },
+
   callRoutine: function(packedAddr, returnAddr, storeVariable, args) {
     if (packedAddr === 0)
       return this.returnWith(0);

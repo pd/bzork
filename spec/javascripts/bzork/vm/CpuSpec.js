@@ -134,4 +134,55 @@ describe("bzork.vm.Cpu", function() {
       });
     });
   });
+
+  describe("returnWith", function() {
+    function pushRoutine(cpu, sp, addr, stores) {
+      var routine = new StubRoutine(sp, addr, stores);
+      cpu.routineStack.push(routine);
+      return routine;
+    }
+
+    it("should throw if returning without being in a routine", function() {
+      var cpu = this.cpu;
+      expect(function() {
+        cpu.returnWith(0);
+      }).toThrow("No current routine to return from");
+    });
+
+    it("should restore the original SP", function() {
+      // avoid "shrink upwards" exception
+      this.cpu.stack.push(0xff);
+      this.cpu.stack.push(0x01);
+
+      pushRoutine(this.cpu, 1, 0xbeef, false);
+      this.cpu.returnWith(0);
+      expect(this.cpu.getSP()).toEqual(1);
+    });
+
+    it("should update the PC to be the routine's return address", function() {
+      pushRoutine(this.cpu, 0, 0xbeef, false);
+      this.cpu.returnWith(0);
+      expect(this.cpu.getPC()).toEqual(0xbeef);
+    });
+
+    it("should not store the result if the call leading to the routine does not", function() {
+      pushRoutine(this.cpu, 0, 0xbeef, false);
+      spyOn(this.cpu, 'setVariable');
+      this.cpu.returnWith(1);
+      expect(this.cpu.setVariable).not.toHaveBeenCalled();
+    });
+
+    it("should store the result in the routine's specified store variable", function() {
+      pushRoutine(this.cpu, 0, 0xbeef, 17);
+      spyOn(this.cpu, 'setVariable');
+      this.cpu.returnWith(0xff);
+      expect(this.cpu.setVariable).toHaveBeenCalledWith(17, 0xff);
+    });
+  });
+
+  describe("setVariable", function() {
+    it("should ...", function() {
+      throw "fail";
+    });
+  });
 });
