@@ -18,11 +18,20 @@ bzork.vm.InstructionImpl = {};
     this.returnFromRoutine(0);
   });
 
+  // 2OP
+  addMethod('add', function() {
+    var a = this.getSignedOperand(0),
+        b = this.getSignedOperand(1);
+    this._machine.setVariable(this.getStoreVariable(), a + b);
+    this.next();
+  });
+
   // VAROP
   addMethod('call', function() {
     var operands = this.getOperands(),
         routineAddr = operands[0];
 
+    // This might be completely wrong. I'm having trouble grokking the spec.
     if (routineAddr === 0)
       this.returnFromRoutine(0);
 
