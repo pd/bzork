@@ -3,7 +3,12 @@ function mzDataView(buffer, byteOffset, byteLength){
 	this.buffer=buffer;
 	this.byteOffset=byteOffset||0;
 	this.byteLength=byteLength||buffer.byteLength;
-	this.bytes=Uint8Array(buffer).slice(byteOffset||0,(byteOffset||0)+byteLength||buffer.byteLength);
+
+        var arr = Uint8Array(buffer);
+        if (arr.slice)
+	  this.bytes=arr.slice(byteOffset||0,(byteOffset||0)+byteLength||buffer.byteLength);
+        else
+          this.bytes=arr.subarray(byteOffset||0,(byteOffset||0)+byteLength||buffer.byteLength);
 }
 
 mzDataView.prototype={
@@ -14,7 +19,7 @@ mzDataView.prototype={
 			return rawByte-256;
 		} else{return rawByte};
 	},
-	getUInt8:function(byteOffset){
+	getUint8:function(byteOffset){
 		if(byteOffset>this.bytes.length){throw new Error("INDEX_SIZE_ERR")}
 		return this.bytes[byteOffset];
 	},
@@ -29,7 +34,7 @@ mzDataView.prototype={
 			return rawShort-0x10000;
 		} else{return rawShort;}
 	},
-	getUInt16:function(byteOffset,littleEndian){
+	getUint16:function(byteOffset,littleEndian){
 		if(byteOffset+1>this.bytes.length){throw new Error("INDEX_SIZE_ERR")}
 		if(littleEndian){
 			var rawShort=(this.bytes[byteOffset])+(this.bytes[byteOffset+1]<<8);
@@ -47,7 +52,7 @@ mzDataView.prototype={
 		}
 		return rawInt;
 	},
-	getUInt32:function(byteOffset,littleEndian){
+	getUint32:function(byteOffset,littleEndian){
 		if(byteOffset+3>this.bytes.length){throw new Error("INDEX_SIZE_ERR")}
 		if(littleEndian){
 			var rawInt=(this.bytes[byteOffset])+(this.bytes[byteOffset+1]<<8)+(this.bytes[byteOffset+2]<<16)+(this.bytes[byteOffset+3]<<24);
@@ -73,7 +78,7 @@ mzDataView.prototype={
 		if(byteOffset>this.bytes.length){throw new Error("INDEX_SIZE_ERR")}
 		this.bytes[byteOffset]=value;
 	},
-	setUInt8:function(byteOffset,value,littleEndian){
+	setUint8:function(byteOffset,value,littleEndian){
 		if(byteOffset>this.bytes.length){throw new Error("INDEX_SIZE_ERR")}
 		this.bytes[byteOffset]=value;
 	},
@@ -87,7 +92,7 @@ mzDataView.prototype={
 			this.bytes[byteOffset+1]=value;
 		}
 	},
-	setUInt16:function(byteOffset,value,littleEndian){
+	setUint16:function(byteOffset,value,littleEndian){
 		if(byteOffset+1>this.bytes.length){throw new Error("INDEX_SIZE_ERR")}
 		if(littleEndian){
 			this.bytes[byteOffset+1]=value>>>8;
@@ -111,7 +116,7 @@ mzDataView.prototype={
 			this.bytes[byteOffset+3]=value;
 		}
 	},
-	setUInt32:function(byteOffset,value,littleEndian){
+	setUint32:function(byteOffset,value,littleEndian){
 		if(byteOffset+3>this.bytes.length){throw new Error("INDEX_SIZE_ERR")}
 		if(littleEndian){
 			this.bytes[byteOffset]=value;
