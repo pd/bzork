@@ -104,7 +104,7 @@ bzork.vm.Instruction.prototype = {
       return this._machine.getUint8(this._getBranchOffsetAddr()) & 0x3f;
 
     var val = this._machine.getUint16(this._getBranchOffsetAddr()) & 0x3fff;
-    return bzork.Math.toSigned14bit(val);
+    return bzork.Math.toInt14(val);
   },
 
   hasDanglingString: function() {
