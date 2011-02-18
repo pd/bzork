@@ -30,9 +30,6 @@ bzork.vm.Cpu.prototype = {
     console.log("moved pc =", this.pc);
   },
 
-  runInstruction: function(addr) {
-  },
-
   returnWith: function(value) {
     if (this.routineStack.isEmpty())
       throw "No current routine to return from";
