@@ -14,8 +14,8 @@ describe("bzork.vm.Routine", function() {
     });
 
     it("should know the default values of locals", function() {
-      expect(this.r001.getLocalValues()).toEqual([0]);
-      expect(this.r285.getLocalValues()).toEqual([0xc2, 0, 0]);
+      expect(this.r001.getLocalDefaults()).toEqual([0]);
+      expect(this.r285.getLocalDefaults()).toEqual([0xc2, 0, 0]);
     });
 
     it("should know the address of its first instruction", function() {
@@ -35,7 +35,7 @@ describe("bzork.vm.Routine", function() {
     });
 
     it("should always use 0 as the default value of locals", function() {
-      expect(this.r003.getLocalValues()).toEqual([0, 0, 0, 0]);
+      expect(this.r003.getLocalDefaults()).toEqual([0, 0, 0, 0]);
     });
 
     it("should know the address of its first instruction", function() {

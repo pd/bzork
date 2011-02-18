@@ -25,6 +25,10 @@ bzork.vm.Cpu.prototype = {
     routine.setOriginalSP(this.getSP());
     routine.setReturnAddr(returnAddr);
 
+    var localDefaults = routine.getLocalDefaults();
+    for (var i = 1; i <= localDefaults.length; i++)
+      routine.setLocal(i, args[i - 1] || localDefaults[i - 1]);
+
     this.routineStack.push(routine);
     this.pc = routine.getFirstInstructionAddr();
     console.log("moved pc =", this.pc);

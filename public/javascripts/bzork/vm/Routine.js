@@ -12,7 +12,7 @@ bzork.vm.Routine = function(machine, addr) {
 
 bzork.vm.Routine.prototype = {
   getOriginalSP: function() {
-    return this.getOriginalSP;
+    return this.originalSP;
   },
 
   setOriginalSP: function(sp) {
@@ -40,7 +40,7 @@ bzork.vm.Routine.prototype = {
     return this._machine.getUint8(this._addr);
   },
 
-  getLocalValues: function() {
+  getLocalDefaults: function() {
     var max = this.getNumLocals(),
         vals = [];
 

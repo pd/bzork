@@ -50,6 +50,23 @@ describe("bzork.vm.Cpu", function() {
       expect(cpu.getPC()).toEqual(0x9);
     });
 
+    it("should set the routine's originalSP to the current SP", function() {
+      var cpu = buildCpu('rfalse');
+      cpu.stack.push(0x1); // just for fun
+      cpu.callRoutine(1, 0, []);
+
+      var routine = cpu.routineStack.peek();
+      expect(routine.getOriginalSP()).toEqual(1);
+    });
+
+    it("should set the return addr to the given addr", function() {
+      var cpu = buildCpu('rfalse');
+      cpu.callRoutine(1, 0xff93, []);
+
+      var routine = cpu.routineStack.peek();
+      expect(routine.getReturnAddr()).toEqual(0xff93);
+    });
+
     it("should set the routine's locals to their default values", function() {
       var cpu = buildCpu('ret');
       cpu.callRoutine(2, 0, []);
