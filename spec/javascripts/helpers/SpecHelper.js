@@ -14,12 +14,16 @@ bzork.spec = (function() {
 
   var storyFiles = {
     zork1: "contrib/stories/zork1.z3",
-    ztuu:  "contrib/stories/ztuu.z5"
+    ztuu:  "contrib/stories/ztuu.z5",
+    z6:    "contrib/stories/advent.z6",
+    z8:    "contrib/stories/advent.z8"
   };
 
   var storyData = {
     zork1: fetchStory(storyFiles.zork1),
-    ztuu:  fetchStory(storyFiles.ztuu)
+    ztuu:  fetchStory(storyFiles.ztuu),
+    z6:    fetchStory(storyFiles.z6),
+    z8:    fetchStory(storyFiles.z8)
   };
 
   return {
