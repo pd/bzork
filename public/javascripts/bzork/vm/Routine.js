@@ -5,6 +5,7 @@ bzork.vm.Routine = function(machine, addr) {
   this._machine = machine;
   this._addr = addr;
 
+  this.storeVariable = false;
   this.originalSP = undefined;
   this.returnAddr = undefined;
   this.locals = [];

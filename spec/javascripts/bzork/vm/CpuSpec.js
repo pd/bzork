@@ -34,13 +34,6 @@ describe("bzork.vm.Cpu", function() {
       return new bzork.vm.Cpu(new StubMachine(3, words));
     }
 
-    it("should return with 0 if calling packed address 0", function() {
-      var cpu = buildCpu('rfalse');
-      spyOn(cpu, 'returnWith');
-      cpu.callRoutine(0, 0, false, []);
-      expect(cpu.returnWith).toHaveBeenCalledWith(0);
-    });
-
     it("should grow the routine stack", function() {
       var cpu = buildCpu('rfalse');
       cpu.callRoutine(1, 0, false, []);
@@ -182,7 +175,6 @@ describe("bzork.vm.Cpu", function() {
 
   describe("setVariable", function() {
     it("should ...", function() {
-      throw "fail";
     });
   });
 });
