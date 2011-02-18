@@ -16,7 +16,7 @@ bzork.spec = (function() {
     zork1: "contrib/stories/zork1.z3",
     ztuu:  "contrib/stories/ztuu.z5",
     z6:    "contrib/stories/advent.z6",
-    z8:    "contrib/stories/advent.z8"
+    z8:    "contrib/stories/anchor.z8"
   };
 
   var storyData = {
