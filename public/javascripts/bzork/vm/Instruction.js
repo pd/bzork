@@ -17,6 +17,10 @@ bzork.vm.Instruction.prototype = {
     method.apply(this);
   },
 
+  next: function() {
+    this._machine.increasePC(this.getLength());
+  },
+
   getName: function() {
     return this._getInstructionInfo().name;
   },

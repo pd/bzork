@@ -338,4 +338,19 @@ describe("bzork.vm.Instruction", function() {
       expect(instr.getDanglingString()).toEqual("Hello.\n");
     });
   });
+
+  // Mock-less specs
+
+  describe("next", function() {
+    beforeEach(function() {
+      this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
+      this.instr   = new bzork.vm.Instruction(this.machine, this.machine.getStartPC());
+    });
+
+    it("should increase the machine's PC by this instruction's length", function() {
+      var origPC = this.machine.cpu.getPC();
+      this.instr.next();
+      expect(this.machine.cpu.getPC()).toEqual(origPC + this.instr.getLength());
+    });
+  });
 });

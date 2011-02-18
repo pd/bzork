@@ -29,6 +29,10 @@ bzork.Machine.prototype = {
     return this.cpu.callRoutine(packedAddr, returnAddr, storeVariable, args);
   },
 
+  increasePC: function(length) {
+    this.cpu.setPC(this.cpu.getPC() + length);
+  },
+
   // Header proxy methods
   getStartPC: function() {
     return this.header.getStartPC();
