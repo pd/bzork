@@ -32,6 +32,8 @@ bzork.vm.Cpu.prototype = {
     this.routineStack.push(routine);
     this.pc = routine.getFirstInstructionAddr();
     console.log("moved pc =", this.pc);
+
+    return routine;
   },
 
   returnWith: function(value) {
