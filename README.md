@@ -12,7 +12,7 @@ on Chrome 9+. I am also using a pure JS implementation of DataView atop the type
 should enable it to run on any browser currently supporting JS typed arrays (FF4+, Chrome 7+,
 dunno which Safaris but presumably some if they are keeping their WebKit up to date).
 
-Support for browsers with JS typed arrays may or may not come, depending on whether I get around
+Support for browsers without JS typed arrays may or may not come, depending on whether I get around
 to coding support for writing into jDataView or some such.
 
 Reference Materials
