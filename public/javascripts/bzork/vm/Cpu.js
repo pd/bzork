@@ -19,6 +19,9 @@ bzork.vm.Cpu.prototype = {
   },
 
   callRoutine: function(packedAddr, returnAddr, storeVariable, args) {
+    if (packedAddr === 0)
+      return this.returnWith(0);
+
     var routine = new bzork.vm.Routine(this._machine,
                                        this._unpackRoutineAddr(packedAddr));
 
@@ -32,7 +35,6 @@ bzork.vm.Cpu.prototype = {
 
     this.routineStack.push(routine);
     this.pc = routine.getFirstInstructionAddr();
-    console.log("moved pc =", this.pc);
 
     return routine;
   },

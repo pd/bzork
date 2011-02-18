@@ -34,6 +34,13 @@ describe("bzork.vm.Cpu", function() {
       return new bzork.vm.Cpu(new StubMachine(3, words));
     }
 
+    it("should return with 0 if calling packed address 0", function() {
+      var cpu = buildCpu('rfalse');
+      spyOn(cpu, 'returnWith');
+      cpu.callRoutine(0, 0, false, []);
+      expect(cpu.returnWith).toHaveBeenCalledWith(0);
+    });
+
     it("should grow the routine stack", function() {
       var cpu = buildCpu('rfalse');
       cpu.callRoutine(1, 0, false, []);
@@ -88,6 +95,43 @@ describe("bzork.vm.Cpu", function() {
       var routine = cpu.callRoutine(2, 0, 19, []);
       expect(routine.storesResult()).toEqual(true);
       expect(routine.getStoreVariable()).toEqual(19);
+    });
+
+    describe("in z5", function() {
+      beforeEach(function() {
+        this.machine = new bzork.Machine(bzork.spec.storyData['ztuu']);
+        this.cpu = this.machine.cpu;
+      });
+
+      it("should unpack routine addresses correctly", function() {
+        var routine = this.cpu.callRoutine(0x1228, 0, false, []);
+        expect(routine._addr).toEqual(0x48a0);
+      });
+    });
+
+    describe("in z6", function() {
+      beforeEach(function() {
+        this.machine = new bzork.Machine(bzork.spec.storyData['z6']);
+        this.cpu = this.machine.cpu;
+      });
+
+      it("should unpack routine addresses correctly", function() {
+        // real address = 0x6d8c; / 4 = 0x1b63; offset = 0xd13
+        var routine = this.cpu.callRoutine(0x13d, 0, false, []);
+        expect(routine._addr).toEqual(0x6d8c);
+      });
+    });
+
+    describe("in z8", function() {
+      beforeEach(function() {
+        this.machine = new bzork.Machine(bzork.spec.storyData['z8']);
+        this.cpu = this.machine.cpu;
+      });
+
+      it("should unpack routine addresses correctly", function() {
+        var routine = this.cpu.callRoutine(0x1fef, 0, false, []);
+        expect(routine._addr).toEqual(0xff78);
+      });
     });
   });
 });
