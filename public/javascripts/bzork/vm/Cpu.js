@@ -22,9 +22,6 @@ bzork.vm.Cpu.prototype = {
     return this.stack.shrinkTo(sp);
   },
 
-  setVariable: function(i, val) {
-  },
-
   callRoutine: function(packedAddr, returnAddr, storeVariable, args) {
     var routine = new bzork.vm.Routine(this._machine,
                                        this._unpackRoutineAddr(packedAddr));
@@ -53,6 +50,15 @@ bzork.vm.Cpu.prototype = {
 
     if (routine.storesResult())
       this.setVariable(routine.getStoreVariable(), value);
+  },
+
+  setVariable: function(i, val) {
+    if (i === 0)
+      this.stack.push(val);
+    else if (i >= 17)
+      this._machine.setGlobal(i, val);
+    else
+      this.routineStack.peek().setLocal(i, val);
   },
 
   _unpackRoutineAddr: function(addr) {

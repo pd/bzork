@@ -174,7 +174,22 @@ describe("bzork.vm.Cpu", function() {
   });
 
   describe("setVariable", function() {
-    it("should ...", function() {
+    it("should push to the stack if setting variable 0", function() {
+      this.cpu.setVariable(0, 0xdead);
+      expect(this.cpu.getSP()).toEqual(1);
+      expect(this.cpu.stack.pop()).toEqual(0xdead);
+    });
+
+    it("should set the global variable if setting variable >= 16", function() {
+      this.cpu.setVariable(50, 0xbeef);
+      expect(this.machine.getGlobal(50)).toEqual(0xbeef);
+    });
+
+    it("should set the current routine's local if setting variable > 0 && < 16", function() {
+      // actual routine with 1 local in zork1.z3
+      this.cpu.callRoutine(0x4eee, 0, false, []);
+      this.cpu.setVariable(1, 0xbeef);
+      expect(this.cpu.routineStack.peek().getLocal(1)).toEqual(0xbeef);
     });
   });
 });

@@ -47,6 +47,14 @@ bzork.Machine.prototype = {
     return this.abbrevTable.get(i);
   },
 
+  getGlobal: function(i) {
+    return this.globalTable.get(i);
+  },
+
+  setGlobal: function(i, val) {
+    this.globalTable.set(i, val);
+  },
+
   // Memory proxy methods
   getUint8: function(offset) {
     return this.memory.getUint8(offset);
