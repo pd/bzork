@@ -340,22 +340,23 @@ bzork.vm.Instruction.Opcodes = {
 
 
 ///// Instruction Take 2.
-bzork.vm.ZInstruction = function(machine, addr, length,
-                          form, opcode, opcount, operands,
-                          storeVar, branchOn, branchOffset, zstring) {
+bzork.vm.ZInstruction = function(machine, addr, length, options) {
   this._machine = machine;
   this._addr = addr;
   this.length = length;
 
-  this.form = form;
-  this.opcode = opcode;
-  this.opcount = opcount;
-  this.operands = operands;
+  _.defaults(this, {
+    storeVar: null,
+    branchOn: null,
+    branchOffset: null,
+    zstring: null
+  });
 
-  this.storeVar = storeVar;
-  this.branchOn = branchOn;
-  this.branchOffset = branchOffset;
-  this.zstring = zstring;
+  // Only merge in the options we actually want.
+  _.extend(this, _.filterObj(options, [
+    'form', 'opcode', 'opcount', 'operands',
+    'storeVar', 'branchOn', 'branchOffset', 'zstring'
+  ]));
 };
 
 bzork.vm.ZInstruction.prototype = function() {

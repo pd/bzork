@@ -33,8 +33,12 @@ bzork.vm.InstructionReader.prototype = {
     }
 
     var length = 0xcafebabe;
-    return new bzork.vm.ZInstruction(this._machine, addr, length,
-                                     form, opcode, opcount, operands);
+    return new bzork.vm.ZInstruction(this._machine, addr, length, {
+      form: form,
+      opcode: opcode,
+      opcount: opcount,
+      operands: operands
+    });
   },
 
   findForm: function(opbyte) {
