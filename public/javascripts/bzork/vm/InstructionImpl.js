@@ -39,7 +39,7 @@ bzork.vm.InstructionImpl = {};
   });
 
   addMethod('jump', function() {
-    this._machine.increasePC(this.operands[0].getSignedValue());
+    this._machine.increasePC(this.operands[0].getSignedValue() + 1);
   });
 
   // 2OP
