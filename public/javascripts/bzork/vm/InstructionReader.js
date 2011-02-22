@@ -9,30 +9,23 @@ bzork.vm.InstructionReader.prototype = {
 
   readInstructionFrom: function(view, addr) {
     var opbyte = view.getUint8(addr),
-        form = this.findForm(opbyte),
-        opcode = this.findOpcode(form, opbyte, view, addr),
-        opcount = this.findOperandCount(form, opbyte, opcode),
-        optypes = this.findOperandTypes(form, opbyte, opcount, view, addr),
-        operands = [];
+        options = {},
+        curaddr;
 
-    var curaddr = this.findOperandsAddr(addr, form, opcount);
-    for (var i = 0; i < optypes.length; i++) {
-      var value;
+    options.form = this.findForm(opbyte);
+    options.opcode = this.findOpcode(options.form, opbyte, view, addr);
+    options.opcount = this.findOperandCount(options.form, opbyte, options.opcode);
+    options.optypes = this.findOperandTypes(options.form, opbyte, options.opcount, view, addr);
 
-      if (optypes[i] === bzork.vm.Instruction.OpTypes.LARGE)
-        value = view.getUint16(curaddr);
-      else if (optypes[i] === bzork.vm.Instruction.OpTypes.OMIT)
-        value = null;
-      else
-        value = view.getUint8(curaddr);
-
-      var operand = new bzork.vm.Operand(this._machine, optypes[i], value);
-      operands.push(operand);
+    curaddr = this.findOperandsAddr(addr, options.form, options.opcount);
+    options.operands = [];
+    for (var i = 0; i < options.optypes.length; i++) {
+      var operand = this.readOperand(view, curaddr, options.optypes[i]);
+      options.operands.push(operand);
       curaddr += operand.getSize();
     }
 
-    var instructionDef = this.getInstructionDef(opcount, opcode);
-    var options = { form: form, opcode: opcode, opcount: opcount, operands: operands };
+    var instructionDef = this.getInstructionDef(options.opcount, options.opcode);
 
     if (instructionDef.stores)
       options.storeVar = view.getUint8(curaddr++);
@@ -146,6 +139,19 @@ bzork.vm.InstructionReader.prototype = {
     if (opcount === bzork.vm.Instruction.OpCounts.OP8)
       opcount = bzork.vm.Instruction.OpCounts.VAR;
     return bzork.vm.InstructionDB[opcount + ":" + opcode];
+  },
+
+  readOperand: function(view, addr, type) {
+    var value;
+
+    if (type === bzork.vm.Instruction.OpTypes.OMIT)
+      value = null;
+    else if (type === bzork.vm.Instruction.OpTypes.LARGE)
+      value = view.getUint16(addr);
+    else
+      value = view.getUint8(addr);
+
+    return new bzork.vm.Operand(this._machine, type, value);
   },
 
   _bitfieldOperandTypes: function(bitfield, count) {
