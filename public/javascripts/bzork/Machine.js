@@ -13,9 +13,10 @@ bzork.Machine = function(storyBytes) {
 
 bzork.Machine.prototype = {
   run: function() {
-    var steps = 0;
+    var steps = 0,
+        reader = new bzork.vm.InstructionReader(this);
     while (!this.shouldHalt() && steps <= 10) { // die early like morrison
-      var instr = new bzork.vm.Instruction(this, this.cpu.getPC());
+      var instr = reader.readInstruction(this.getPC());
       instr.run();
     }
   },
@@ -93,16 +94,16 @@ bzork.Machine.prototype = {
   },
 
   // ZSCII proxy methods
-  findZsciiEnd: function(offset) {
-    return this.zscii.findZsciiEnd(offset);
+  findZsciiEnd: function(offset, view) {
+    return this.zscii.findZsciiEnd(offset, view);
   },
 
-  getZsciiString: function(offset) {
-    return this.zscii.getString(offset);
+  getZsciiString: function(offset, view) {
+    return this.zscii.getString(offset, view);
   },
 
-  getZsciiChar: function(offset) {
-    return this.zscii.getChar(offset);
+  getZsciiChar: function(offset, view) {
+    return this.zscii.getChar(offset, view);
   },
 
   decodeZsciiChar: function(c) {

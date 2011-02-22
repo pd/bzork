@@ -340,9 +340,10 @@ bzork.vm.Instruction.Opcodes = {
 
 
 ///// Instruction Take 2.
-bzork.vm.ZInstruction = function(machine, addr, length, options) {
+bzork.vm.ZInstruction = function(machine, addr, def, length, options) {
   this._machine = machine;
   this._addr = addr;
+  this.instructionDef = def;
   this.length = length;
 
   _.defaults(this, {
@@ -359,5 +360,18 @@ bzork.vm.ZInstruction = function(machine, addr, length, options) {
   ]));
 };
 
-bzork.vm.ZInstruction.prototype = function() {
+bzork.vm.ZInstruction.prototype = {
+  run: function() {
+    var name = this.getName(),
+        method = bzork.vm.InstructionImpl[name];
+
+    if (typeof method === "undefined")
+      throw "Unimplemented instruction: " + name;
+
+    method.apply(this);
+  },
+
+  getName: function() {
+    return this.instructionDef.name;
+  }
 };

@@ -36,22 +36,25 @@ bzork.Zscii.prototype = {
       return bzork.Zscii.DefaultAlphabets['v2'];
   },
 
-  getString: function(offset) {
+  getString: function(offset, view) {
     var words = [], end = this.findZsciiEnd(offset);
+    view = view || this._machine;
 
     for (offset; offset < end; offset += 2)
-      words.push( this._machine.getUint16(offset) );
+      words.push( view.getUint16(offset) );
 
     return this.decodeString(words);
   },
 
-  getChar: function(offset) {
-    var c = this._machine.getUint8(offset);
+  getChar: function(offset, view) {
+    view = view || this._machine;
+    var c = view.getUint8(offset);
     return this.decodeChar(c);
   },
 
-  findZsciiEnd: function(offset) {
-    while ((this._machine.getUint16(offset) & 0x8000) === 0)
+  findZsciiEnd: function(offset, view) {
+    view = view || this._machine;
+    while ((view.getUint16(offset) & 0x8000) === 0)
       offset += 2;
     return offset + 2;
   },
