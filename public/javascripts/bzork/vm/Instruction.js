@@ -225,7 +225,8 @@ bzork.vm.Instruction.OpCounts = {
   OP0: 0,
   OP1: 1,
   OP2: 2,
-  VAR: 3
+  VAR: 3,
+  OP8: 4
 };
 
 bzork.vm.Instruction.OpTypes = {
@@ -334,4 +335,28 @@ bzork.vm.Instruction.Opcodes = {
   copy_table: 29,
   print_table: 30,
   check_arg_count: 31
+};
+
+
+
+///// Instruction Take 2.
+bzork.vm.ZInstruction = function(machine, addr, length,
+                          form, opcode, opcount, operands,
+                          storeVar, branchOn, branchOffset, zstring) {
+  this._machine = machine;
+  this._addr = addr;
+  this.length = length;
+
+  this.form = form;
+  this.opcode = opcode;
+  this.opcount = opcount;
+  this.operands = operands;
+
+  this.storeVar = storeVar;
+  this.branchOn = branchOn;
+  this.branchOffset = branchOffset;
+  this.zstring = zstring;
+};
+
+bzork.vm.ZInstruction.prototype = function() {
 };
