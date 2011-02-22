@@ -24,9 +24,9 @@ describe("bzork.vm.Instruction", function() {
     if (typeof words === "undefined")
       throw "Unknown test instruction name " + name;
 
-    if (words['v'])
-      return new bzork.vm.Instruction(stubMachine(words.w, words.v), 0);
-    return new bzork.vm.Instruction(stubMachine(words), 0);
+    var machine = words['v'] ? stubMachine(words.w, words.v) : stubMachine(words);
+    var reader = new bzork.vm.InstructionReader(machine);
+    return reader.readInstruction(0);
   }
 
   it("should know its name", function() {

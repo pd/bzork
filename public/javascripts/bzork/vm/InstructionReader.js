@@ -57,7 +57,7 @@ bzork.vm.InstructionReader.prototype = {
     }
 
     var length = curaddr - addr;
-    return new bzork.vm.ZInstruction(this._machine, addr, instructionDef, length, options);
+    return new bzork.vm.Instruction(this._machine, addr, instructionDef, length, options);
   },
 
   findForm: function(opbyte) {

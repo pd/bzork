@@ -1,12 +1,24 @@
-bzork.vm.Instruction = function(machine, addr) {
+bzork.vm.Instruction = function(machine, addr, def, length, options) {
   this._machine = machine;
   this._addr = addr;
-  this._decorateByForm();
+  this.instructionDef = def;
+  this.length = length;
+
+  _.defaults(this, {
+    storeVar: null,
+    branchOn: null,
+    branchOffset: null,
+    string: null
+  });
+
+  // Only merge in the options we actually want.
+  _.extend(this, _.filterObj(options, [
+    'form', 'opcode', 'opcount', 'operands',
+    'storeVar', 'branchOn', 'branchOffset', 'string'
+  ]));
 };
 
 bzork.vm.Instruction.prototype = {
-  // Retrieves the actual implementation of the instruction
-  // and then executes it in the context of this object.
   run: function() {
     var name = this.getName(),
         method = bzork.vm.InstructionImpl[name];
@@ -18,197 +30,43 @@ bzork.vm.Instruction.prototype = {
   },
 
   next: function() {
-    this._machine.increasePC(this.getLength());
-  },
-
-  getSignedOperand: function(i) {
-    var optypes = this.getOperandTypes(),
-        operands = this.getOperands(),
-        val;
-
-    if (optypes[i] === bzork.vm.Instruction.OpTypes.VAR)
-      val = this._machine.getVariable(operands[i]);
-    else
-      val = operands[i];
-
-    return bzork.Math.toInt16(val);
-  },
-
-  getName: function() {
-    return this._getInstructionInfo().name;
+    this._machine.increasePC(this.length);
   },
 
   getLength: function() {
-    if (this.hasDanglingString())
-      return this._machine.findZsciiEnd(this._getStringAddr());
-    else if (this.branches())
-      return this._getBranchOffsetAddr() + this._getBranchOffsetSize();
-    else if (this.stores())
-      return this._getStoreVariableAddr() + 1;
-    else
-      return this._getAfterOperandsAddr();
+    return this.length;
   },
 
-  getOpcodeByte: function() {
-    return this._machine.getUint8(this._addr);
+  getName: function() {
+    return this.instructionDef.name;
   },
 
-  getForm: function() {
-    var opbyte = this.getOpcodeByte();
-
-    if (this._machine.getZcodeVersion() >= 5 && opbyte == 0xbe)
-      return bzork.vm.Instruction.Forms.EXT;
-    if ((opbyte & 0xc0) === 0xc0)
-      return bzork.vm.Instruction.Forms.VAR;
-    if ((opbyte & 0x80) === 0x80)
-      return bzork.vm.Instruction.Forms.SHORT;
-    return bzork.vm.Instruction.Forms.LONG;
-  },
-
-  getOperands: function() {
-    var offset = this._getOperandsAddr(),
-        optypes = this.getOperandTypes(),
-        operands = [];
-
-    if (optypes.length === 0)
-      return [];
-
-    for (var i = 0; i < optypes.length; i++) {
-      var op = this._getOperand(offset, optypes[i]);
-      if (typeof op === "undefined")
-        break;
-      operands.push(op);
-      offset += this._operandSize(optypes[i]);
-    }
-
-    return operands;
-  },
-
-  stores: function() {
-    return this._getInstructionInfo().stores;
+  nextInstructionAddr: function() {
+    return this._addr + this.length;
   },
 
   getStoreVariable: function() {
-    if (!this.stores())
+    if (this.storeVar === null)
       throw "Instruction does not store";
-    return this._machine.getUint8(this._getStoreVariableAddr());
-  },
-
-  branches: function() {
-    return this._getInstructionInfo().branches;
+    return this.storeVar;
   },
 
   branchesOn: function() {
-    if (!this.branches())
+    if (this.branchOn === null)
       throw "Instruction does not branch";
-
-    var byte = this._machine.getUint8(this._getBranchOffsetAddr());
-    return (byte & 0x80) === 0x80;
+    return this.branchOn;
   },
 
   getBranchOffset: function() {
-    if (!this.branches())
+    if (this.branchOn === null)
       throw "Instruction does not branch";
-
-    if (this._getBranchOffsetSize() === 1)
-      return this._machine.getUint8(this._getBranchOffsetAddr()) & 0x3f;
-
-    var val = this._machine.getUint16(this._getBranchOffsetAddr()) & 0x3fff;
-    return bzork.Math.toInt14(val);
+    return this.branchOffset;
   },
 
-  hasDanglingString: function() {
-    return this._getInstructionInfo().stringed;
-  },
-
-  getDanglingString: function() {
-    if (!this.hasDanglingString())
+  getString: function() {
+    if (this.string === null)
       throw "Instruction has no embedded string";
-    return this._machine.getZsciiString(this._getStringAddr());
-  },
-
-  // Decorates this object with form-specific accessor methods.
-  // See InstructionForms.js
-  _decorateByForm: function() {
-    var methods = undefined;
-
-    switch (this.getForm()) {
-    case bzork.vm.Instruction.Forms.LONG:
-      methods = bzork.vm.LongInstruction;
-      break;
-    case bzork.vm.Instruction.Forms.SHORT:
-      methods = bzork.vm.ShortInstruction;
-      break;
-    case bzork.vm.Instruction.Forms.EXT:
-      methods = bzork.vm.ExtInstruction;
-      break;
-    case bzork.vm.Instruction.Forms.VAR:
-      methods = bzork.vm.VarInstruction;
-      break;
-    }
-
-    for (var method in methods)
-      this[method] = methods[method];
-  },
-
-  _getInstructionInfo: function() {
-    return bzork.vm.InstructionDB[this._uniqueKey()];
-  },
-
-  _uniqueKey: function() {
-    var operandCount = this._is8OP && this._is8OP() ? bzork.vm.Instruction.OpCounts.VAR :
-      this.getOperandCount();
-    return operandCount + ":" + this.getOpcode();
-  },
-
-  _getOperand: function(offset, type) {
-    if (type === bzork.vm.Instruction.OpTypes.OMIT)
-      return undefined;
-    if (type === bzork.vm.Instruction.OpTypes.LARGE)
-      return this._machine.getUint16(offset);
-    else
-      return this._machine.getUint8(offset);
-  },
-
-  _operandSize: function(type) {
-    if (type === bzork.vm.Instruction.OpTypes.LARGE)
-      return 2;
-    else if (type === bzork.vm.Instruction.OpTypes.OMIT)
-      return 0;
-    else
-      return 1;
-  },
-
-  _getAfterOperandsAddr: function() {
-    var addr = this._getOperandsAddr(),
-        optypes = this.getOperandTypes();
-    for (var i = 0; i < optypes.length; i++)
-      addr += this._operandSize(optypes[i]);
-    return addr;
-  },
-
-  _getStoreVariableAddr: function() {
-    return this._getAfterOperandsAddr();
-  },
-
-  _getBranchOffsetAddr: function() {
-    if (this.stores())
-      return this._getStoreVariableAddr() + 1;
-    else
-      return this._getStoreVariableAddr();
-  },
-
-  _getBranchOffsetSize: function() {
-    var byte = this._machine.getUint8(this._getBranchOffsetAddr());
-    if ((byte & 0x40) === 0x40)
-      return 1;
-    else
-      return 2;
-  },
-
-  _getStringAddr: function() {
-    // neither print nor print_ret store or branch, so this is always safe
-    return this._getAfterOperandsAddr();
+    return this.string;
   }
 };
 
@@ -337,77 +195,3 @@ bzork.vm.Instruction.Opcodes = {
   check_arg_count: 31
 };
 
-
-
-///// Instruction Take 2.
-bzork.vm.ZInstruction = function(machine, addr, def, length, options) {
-  this._machine = machine;
-  this._addr = addr;
-  this.instructionDef = def;
-  this.length = length;
-
-  _.defaults(this, {
-    storeVar: null,
-    branchOn: null,
-    branchOffset: null,
-    string: null
-  });
-
-  // Only merge in the options we actually want.
-  _.extend(this, _.filterObj(options, [
-    'form', 'opcode', 'opcount', 'operands',
-    'storeVar', 'branchOn', 'branchOffset', 'string'
-  ]));
-};
-
-bzork.vm.ZInstruction.prototype = {
-  run: function() {
-    var name = this.getName(),
-        method = bzork.vm.InstructionImpl[name];
-
-    if (typeof method === "undefined")
-      throw "Unimplemented instruction: " + name;
-
-    method.apply(this);
-  },
-
-  next: function() {
-    this._machine.increasePC(this.length);
-  },
-
-  getLength: function() {
-    return this.length;
-  },
-
-  getName: function() {
-    return this.instructionDef.name;
-  },
-
-  nextInstructionAddr: function() {
-    return this._addr + this.length;
-  },
-
-  getStoreVariable: function() {
-    if (this.storeVar === null)
-      throw "Instruction does not store";
-    return this.storeVar;
-  },
-
-  branchesOn: function() {
-    if (this.branchOn === null)
-      throw "Instruction does not branch";
-    return this.branchOn;
-  },
-
-  getBranchOffset: function() {
-    if (this.branchOn === null)
-      throw "Instruction does not branch";
-    return this.branchOffset;
-  },
-
-  getString: function() {
-    if (this.string === null)
-      throw "Instruction has no embedded string";
-    return this.string;
-  }
-};
