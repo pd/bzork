@@ -3,7 +3,7 @@ describe("bzork.Machine", function() {
     var machine = new bzork.Machine(bzork.spec.storyData['zork1']);
     expect(function() {
       machine.run()
-    }).toThrow("Unimplemented instruction: je");
+    }).toThrow("Unimplemented instruction: put_prop");
   });
 });
 
