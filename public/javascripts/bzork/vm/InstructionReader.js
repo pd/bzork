@@ -41,6 +41,8 @@ bzork.vm.InstructionReader.prototype = {
         options.branchOffset = bzork.Math.toInt14(view.getUint16(curaddr) & 0x3fff);
         curaddr += 2;
       }
+
+      options.branchDataEndAddr = curaddr;
     }
 
     if (instructionDef.stringed) {

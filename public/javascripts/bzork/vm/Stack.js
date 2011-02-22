@@ -15,6 +15,8 @@ bzork.vm.Stack.prototype = {
   },
 
   peek: function() {
+    if (this.sp === 0)
+      throw "Can not peek at empty stack";
     return this.stack[this.sp - 1];
   },
 

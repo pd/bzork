@@ -22,6 +22,16 @@ bzork.vm.Cpu.prototype = {
     return this.stack.shrinkTo(sp);
   },
 
+  // There is an annoying special case condition of the main routine
+  // (for which there is no routineStack entry in v<5) should still be
+  // able to push onto/pop from the stack
+  getOriginalSP: function() {
+    if (this.routineStack.size() > 0)
+      return this.routineStack.peek().getOriginalSP();
+    else
+      return 0;
+  },
+
   callRoutine: function(packedAddr, returnAddr, storeVariable, args) {
     var routine = new bzork.vm.Routine(this._machine,
                                        this._unpackRoutineAddr(packedAddr));
@@ -54,7 +64,7 @@ bzork.vm.Cpu.prototype = {
 
   getVariable: function(i) {
     if (i === 0) {
-      if (this.getSP() <= this.routineStack.peek().getOriginalSP())
+      if (this.getSP() <= this.getOriginalSP())
         throw "Stack underflow error";
       return this.stack.pop();
     }

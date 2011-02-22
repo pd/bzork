@@ -14,8 +14,7 @@ bzork.Machine = function(storyBytes) {
 
 bzork.Machine.prototype = {
   run: function() {
-    var steps = 0;
-    while (!this.shouldHalt() && steps <= 10) { // die early like morrison
+    while (!this.shouldHalt()) { // die early like morrison
       var instr = this.readInstruction(this.getPC());
       instr.run();
     }
@@ -28,6 +27,10 @@ bzork.Machine.prototype = {
   // CPU proxy methods
   call: function(packedAddr, returnAddr, storeVariable, args) {
     return this.cpu.callRoutine(packedAddr, returnAddr, storeVariable, args);
+  },
+
+  returnWith: function(value) {
+    this.cpu.returnWith(value);
   },
 
   getPC: function() {

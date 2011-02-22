@@ -14,7 +14,7 @@ bzork.vm.Instruction = function(machine, addr, def, length, options) {
   // Only merge in the options we actually want.
   _.extend(this, _.filterObj(options, [
     'form', 'opcode', 'opcount', 'operands',
-    'storeVar', 'branchOn', 'branchOffset', 'string'
+    'storeVar', 'branchOn', 'branchOffset', 'branchDataEndAddr', 'string'
   ]));
 };
 
@@ -31,6 +31,37 @@ bzork.vm.Instruction.prototype = {
 
   next: function() {
     this._machine.increasePC(this.length);
+  },
+
+  branch: function() {
+    if (this.branchOffset === 0)
+      this.returnFromRoutine(0);
+    else if (this.branchOffset === 1)
+      this.returnFromRoutine(1);
+    else
+      this._machine.setPC(this.getBranchDestination());
+  },
+
+  branchOrNext: function(cmp) {
+    if (this.branchOn === cmp)
+      this.branch();
+    else
+      this.next();
+  },
+
+  returnFromRoutine: function(value) {
+    this._machine.returnWith(value);
+  },
+
+  incrementVariable: function(i, amount) {
+    amount = amount || 1;
+    var value = bzork.Math.toInt16(this._machine.getVariable(i));
+    this._machine.setVariable(i, bzork.Math.toUint16(value + amount));
+    return value + amount;
+  },
+
+  decrementVariable: function(i) {
+    return this.incrementVariable(i, -1);
   },
 
   getLength: function() {
@@ -89,6 +120,12 @@ bzork.vm.Instruction.prototype = {
     if (this.branchOn === null)
       throw "Instruction does not branch";
     return this.branchOffset;
+  },
+
+  getBranchDestination: function() {
+    if (this.branchOn === null)
+      throw "Instruction does not branch";
+    return this.branchDataEndAddr + this.branchOffset - 2;
   },
 
   hasString: function() {
