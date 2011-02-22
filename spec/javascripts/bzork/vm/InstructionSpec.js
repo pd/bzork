@@ -5,7 +5,7 @@ describe("bzork.vm.Instruction", function() {
   }
 
   // These may be padded with an extra byte where necessary
-  TestInstructions = {
+  var TestInstructions = {
     'call':     [0xe003, 0x2a39, 0x8010, 0xffff, 0x00e1], // var, 3 large
     'rfalse':   [0xb100], // short, 0OP
     'ret':      [0xab05], // short, 1OP
@@ -121,7 +121,6 @@ describe("bzork.vm.Instruction", function() {
 
     it("recognizes 8OP variable forms", function() {
       var instr = buildInstruction('call_vs2');
-      window.instr = instr
       expect(instr.getOperandCount()).toEqual(8);
     });
 

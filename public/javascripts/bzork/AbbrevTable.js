@@ -53,7 +53,7 @@ bzork.AbbrevTable.prototype = {
   _discoverDataBounds: function() {
     var addr = null;
 
-    for (i = 0; i < this.getAbbrevCount(); i++) {
+    for (var i = 0; i < this.getAbbrevCount(); i++) {
       addr = this.getAbbrevDataAddr(i);
       if (!this.dataStartAddr || addr < this.dataStartAddr)
         this.dataStartAddr = addr;

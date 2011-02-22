@@ -22,7 +22,7 @@ describe("bzork.vm.Cpu", function() {
   });
 
   describe("callRoutine", function() {
-    Routines = {
+    var Routines = {
       // 2 bytes in, 0 locals, 1 instruction
       'rfalse': [0x0000, 0x00b1],
       // 4 bytes in, 2 locals (0x0a, 0xffff), 1 instruction

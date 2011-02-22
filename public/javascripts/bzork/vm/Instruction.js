@@ -154,7 +154,7 @@ bzork.vm.Instruction.prototype = {
       break;
     }
 
-    for (method in methods)
+    for (var method in methods)
       this[method] = methods[method];
   },
 

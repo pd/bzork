@@ -2,8 +2,7 @@
 // what version it is and access the underlying memory.
 var StubMachine = function(version, words) {
   this.version = version;
-  buf = bzork.spec.createArrayBuffer(words);
-  this.memory  = new bzork.Memory(buf);
+  this.memory  = new bzork.Memory( bzork.spec.createArrayBuffer(words) );
   this.zscii   = new bzork.Zscii(this);
 };
 
