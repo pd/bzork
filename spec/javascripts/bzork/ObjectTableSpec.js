@@ -61,6 +61,10 @@ describe("bzork.ObjectTable", function() {
       expect(obj67.getDescription()).toEqual("Maze");
       expect(obj195.getDescription()).toEqual("blue button");
     });
+
+    it("should have undefined descriptions for unnamed objects", function() {
+      expect(this.objects.get(249).getDescription()).toEqual(undefined);
+    });
   });
 
   describe("for ZTUU", function() {
