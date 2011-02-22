@@ -11,6 +11,7 @@ StubMachine.prototype = {
   getStartPC: function() { return 0; },
   getVariable: bzork.Machine.prototype.getVariable,
   getZsciiString: bzork.Machine.prototype.getZsciiString,
+  findZsciiEnd: bzork.Machine.prototype.findZsciiEnd,
   getUint8: bzork.Machine.prototype.getUint8,
   getUint16: bzork.Machine.prototype.getUint16
 };

@@ -37,14 +37,10 @@ bzork.Zscii.prototype = {
   },
 
   getString: function(offset) {
-    var words = [];
-    var word, cnt = 0;
+    var words = [], end = this.findZsciiEnd(offset);
 
-    do {
-      word = this._machine.getUint16(offset + (cnt * 2));
-      words.push(word);
-      cnt++;
-    } while ((word & 0x8000) === 0);
+    for (offset; offset < end; offset += 2)
+      words.push( this._machine.getUint16(offset) );
 
     return this.decodeString(words);
   },
@@ -52,6 +48,12 @@ bzork.Zscii.prototype = {
   getChar: function(offset) {
     var c = this._machine.getUint8(offset);
     return this.decodeChar(c);
+  },
+
+  findZsciiEnd: function(offset) {
+    while ((this._machine.getUint16(offset) & 0x8000) === 0)
+      offset += 2;
+    return offset + 2;
   },
 
   decodeString: function(words) {
@@ -120,10 +122,6 @@ bzork.Zscii.ZCharTriplet.prototype = {
         result.push(c);
     }
     return result.join('');
-  },
-
-  isTerminal: function() {
-    return (this.word & 0x8000) !== 0;
   }
 };
 

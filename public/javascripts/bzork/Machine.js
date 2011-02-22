@@ -93,6 +93,10 @@ bzork.Machine.prototype = {
   },
 
   // ZSCII proxy methods
+  findZsciiEnd: function(offset) {
+    return this.zscii.findZsciiEnd(offset);
+  },
+
   getZsciiString: function(offset) {
     return this.zscii.getString(offset);
   },

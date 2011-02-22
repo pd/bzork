@@ -39,16 +39,9 @@ bzork.vm.Instruction.prototype = {
   },
 
   getLength: function() {
-    if (this.hasDanglingString()) {
-      var i = 0, word;
-      do {
-        word = this._machine.getUint16(this._getStringAddr() + i);
-        i += 2;
-      } while ((word & 0x8000) === 0);
-      return this._getStringAddr() + i;
-    }
-
-    if (this.branches())
+    if (this.hasDanglingString())
+      return this._machine.findZsciiEnd(this._getStringAddr());
+    else if (this.branches())
       return this._getBranchOffsetAddr() + this._getBranchOffsetSize();
     else if (this.stores())
       return this._getStoreVariableAddr() + 1;

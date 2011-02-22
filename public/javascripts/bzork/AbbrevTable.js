@@ -62,16 +62,7 @@ bzork.AbbrevTable.prototype = {
     }
 
     // Find the actual end of the final abbreviation
-    var word, offset = 0;
-    do {
-      word = this._machine.getUint16(this.dataEndAddr + offset);
-      if (word & 0x8000) {
-        this.dataEndAddr = this.dataEndAddr + offset + 1;
-        break;
-      }
-      offset += 2;
-    } while (true);
-
+    this.dataEndAddr = this._machine.findZsciiEnd(this.dataEndAddr);
     this._dataBoundsDiscovered = true;
   }
 };

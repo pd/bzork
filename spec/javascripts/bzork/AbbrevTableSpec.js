@@ -32,7 +32,7 @@ describe("bzork.abbrevTable", function() {
     });
 
     it("should know the end address of the data", function() {
-      expect(this.abbrev.getDataEndAddr()).toEqual(0x01ef);
+      expect(this.abbrev.getDataEndAddr()).toEqual(0x01f0);
     });
 
     it("should be able to retrieve the data address of abbreviations", function() {

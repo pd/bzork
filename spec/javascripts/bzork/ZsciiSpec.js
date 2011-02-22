@@ -45,4 +45,8 @@ describe('ZSCII', function() {
   it("can decode strings directly out of memory", function() {
     expect(this.zscii.getString(0x94)).toEqual("appears ");
   });
+
+  it("can locate the address of the byte following a ZSCII string", function() {
+    expect(this.zscii.findZsciiEnd(0x94)).toEqual(0x9a);
+  });
 });
