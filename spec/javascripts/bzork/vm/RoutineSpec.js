@@ -1,4 +1,12 @@
 describe("bzork.vm.Routine", function() {
+  it("throws if accessing the store variable when the routine does not store", function() {
+    var machine = new bzork.Machine(bzork.spec.storyData['zork1']);
+    var routine = new bzork.vm.Routine(machine, 0);
+    expect(function() {
+      routine.getStoreVariable()
+    }).toThrow("Can not access storeVariable on routine which does not store");
+  });
+
   describe("for Zork1", function() {
     beforeEach(function() {
       this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
