@@ -43,4 +43,22 @@ describe("bzork.vm.Stack", function() {
     stack.push(0x01);
     expect(stack.peek()).toEqual(0x01);
   });
+
+  it("should resize downwards", function() {
+    var stack = new bzork.vm.Stack();
+    stack.push(0x0a);
+    stack.push(0x1b1c);
+    stack.push(0x0d);
+    stack.shrinkTo(2);
+
+    expect(stack.peek()).toEqual(0x1b1c);
+    expect(stack.size()).toEqual(2);
+  });
+
+  it("should not allow itself to be resized to a larger size", function() {
+    var stack = new bzork.vm.Stack();
+    expect(function() {
+      stack.shrinkTo(1);
+    }).toThrow("Can not shrink stack upwards");
+  });
 });
