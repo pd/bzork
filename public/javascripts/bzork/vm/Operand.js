@@ -1,7 +1,7 @@
 bzork.vm.Operand = function(machine, type, value) {
   this._machine = machine;
   this._type = type;
-  this.value = value;
+  this._value = value;
 };
 
 bzork.vm.Operand.prototype = {
@@ -12,5 +12,15 @@ bzork.vm.Operand.prototype = {
       return 0;
     else
       return 1;
+  },
+
+  getValue: function() {
+    if (this._type === bzork.vm.Instruction.OpTypes.VAR)
+      return this._machine.getVariable(this._value);
+    return this._value;
+  },
+
+  getSignedValue: function() {
+    return bzork.Math.toInt16(this.getValue());
   }
 };

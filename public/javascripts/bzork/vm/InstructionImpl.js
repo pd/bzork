@@ -20,26 +20,19 @@ bzork.vm.InstructionImpl = {};
 
   // 2OP
   addMethod('add', function() {
-    var a = this.getSignedOperand(0),
-        b = this.getSignedOperand(1);
+    var a = this.operands[0].getSignedValue(),
+        b = this.operands[1].getSignedValue();
     this._machine.setVariable(this.getStoreVariable(), a + b);
     this.next();
   });
 
   // VAROP
   addMethod('call', function() {
-    var operands = this.getOperands(),
-        routineAddr = operands[0];
-
-    // This might be completely wrong. I'm having trouble grokking the spec.
-    if (routineAddr === 0)
-      this.returnFromRoutine(0);
-
-    var args = [];
+    var operands = this.operands, args = [];
     for (var i = 1; i < operands.length; i++)
-      args.push(operands[i]);
+      args.push(operands[i].getValue());
 
-    this._machine.call(routineAddr, this._addr + this.getLength(),
+    this._machine.call(operands[0].getValue(), this.nextInstructionAddr(),
                        this.getStoreVariable(), args);
   });
 

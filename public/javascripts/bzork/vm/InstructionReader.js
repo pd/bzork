@@ -52,7 +52,7 @@ bzork.vm.InstructionReader.prototype = {
     }
 
     if (instructionDef.stringed) {
-      options.zstring = this._machine.getZsciiString(curaddr, view);
+      options.string = this._machine.getZsciiString(curaddr, view);
       curaddr = this._machine.findZsciiEnd(curaddr, view);
     }
 

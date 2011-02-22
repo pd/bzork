@@ -350,13 +350,13 @@ bzork.vm.ZInstruction = function(machine, addr, def, length, options) {
     storeVar: null,
     branchOn: null,
     branchOffset: null,
-    zstring: null
+    string: null
   });
 
   // Only merge in the options we actually want.
   _.extend(this, _.filterObj(options, [
     'form', 'opcode', 'opcount', 'operands',
-    'storeVar', 'branchOn', 'branchOffset', 'zstring'
+    'storeVar', 'branchOn', 'branchOffset', 'string'
   ]));
 };
 
@@ -371,7 +371,43 @@ bzork.vm.ZInstruction.prototype = {
     method.apply(this);
   },
 
+  next: function() {
+    this._machine.increasePC(this.length);
+  },
+
+  getLength: function() {
+    return this.length;
+  },
+
   getName: function() {
     return this.instructionDef.name;
+  },
+
+  nextInstructionAddr: function() {
+    return this._addr + this.length;
+  },
+
+  getStoreVariable: function() {
+    if (this.storeVar === null)
+      throw "Instruction does not store";
+    return this.storeVar;
+  },
+
+  branchesOn: function() {
+    if (this.branchOn === null)
+      throw "Instruction does not branch";
+    return this.branchOn;
+  },
+
+  getBranchOffset: function() {
+    if (this.branchOn === null)
+      throw "Instruction does not branch";
+    return this.branchOffset;
+  },
+
+  getString: function() {
+    if (this.string === null)
+      throw "Instruction has no embedded string";
+    return this.string;
   }
 };
