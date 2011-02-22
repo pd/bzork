@@ -9,14 +9,14 @@ bzork.Machine = function(storyBytes) {
   this.globalTable = new bzork.GlobalTable(this, this.header.getGlobalTableAddr());
 
   this.cpu = new bzork.vm.Cpu(this);
+  this.instructionReader = new bzork.vm.InstructionReader(this);
 };
 
 bzork.Machine.prototype = {
   run: function() {
-    var steps = 0,
-        reader = new bzork.vm.InstructionReader(this);
+    var steps = 0;
     while (!this.shouldHalt() && steps <= 10) { // die early like morrison
-      var instr = reader.readInstruction(this.getPC());
+      var instr = this.readInstruction(this.getPC());
       instr.run();
     }
   },
@@ -48,6 +48,10 @@ bzork.Machine.prototype = {
 
   setVariable: function(i, val) {
     this.cpu.setVariable(i, val);
+  },
+
+  readInstruction: function(addr) {
+    return this.instructionReader.readInstruction(addr);
   },
 
   // Header proxy methods

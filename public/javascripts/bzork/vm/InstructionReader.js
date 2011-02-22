@@ -16,14 +16,13 @@ bzork.vm.InstructionReader.prototype = {
         operands = [];
 
     var curaddr = this.findOperandsAddr(addr, form, opcount);
-    for (var i = 0; i < opcount; i++) {
-      if (optypes[i] === bzork.vm.Instruction.OpTypes.OMIT)
-        break;
-
+    for (var i = 0; i < optypes.length; i++) {
       var value;
 
       if (optypes[i] === bzork.vm.Instruction.OpTypes.LARGE)
         value = view.getUint16(curaddr);
+      else if (optypes[i] === bzork.vm.Instruction.OpTypes.OMIT)
+        value = null;
       else
         value = view.getUint8(curaddr);
 
@@ -76,9 +75,9 @@ bzork.vm.InstructionReader.prototype = {
       return opbyte & 0xf;
     case bzork.vm.Instruction.Forms.VAR:
     case bzork.vm.Instruction.Forms.LONG:
-      return opbyte &0x1f;
+      return opbyte & 0x1f;
     case bzork.vm.Instruction.Forms.EXT:
-      return view.readUint8(addr + 1);
+      return view.getUint8(addr + 1);
     }
   },
 

@@ -41,14 +41,42 @@ bzork.vm.Instruction.prototype = {
     return this.instructionDef.name;
   },
 
+  getForm: function() {
+    return this.form;
+  },
+
+  getOpcode: function() {
+    return this.opcode;
+  },
+
+  getOperandCount: function() {
+    return this.opcount;
+  },
+
+  getOperands: function() {
+    return this.operands;
+  },
+
+  getOperandTypes: function() {
+    return _.map(this.operands, function(op) { return op.getType() });
+  },
+
   nextInstructionAddr: function() {
     return this._addr + this.length;
   },
 
+  stores: function() {
+    return this.storeVar !== null;
+  },
+
   getStoreVariable: function() {
-    if (this.storeVar === null)
+    if (!this.stores())
       throw "Instruction does not store";
     return this.storeVar;
+  },
+
+  branches: function() {
+    return this.branchOn !== null;
   },
 
   branchesOn: function() {
@@ -61,6 +89,10 @@ bzork.vm.Instruction.prototype = {
     if (this.branchOn === null)
       throw "Instruction does not branch";
     return this.branchOffset;
+  },
+
+  hasString: function() {
+    return this.string !== null;
   },
 
   getString: function() {

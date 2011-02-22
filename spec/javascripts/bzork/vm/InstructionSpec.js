@@ -121,7 +121,7 @@ describe("bzork.vm.Instruction", function() {
 
     it("recognizes 8OP variable forms", function() {
       var instr = buildInstruction('call_vs2');
-      expect(instr.getOperandCount()).toEqual(8);
+      expect(instr.getOperandCount()).toEqual(bzork.vm.Instruction.OpCounts.OP8);
     });
 
     it("knows extended forms are always VAROP", function() {
@@ -191,45 +191,49 @@ describe("bzork.vm.Instruction", function() {
     });
   });
 
-  describe("getOperands", function() {
+  describe("operand values", function() {
+    function opvals(instr) {
+      return _.map(instr.getOperands(), function(o) { return o._value; });
+    }
+
     it("knows 0OP forms have no operands", function() {
       var instr = buildInstruction('rfalse');
-      expect(instr.getOperands()).toEqual([]);
+      expect(opvals(instr)).toEqual([]);
     });
 
     it("extracts the operands for 1OP short forms", function() {
       var instr = buildInstruction('ret');
-      expect(instr.getOperands()).toEqual([5]);
+      expect(opvals(instr)).toEqual([5]);
     });
 
     it("extracts the operands for var/small long forms", function() {
       var instr = buildInstruction('je');
-      expect(instr.getOperands()).toEqual([0x88, 0x2b]);
+      expect(opvals(instr)).toEqual([0x88, 0x2b]);
     });
 
     it("extracts the operands for small/small long forms", function() {
       var instr = buildInstruction('inc_chk');
-      expect(instr.getOperands()).toEqual([2, 0]);
+      expect(opvals(instr)).toEqual([2, 0]);
     });
 
     it("extracts the operands for 2OP var forms", function() {
       var instr = buildInstruction('mul');
-      expect(instr.getOperands()).toEqual([0x03e8, 2]);
+      expect(opvals(instr)).toEqual([0x03e8, 2]);
     });
 
     it("extracts the operands for VAROP var forms", function() {
       var instr = buildInstruction('call');
-      expect(instr.getOperands()).toEqual([0x2a39, 0x8010, 0xffff]);
+      expect(opvals(instr)).toEqual([0x2a39, 0x8010, 0xffff, null]);
     });
 
     it("extracts the operands for 8OP var forms", function() {
       var instr = buildInstruction('call_vs2');
-      expect(instr.getOperands()).toEqual([0x01, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]);
+      expect(opvals(instr)).toEqual([0x01, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]);
     });
 
     it("extracts the operands for ext forms", function() {
       var instr = buildInstruction('save');
-      expect(instr.getOperands()).toEqual([]);
+      expect(opvals(instr)).toEqual([null, null, null, null]);
     });
   });
 
@@ -312,45 +316,29 @@ describe("bzork.vm.Instruction", function() {
     });
   });
 
-  describe("hasDanglingString", function() {
+  describe("hasString", function() {
     it("recognizes instructions which have a ZString following them", function() {
       var instr = buildInstruction('print');
-      expect(instr.hasDanglingString()).toEqual(true);
+      expect(instr.hasString()).toEqual(true);
     });
 
     it("returns false for other instructions", function() {
       var instr = buildInstruction('je');
-      expect(instr.hasDanglingString()).toEqual(false);
+      expect(instr.hasString()).toEqual(false);
     });
   });
 
-  describe("getDanglingString", function() {
+  describe("getString", function() {
     it("throws if the instruction does not have a dangling string", function() {
       var instr = buildInstruction('je');
       expect(function() {
-        instr.getDanglingString()
+        instr.getString()
       }).toThrow("Instruction has no embedded string");
     });
 
     it("returns the decoded dangling string", function() {
       var instr = buildInstruction('print');
-      expect(instr.getDanglingString()).toEqual("Hello.\n");
-    });
-  });
-
-  describe("getSignedOperand", function() {
-    it("returns the signed value of operand n", function() {
-      var instr = buildInstruction('je');
-      expect(instr.getSignedOperand(1)).toEqual(0x2b);
-    });
-
-    it("returns the signed value of the variable named by operand n for VAR types", function() {
-      var instr = buildInstruction('je'),
-          machine = instr._machine;
-
-      spyOn(machine, 'getVariable').andReturn(0xffff);
-      expect(instr.getSignedOperand(0)).toEqual(-1);
-      expect(machine.getVariable).toHaveBeenCalledWith(0x88);
+      expect(instr.getString()).toEqual("Hello.\n");
     });
   });
 
@@ -359,7 +347,7 @@ describe("bzork.vm.Instruction", function() {
   describe("next", function() {
     beforeEach(function() {
       this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
-      this.instr   = new bzork.vm.Instruction(this.machine, this.machine.getStartPC());
+      this.instr   = this.machine.readInstruction(this.machine.getStartPC());
     });
 
     it("should increase the machine's PC by this instruction's length", function() {

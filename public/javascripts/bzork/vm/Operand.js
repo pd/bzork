@@ -5,6 +5,10 @@ bzork.vm.Operand = function(machine, type, value) {
 };
 
 bzork.vm.Operand.prototype = {
+  getType: function() {
+    return this._type;
+  },
+
   getSize: function() {
     if (this._type === bzork.vm.Instruction.OpTypes.LARGE)
       return 2;
