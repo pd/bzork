@@ -120,8 +120,8 @@ bzork.vm.InstructionReader.prototype = {
       case bzork.vm.Instruction.OpCounts.VAR:
         return this._bitfieldOperandTypes(bitfield, 4);
       case bzork.vm.Instruction.OpCounts.OP8:
-        return this._bitfieldOperandTypes(view.getUint8(addr + 2), 4) +
-          this._bitfieldOperandTypes(bitfield, 4);
+        return this._bitfieldOperandTypes(bitfield, 4).
+          concat(this._bitfieldOperandTypes(view.getUint8(addr + 2), 4));
       }
 
     case bzork.vm.Instruction.Forms.EXT:

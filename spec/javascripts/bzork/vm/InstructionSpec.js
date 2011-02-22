@@ -228,7 +228,7 @@ describe("bzork.vm.Instruction", function() {
 
     it("extracts the operands for 8OP var forms", function() {
       var instr = buildInstruction('call_vs2');
-      expect(opvals(instr)).toEqual([0x01, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08]);
+      expect(opvals(instr)).toEqual([0x01, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, null]);
     });
 
     it("extracts the operands for ext forms", function() {

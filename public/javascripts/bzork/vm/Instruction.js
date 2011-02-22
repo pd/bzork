@@ -115,8 +115,8 @@ bzork.vm.Instruction.OpCounts = {
   OP0: 0,
   OP1: 1,
   OP2: 2,
-  VAR: 3,
-  OP8: 4
+  VAR: 4,
+  OP8: 8
 };
 
 bzork.vm.Instruction.OpTypes = {

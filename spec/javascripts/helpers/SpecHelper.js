@@ -54,9 +54,6 @@ if (typeof console !== "undefined") {
 
   function z1i(addr) {
     var m = z1m();
-    if (addr)
-      return new bzork.vm.Instruction(m, addr);
-    else
-      return new bzork.vm.Instruction(m, m.getStartPC());
+    return m.readInstruction(addr || m.getStartPC());
   }
 }
