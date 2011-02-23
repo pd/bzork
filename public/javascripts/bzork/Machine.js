@@ -1,3 +1,7 @@
+/**
+ * @class Z-Machine
+ * @param {ArrayBuffer} storyBytes The story file data
+ */
 bzork.Machine = function(storyBytes) {
   this.memory = new bzork.Memory(storyBytes);
   this.header = new bzork.Header(this);
@@ -13,6 +17,11 @@ bzork.Machine = function(storyBytes) {
 };
 
 bzork.Machine.prototype = {
+  /**
+   * Entry point for running a story.
+   *
+   * @param {boolean} debug If truthy, enables debugging output to the console.
+   */
   run: function(debug) {
     if (debug)
       bzork.Debug.enable();
