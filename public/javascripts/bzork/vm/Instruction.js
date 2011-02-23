@@ -106,6 +106,12 @@ bzork.vm.Instruction.prototype = {
     return this.storeVar;
   },
 
+  storeResult: function(value) {
+    if (!this.stores())
+      throw "Instruction should not be trying to store";
+    this._machine.setVariable(this.getStoreVariable(), value);
+  },
+
   branches: function() {
     return this.branchOn !== null;
   },

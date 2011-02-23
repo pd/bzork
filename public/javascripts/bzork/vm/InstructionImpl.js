@@ -76,30 +76,29 @@ bzork.vm.InstructionImpl = {};
   addMethod('loadw', function() {
     var array = this.operands[0].getValue(),
         wordIndex = this.operands[1].getValue();
-    this._machine.setVariable(this.getStoreVariable(),
-                              this._machine.getUint16(array + wordIndex * 2));
+    this.storeResult(this._machine.getUint16(array + wordIndex * 2));
     this.next();
   });
 
   addMethod('get_prop', function() {
     var objnum = this.operands[0].getValue(),
         propnum = this.operands[1].getValue();
-    this._machine.setVariable(this.getStoreVariable(),
-                              this._machine.getProperty(objnum, propnum));
+    this.storeResult(this._machine.getProperty(objnum, propnum));
+    this.next();
   });
 
   addMethod('get_prop_addr', function() {
     var objnum = this.operands[0].getValue(),
         propnum = this.operands[1].getValue();
-    this._machine.setVariable(this.getStoreVariable(),
-                              this._machine.getPropertyDataAddr(objnum, propnum));
+    this.storeResult(this._machine.getPropertyDataAddr(objnum, propnum));
+    this.next();
   });
 
   addMethod('get_next_prop', function() {
     var objnum = this.operands[0].getValue(),
         propnum = this.operands[1].getValue();
-    this._machine.setVariable(this.getStoreVariable(),
-                              this._machine.getNextProperty(objnum, propnum));
+    this.storeResult(this._machine.getNextProperty(objnum, propnum));
+    this.next();
   });
 
   addMethod('add', function() {
