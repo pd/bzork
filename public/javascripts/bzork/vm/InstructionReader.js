@@ -26,6 +26,8 @@ bzork.vm.InstructionReader.prototype = {
     }
 
     var instructionDef = this.getInstructionDef(options.opcount, options.opcode);
+    if (typeof instructionDef === "undefined")
+      throw "Undefined instruction: " + options.opcount + ":" + options.opcode;
 
     if (instructionDef.stores)
       options.storeVar = view.getUint8(curaddr++);
