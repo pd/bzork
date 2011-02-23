@@ -139,13 +139,13 @@ bzork.vm.Instruction.prototype = {
   },
 
   toString: function() {
-    var s = this.getName();
-    _.each(this.operands, function(op) {
-      if (op._value === null)
-        s += " null";
-      else
-        s += " 0x" + op._value.toString(16);
-    });
+    var s = this.getName(),
+        ops = _.map(this.operands, function(op) { return op.toString() });
+    s += ' ' + _.compact(ops).join(' ');
+
+    if (this.stores())
+      s += ' -> ' + bzork.Util.variableName(this.getStoreVariable());
+
     return s;
   }
 };

@@ -26,5 +26,17 @@ bzork.vm.Operand.prototype = {
 
   getSignedValue: function() {
     return bzork.Math.toInt16(this.getValue());
+  },
+
+  toString: function() {
+    switch (this._type) {
+    case bzork.vm.Instruction.OpTypes.OMIT:
+      return null;
+    case bzork.vm.Instruction.OpTypes.SMALL:
+    case bzork.vm.Instruction.OpTypes.LARGE:
+      return "#" + this._value.toString(16);
+    case bzork.vm.Instruction.OpTypes.VAR:
+      return bzork.Util.variableName(this._value);
+    }
   }
 };
