@@ -141,10 +141,10 @@ bzork.vm.Instruction.prototype = {
   toString: function() {
     var s = this.getName();
     _.each(this.operands, function(op) {
-      if (op.getValue() === null)
+      if (op._value === null)
         s += " null";
       else
-        s += " 0x" + op.getValue().toString(16);
+        s += " 0x" + op._value.toString(16);
     });
     return s;
   }

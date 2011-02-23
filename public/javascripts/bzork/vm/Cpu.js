@@ -47,8 +47,8 @@ bzork.vm.Cpu.prototype = {
     this.routineStack.push(routine);
     this.pc = routine.getFirstInstructionAddr();
 
-    console.log("R" + routine._addr.toString(16), "->", storeVariable,
-                " (ret: " + returnAddr.toString(16) + ")");
+    bzork.Debug.group("R" + routine._addr.toString(16), "->", storeVariable,
+                      " (ret: " + returnAddr.toString(16) + ")");
 
     return routine;
   },
@@ -64,7 +64,8 @@ bzork.vm.Cpu.prototype = {
     if (routine.storesResult())
       this.setVariable(routine.getStoreVariable(), value);
 
-    console.log("\treturning to", "0x" + this.getPC().toString(16));
+    bzork.Debug.log("  - returning to 0x" + this.getPC().toString(16));
+    bzork.Debug.groupEnd();
   },
 
   getVariable: function(i) {

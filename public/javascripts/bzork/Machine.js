@@ -13,12 +13,17 @@ bzork.Machine = function(storyBytes) {
 };
 
 bzork.Machine.prototype = {
-  run: function() {
-    while (!this.shouldHalt()) { // die early like morrison
-      var instr = this.readInstruction(this.getPC());
-      console.log("\t0x" + this.getPC().toString(16), instr.toString());
-      instr.run();
-    }
+  run: function(debug) {
+    if (debug)
+      bzork.Debug.enable();
+
+    try {
+      while (!this.shouldHalt()) { // die early like morrison
+        var instr = this.readInstruction(this.getPC());
+        bzork.Debug.log("0x" + this.getPC().toString(16), instr.toString());
+        instr.run();
+      }
+    } finally { bzork.Debug.disable(); }
   },
 
   shouldHalt: function() {
