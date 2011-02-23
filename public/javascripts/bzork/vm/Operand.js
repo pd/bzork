@@ -25,7 +25,7 @@ bzork.vm.Operand.prototype = {
   },
 
   getSignedValue: function() {
-    return bzork.Math.toInt16(this.getValue());
+    return bzork.Util.toInt16(this.getValue());
   },
 
   toString: function() {

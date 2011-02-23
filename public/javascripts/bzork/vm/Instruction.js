@@ -55,8 +55,8 @@ bzork.vm.Instruction.prototype = {
 
   incrementVariable: function(i, amount) {
     amount = amount || 1;
-    var value = bzork.Math.toInt16(this._machine.getVariable(i));
-    this._machine.setVariable(i, bzork.Math.toUint16(value + amount));
+    var value = bzork.Util.toInt16(this._machine.getVariable(i));
+    this._machine.setVariable(i, bzork.Util.toUint16(value + amount));
     return value + amount;
   },
 

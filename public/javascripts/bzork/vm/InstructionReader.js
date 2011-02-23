@@ -37,10 +37,10 @@ bzork.vm.InstructionReader.prototype = {
 
       options.branchOn = (branch & 0x80) === 0x80;
       if ((branch & 0x40) === 0x40) {
-        options.branchOffset = bzork.Math.toInt14(branch & 0x3f);
+        options.branchOffset = bzork.Util.toInt14(branch & 0x3f);
         curaddr++;
       } else {
-        options.branchOffset = bzork.Math.toInt14(view.getUint16(curaddr) & 0x3fff);
+        options.branchOffset = bzork.Util.toInt14(view.getUint16(curaddr) & 0x3fff);
         curaddr += 2;
       }
 
