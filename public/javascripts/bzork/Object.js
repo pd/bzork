@@ -55,6 +55,14 @@ bzork.Object.prototype = {
     return property;
   },
 
+  getPropertyDataAddr: function(i) {
+    var prop = this.getProperty(i);
+    if (prop)
+      return prop.getDataAddr();
+    else
+      return 0;
+  },
+
   getPropertyValue: function(i) {
     var prop = this.getProperty(i);
     if (prop)
@@ -69,6 +77,18 @@ bzork.Object.prototype = {
       prop.setValue(val);
     else
       throw "Unavailable property " + i + " for object " + this.id;
+  },
+
+  getNextPropertyNumber: function(i) {
+    var prop = this.getProperty(i);
+    if (!prop)
+      throw "Unavailable property " + i + " for object " + this.id;
+
+    var addr = prop.nextPropertyAddr();
+    if (this._machine.getUint8(addr) === 0)
+      return 0;
+
+    return new bzork.Object.Property(this._machine, addr).getNumber();
   },
 
   hasDescription: function() {

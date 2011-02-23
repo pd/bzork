@@ -114,6 +114,32 @@ describe("bzork.ObjectTable", function() {
         obj1.setPropertyValue(25, 0xabcd);
       }).toThrow("Unavailable property 25 for object 1");
     });
+
+    it("should know the property data addresses of individual properties", function() {
+      var obj1 = this.objects.get(1),
+          obj232 = this.objects.get(232);
+
+      expect(obj1.getPropertyDataAddr(18)).toEqual(0x0bc2);
+      expect(obj1.getPropertyDataAddr(16)).toEqual(0x0bc9);
+
+      expect(obj232.getPropertyDataAddr(28)).toEqual(0x20ec);
+      expect(obj232.getPropertyDataAddr(4)).toEqual(0x20fd);
+    });
+
+    it("should return a property data address of 0 for undefined properties", function() {
+      var obj1 = this.objects.get(1);
+      expect(obj1.getPropertyDataAddr(25)).toEqual(0);
+    });
+
+    it("should know the number of the property following each property", function() {
+      var obj1 = this.objects.get(1);
+      expect(obj1.getNextPropertyNumber(18)).toEqual(16);
+    });
+
+    it("should return 0 if the property has no properties after it", function() {
+      var obj1 = this.objects.get(1);
+      expect(obj1.getNextPropertyNumber(16)).toEqual(0);
+    });
   });
 
   describe("for ZTUU", function() {

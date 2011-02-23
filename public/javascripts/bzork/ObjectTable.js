@@ -14,6 +14,26 @@ bzork.ObjectTable.prototype = {
     return new bzork.Object(this._machine, this, i, this.getObjectAddr(i));
   },
 
+  getProperty: function(obj, prop) {
+    var obj = this.get(obj);
+    return obj.getPropertyValue(prop);
+  },
+
+  setProperty: function(obj, prop, val) {
+    var obj = this.get(obj);
+    obj.setPropertyValue(prop, val);
+  },
+
+  getPropertyDataAddr: function(obj, prop) {
+    var obj = this.get(obj);
+    return obj.getDataAddr(prop);
+  },
+
+  getNextProperty: function(obj, prop) {
+    var obj = this.get(obj);
+    return obj.getNextPropertyNumber(prop);
+  },
+
   getObjectSize: function() {
     if (this.getZcodeVersion() <= 3)
       return 9;

@@ -75,6 +75,27 @@ bzork.vm.InstructionImpl = {};
     this.next();
   });
 
+  addMethod('get_prop', function() {
+    var objnum = this.operands[0].getValue(),
+        propnum = this.operands[1].getValue();
+    this._machine.setVariable(this.getStoreVariable(),
+                              this._machine.getProperty(objnum, propnum));
+  });
+
+  addMethod('get_prop_addr', function() {
+    var objnum = this.operands[0].getValue(),
+        propnum = this.operands[1].getValue();
+    this._machine.setVariable(this.getStoreVariable(),
+                              this._machine.getPropertyDataAddr(objnum, propnum));
+  });
+
+  addMethod('get_next_prop', function() {
+    var objnum = this.operands[0].getValue(),
+        propnum = this.operands[1].getValue();
+    this._machine.setVariable(this.getStoreVariable(),
+                              this._machine.getNextProperty(objnum, propnum));
+  });
+
   addMethod('add', function() {
     var a = this.operands[0].getSignedValue(),
         b = this.operands[1].getSignedValue();

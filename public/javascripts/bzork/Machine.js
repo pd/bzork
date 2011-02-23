@@ -89,9 +89,20 @@ bzork.Machine.prototype = {
     this.globalTable.set(i, val);
   },
 
+  getProperty: function(obj, prop) {
+    return this.objectTable.getProperty(obj, prop);
+  },
+
   setProperty: function(obj, prop, val) {
-    var obj = this.objectTable.get(obj);
-    obj.setPropertyValue(prop, val);
+    this.objectTable.setProperty(obj, prop, val);
+  },
+
+  getPropertyDataAddr: function(obj, prop) {
+    return this.objectTable.getPropertyDataAddr(obj, prop);
+  },
+
+  getNextProperty: function(obj, prop) {
+    return this.objectTable.getNextProperty(obj, prop);
   },
 
   // Memory proxy methods
