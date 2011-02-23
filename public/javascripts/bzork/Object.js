@@ -63,6 +63,14 @@ bzork.Object.prototype = {
       return this.getDefaultPropertyValue(i);
   },
 
+  setPropertyValue: function(i, val) {
+    var prop = this.getProperty(i);
+    if (prop)
+      prop.setValue(val);
+    else
+      throw "Unavailable property " + i + " for object " + this.id;
+  },
+
   hasDescription: function() {
     return this._machine.getUint8(this.getPropertyHeaderAddr()) !== 0;
   },
@@ -109,11 +117,23 @@ bzork.Object.Property.prototype = {
     return Math.floor(this._getSizeByte() / 32) + 1;
   },
 
+  // Object 1 of zork1.z3 has a length of 8. I have no idea what to do
+  // with that. AFAICT, everything that operates on property values
+  // assumes that it is working with words. TODO XXX
   getValue: function() {
-    var len = this.getLength(), bytes = [];
-    for (var i = 0; i < len; i++)
-      bytes.push( this._machine.getUint8(this.getDataAddr() + i) );
-    return bytes;
+    var len = this.getLength();
+    if (len === 1)
+      return this._machine.getUint8(this.getDataAddr());
+    else
+      return this._machine.getUint16(this.getDataAddr());
+  },
+
+  setValue: function(val) {
+    var len = this.getLength();
+    if (len === 1)
+      this._machine.setUint8(this.getDataAddr(), val & 0xff);
+    else
+      this._machine.setUint16(this.getDataAddr(), val & 0xffff);
   },
 
   getDataAddr: function() {

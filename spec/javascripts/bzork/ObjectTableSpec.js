@@ -78,13 +78,41 @@ describe("bzork.ObjectTable", function() {
 
     it("should know the defined values for properties", function() {
       var obj1 = this.objects.get(1);
-      expect(obj1.getPropertyValue(18)).toEqual([0x46, 0xdc, 0x42, 0xc2, 0x42, 0xb4]);
-      expect(obj1.getPropertyValue(16)).toEqual([0x82]);
+      expect(obj1.getPropertyValue(18)).toEqual(0x46dc);
+      expect(obj1.getPropertyValue(16)).toEqual(0x82);
     });
 
     it("should use the default value for properties without specified values", function() {
       var obj1 = this.objects.get(1);
       expect(obj1.getPropertyValue(1)).toEqual(0);
+    });
+
+    it("should be able to set byte property values", function() {
+      var obj246 = this.objects.get(246);
+      expect(obj246.getPropertyValue(16)).toEqual(0xff);
+      obj246.setPropertyValue(16, 0xab);
+      expect(obj246.getPropertyValue(16)).toEqual(0xab);
+    });
+
+    it("should be able to set word property values", function() {
+      var obj2 = this.objects.get(2);
+      expect(obj2.getPropertyValue(18)).toEqual(0x4e29);
+      obj2.setPropertyValue(18, 0x1234);
+      expect(obj2.getPropertyValue(18)).toEqual(0x1234);
+    });
+
+    it("should be able to set word property values on properties with len>2", function() {
+      var obj1 = this.objects.get(1);
+      expect(obj1.getPropertyValue(18)).toEqual(0x46dc);
+      obj1.setPropertyValue(18, 0xbeef);
+      expect(obj1.getPropertyValue(18)).toEqual(0xbeef);
+    });
+
+    it("should throw when setting undefined properties", function() {
+      var obj1 = this.objects.get(1);
+      expect(function() {
+        obj1.setPropertyValue(25, 0xabcd);
+      }).toThrow("Unavailable property 25 for object 1");
     });
   });
 

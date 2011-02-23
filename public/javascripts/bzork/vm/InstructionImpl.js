@@ -116,4 +116,12 @@ bzork.vm.InstructionImpl = {};
     this.next();
   });
 
+  addMethod('put_prop', function() {
+    var objnum = this.operands[0].getValue(),
+        propnum = this.operands[1].getValue(),
+        value = this.operands[2].getValue();
+    this._machine.setProperty(objnum, propnum, value);
+    this.next();
+  });
+
 }());
