@@ -1,0 +1,3 @@
+[submodule "vendor/jsdoc-simple"]
+	path = vendor/jsdoc-simple
+	url = git://github.com/urso/jsdoc-simple.git
