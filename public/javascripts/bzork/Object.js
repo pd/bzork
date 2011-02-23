@@ -27,6 +27,10 @@ bzork.Object.prototype = {
     return this._getRelative(2);
   },
 
+  getAttributesAddr: function() {
+    return this._addr;
+  },
+
   getPropertyHeaderAddr: function() {
     return this._machine.getUint16(this._addr + this._attributesSize + this._idSize * 3);
   },
@@ -89,6 +93,30 @@ bzork.Object.prototype = {
       return 0;
 
     return new bzork.Object.Property(this._machine, addr).getNumber();
+  },
+
+  getAttributes: function() {
+    var attrs = [], bytes = [];
+
+    for (var i = 0; i < this._attributesSize; i++)
+      bytes.push(this._machine.getUint8(this.getAttributesAddr() + i));
+
+    var attr = 0;
+    _(bytes).each(function(byte) {
+      for (var i = 0; i < 8; i++) {
+        if (((byte >> (7 - i)) & 0x1) == 0x1)
+          attrs.push(attr);
+        attr++;
+      }
+    });
+
+    return attrs;
+  },
+
+  testAttribute: function(attr) {
+    if (attr < 0 || attr >= this._attributesSize * 8)
+      throw "Attribute " + attr + " out of bounds!";
+    return _.contains(this.getAttributes(), attr);
   },
 
   hasDescription: function() {

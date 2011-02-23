@@ -1,3 +1,5 @@
+// So this also ends up specing the bulk of Object. I should maybe split
+// them up but it's just so convenient to have everything here for now.
 describe("bzork.ObjectTable", function() {
   describe("for Zork1", function() {
     beforeEach(function() {
@@ -139,6 +141,22 @@ describe("bzork.ObjectTable", function() {
     it("should return 0 if the property has no properties after it", function() {
       var obj1 = this.objects.get(1);
       expect(obj1.getNextPropertyNumber(16)).toEqual(0);
+    });
+
+    it("should know the list of set attributes for an object", function() {
+      var obj1 = this.objects.get(1),
+          obj2 = this.objects.get(2),
+          obj114 = this.objects.get(114);
+
+      expect(obj1.getAttributes()).toEqual([14, 28]);
+      expect(obj2.getAttributes()).toEqual([]);
+      expect(obj114.getAttributes()).toEqual([7, 11, 13, 19, 30]);
+    });
+
+    it("should be able to check for the presence of a single attribute", function() {
+      var obj1 = this.objects.get(1);
+      expect(obj1.testAttribute(14)).toEqual(true);
+      expect(obj1.testAttribute(20)).toEqual(false);
     });
   });
 

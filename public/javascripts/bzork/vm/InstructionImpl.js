@@ -60,6 +60,12 @@ bzork.vm.InstructionImpl = {};
     this.branchOrNext(this.decrementVariable(variable) < value);
   });
 
+  addMethod('test_attr', function() {
+    var objnum = this.operands[0].getValue(),
+        attr = this.operands[1].getValue();
+    this.branchOrNext(this._machine.testAttribute(objnum, attr));
+  });
+
   addMethod('store', function() {
     var variable = this.operands[0].getValue(),
         value = this.operands[1].getValue();
