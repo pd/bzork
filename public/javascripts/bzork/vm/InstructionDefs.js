@@ -1,42 +1,47 @@
 // Huge map of instructions, keyed by opcount:opcode, that contains
 // whether the instruction stores a variable, branches, etc.
-bzork.vm.InstructionDB = {};
+bzork.vm.InstructionDefs = {};
 
 (function() {
 
-  function addEntry(name, opcount, stores, branches, stringed, version) {
+  function addEntry(name, opcount, stores, branches, stringed, minVersion, maxVersion) {
     var opcode = bzork.vm.Instruction.Opcodes[name];
+    if (typeof opcode === "undefined")
+      throw "Unknown opcode for instruction " + name;
+
     var key  = opcount + ":" + opcode;
     var info = {
       name: name, opcount: opcount, opcode: opcode,
       stores: stores, branches: branches, stringed: stringed,
-      version: (version || 1)
+      minVersion: (minVersion || 1), maxVersion: (maxVersion || 6)
     };
 
-    if (bzork.vm.InstructionDB[key])
-      throw "Adding duplicate entry to instruction DB: " + key;
-
-    bzork.vm.InstructionDB[key] = info;
+    for (var v = info.minVersion; v <= info.maxVersion; v++) {
+      var vkey = key + ":" + v;
+      if (bzork.vm.InstructionDefs[vkey])
+        throw "Adding duplicate entry to instruction DB: " + vkey;
+      bzork.vm.InstructionDefs[vkey] = info;
+    }
   }
 
-  function addBasic(name, opcount, version) {
-    addEntry(name, opcount, false, false, false, version);
+  function addBasic(name, opcount, minVersion, maxVersion) {
+    addEntry(name, opcount, false, false, false, minVersion, maxVersion);
   }
 
-  function addStore(name, opcount, version) {
-    addEntry(name, opcount, true, false, false, version);
+  function addStore(name, opcount, minVersion, maxVersion) {
+    addEntry(name, opcount, true, false, false, minVersion, maxVersion);
   }
 
-  function addBranch(name, opcount, version) {
-    addEntry(name, opcount, false, true, false, version);
+  function addBranch(name, opcount, minVersion, maxVersion) {
+    addEntry(name, opcount, false, true, false, minVersion, maxVersion);
   }
 
-  function addBranchAndStore(name, opcount, version) {
-    addEntry(name, opcount, true, true, false, version);
+  function addBranchAndStore(name, opcount, minVersion, maxVersion) {
+    addEntry(name, opcount, true, true, false, minVersion, maxVersion);
   }
 
-  function addStringed(name, opcount, version) {
-    addEntry(name, opcount, false, false, true, version);
+  function addStringed(name, opcount, minVersion, maxVersion) {
+    addEntry(name, opcount, false, false, true, minVersion, maxVersion);
   }
 
   var OP0 = bzork.vm.Instruction.OpCounts.OP0,
@@ -50,16 +55,21 @@ bzork.vm.InstructionDB = {};
   addStringed('print', OP0);
   addStringed('print_ret', OP0);
   addBasic('nop', OP0);
-  addBranch('save', OP0);
-  addBranch('restore', OP0);
+  addBranch('save', OP0, 1, 3);
+  addBasic('save', OP0, 4, 4);
+  // addIllegal('save', OP0, 5); ??
+  addBranch('restore', OP0, 1, 3);
+  addBasic('restore', OP0, 4, 4);
   addBasic('restart', OP0);
   addBasic('ret_popped', OP0);
-  addBasic('pop', OP0);
+  addBasic('pop', OP0, 1, 4);
+  addStore('catch', OP0, 5);
   addBasic('quit', OP0);
   addBasic('new_line', OP0);
   addBasic('show_status', OP0);
-  addBranch('verify', OP0);
-  addBranch('pirate', OP0);
+  // addIllegal('show_status', OP0, 4);
+  addBranch('verify', OP0, 3);
+  addBranch('pirate', OP0, 5);
 
   // 1OP
   addBranch('jz', OP1);
@@ -77,7 +87,8 @@ bzork.vm.InstructionDB = {};
   addBasic('jump', OP1);
   addBasic('print_paddr', OP1);
   addStore('load', OP1);
-  addStore('not', OP1);
+  addStore('not', OP1, 1, 4);
+  addBasic('call_1n', OP1, 5);
 
   // 2OP
   addBranch("je", OP2);
@@ -110,16 +121,20 @@ bzork.vm.InstructionDB = {};
   addBasic("throw", OP2, 5);
 
   // VAROP
-  addStore("call", VAROP);
+  addStore("call", VAROP, 1, 3);
+  addStore("call_vs", VAROP, 4);
   addBasic("storew", VAROP);
   addBasic("storeb", VAROP);
   addBasic("put_prop", VAROP);
-  addBasic("sread", VAROP);
+  addBasic("sread", VAROP, 1, 3);
+  addBasic("sread", VAROP, 4, 4);
+  addStore("aread", VAROP, 5);
   addBasic("print_char", VAROP);
   addBasic("print_num", VAROP);
   addStore("random", VAROP);
   addBasic("push", VAROP);
-  addBasic("pull", VAROP);
+  addBasic("pull", VAROP, 1, 5);
+  addStore("pull", VAROP, 6);
   addBasic("split_window", VAROP, 3)
   addBasic("set_window", VAROP, 3);
   addStore("call_vs2", VAROP, 4);

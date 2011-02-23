@@ -140,9 +140,13 @@ bzork.vm.InstructionReader.prototype = {
   },
 
   getInstructionDef: function(opcount, opcode) {
+    var key;
+
     if (opcount === bzork.vm.Instruction.OpCounts.OP8)
       opcount = bzork.vm.Instruction.OpCounts.VAR;
-    return bzork.vm.InstructionDB[opcount + ":" + opcode];
+
+    key = opcount + ":" + opcode + ":" + this._machine.getZcodeVersion();
+    return bzork.vm.InstructionDefs[key];
   },
 
   readOperand: function(view, addr, type) {

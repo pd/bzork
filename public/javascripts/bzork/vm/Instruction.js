@@ -186,6 +186,7 @@ bzork.vm.Instruction.Opcodes = {
   restart: 7,
   ret_popped: 8,
   pop: 9,
+  'catch': 9,
   quit: 10,
   new_line: 11,
   show_status: 12,
@@ -209,6 +210,7 @@ bzork.vm.Instruction.Opcodes = {
   print_paddr: 13,
   load: 14,
   not: 15,
+  call_1n: 15,
 
   // 2OP
   je: 1,
@@ -242,10 +244,12 @@ bzork.vm.Instruction.Opcodes = {
 
   // VAROP
   call: 0,
+  call_vs: 0,
   storew: 1,
   storeb: 2,
   put_prop: 3,
   sread: 4,
+  aread: 4,
   print_char: 5,
   print_num: 6,
   random: 7,
