@@ -47,7 +47,7 @@ bzork.vm.Cpu.prototype = {
     this.routineStack.push(routine);
     this.pc = routine.getFirstInstructionAddr();
 
-    bzork.Debug.groupCollapsed("R%s (store: %s, returnAddr: %s)",
+    bzork.Debug.groupCollapsed("R%s (store: %s, returnAddr: 0x%s)",
                                routine._addr.toString(16),
                                bzork.Util.variableName(storeVariable),
                                returnAddr.toString(16));

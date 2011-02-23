@@ -42,6 +42,11 @@ bzork.vm.InstructionImpl = {};
     this._machine.increasePC(this.operands[0].getSignedValue() + 1);
   });
 
+  addMethod('call_1n', function() {
+    this._machine.call(this.operands[0].getValue(), this.nextInstructionAddr(),
+                       false, []);
+  });
+
   // 2OP
   addMethod('je', function() {
     var a = this.operands[0].getSignedValue(),
@@ -53,6 +58,13 @@ bzork.vm.InstructionImpl = {};
     var variable = this.operands[0].getValue(),
         value = this.operands[1].getSignedValue();
     this.branchOrNext(this.decrementVariable(variable) < value);
+  });
+
+  addMethod('store', function() {
+    var variable = this.operands[0].getValue(),
+        value = this.operands[1].getValue();
+    this._machine.setVariable(variable, value);
+    this.next();
   });
 
   addMethod('loadw', function() {
@@ -79,6 +91,15 @@ bzork.vm.InstructionImpl = {};
 
   // VAROP
   addMethod('call', function() {
+    var operands = this.operands, args = [];
+    for (var i = 1; i < operands.length; i++)
+      args.push(operands[i].getValue());
+
+    this._machine.call(operands[0].getValue(), this.nextInstructionAddr(),
+                       this.getStoreVariable(), args);
+  });
+
+  addMethod('call_vs', function() { // same as call. what to do.
     var operands = this.operands, args = [];
     for (var i = 1; i < operands.length; i++)
       args.push(operands[i].getValue());
