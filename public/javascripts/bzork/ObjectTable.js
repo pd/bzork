@@ -11,7 +11,7 @@ bzork.ObjectTable.prototype = {
     if (i < 1 || i > this.getObjectCount())
       throw "Object " + i + " out of bounds!";
 
-    return new bzork.Object(this._machine, i, this.getObjectAddr(i));
+    return new bzork.Object(this._machine, this, i, this.getObjectAddr(i));
   },
 
   getObjectSize: function() {
@@ -56,6 +56,10 @@ bzork.ObjectTable.prototype = {
     offset += (this.getMaxProperties() - 1) * 2;
     offset += (i - 1) * this.getObjectSize();
     return offset;
+  },
+
+  getDefaultPropertyValue: function(i) {
+    return this._machine.getUint8(this.getStartAddr() + i);
   },
 
   getZcodeVersion: function() {

@@ -46,10 +46,10 @@ describe("bzork.ObjectTable", function() {
       expect(obj89.getChild()).toEqual(87);
     });
 
-    it("should retrieve objects with the correct property addresses", function() {
-      expect(this.objects.get(1).getPropertyAddr()).toEqual(0x0bb8);
-      expect(this.objects.get(89).getPropertyAddr()).toEqual(0x1388);
-      expect(this.objects.get(173).getPropertyAddr()).toEqual(0x1b95);
+    it("should retrieve objects with the correct property header addresses", function() {
+      expect(this.objects.get(1).getPropertyHeaderAddr()).toEqual(0x0bb8);
+      expect(this.objects.get(89).getPropertyHeaderAddr()).toEqual(0x1388);
+      expect(this.objects.get(173).getPropertyHeaderAddr()).toEqual(0x1b95);
     });
 
     it("should retrieve objects with the correct names", function() {
@@ -64,6 +64,27 @@ describe("bzork.ObjectTable", function() {
 
     it("should have undefined descriptions for unnamed objects", function() {
       expect(this.objects.get(249).getDescription()).toEqual(undefined);
+    });
+
+    it("should know the defined property numbers for objects", function() {
+      var obj1 = this.objects.get(1),
+          obj19 = this.objects.get(19),
+          obj249 = this.objects.get(249);
+
+      expect(obj1.getPropertyNumbers()).toEqual([18, 16]);
+      expect(obj19.getPropertyNumbers()).toEqual([31, 30, 27, 11]);
+      expect(obj249.getPropertyNumbers()).toEqual([18, 15, 14, 11, 10, 9, 6, 5, 4, 3, 2]);
+    });
+
+    it("should know the defined values for properties", function() {
+      var obj1 = this.objects.get(1);
+      expect(obj1.getPropertyValue(18)).toEqual([0x46, 0xdc, 0x42, 0xc2, 0x42, 0xb4]);
+      expect(obj1.getPropertyValue(16)).toEqual([0x82]);
+    });
+
+    it("should use the default value for properties without specified values", function() {
+      var obj1 = this.objects.get(1);
+      expect(obj1.getPropertyValue(1)).toEqual(0);
     });
   });
 
@@ -81,8 +102,8 @@ describe("bzork.ObjectTable", function() {
       expect(this.objects.getObjectSize()).toEqual(14);
     });
 
-    it("should retrieve objects with the correct property address", function() {
-      expect(this.objects.get(54).getPropertyAddr()).toEqual(0x1053);
+    it("should retrieve objects with the correct property header address", function() {
+      expect(this.objects.get(54).getPropertyHeaderAddr()).toEqual(0x1053);
     });
 
     it("should retrieve objects with the correct tree information", function() {
