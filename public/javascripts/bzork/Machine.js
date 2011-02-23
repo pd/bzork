@@ -16,7 +16,7 @@ bzork.Machine.prototype = {
   run: function() {
     while (!this.shouldHalt()) { // die early like morrison
       var instr = this.readInstruction(this.getPC());
-      console.log("Running instr @", this.getPC().toString(16), ":", instr.getName());
+      console.log("\t0x" + this.getPC().toString(16), instr.toString());
       instr.run();
     }
   },

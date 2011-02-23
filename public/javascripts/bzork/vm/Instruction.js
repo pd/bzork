@@ -136,6 +136,17 @@ bzork.vm.Instruction.prototype = {
     if (this.string === null)
       throw "Instruction has no embedded string";
     return this.string;
+  },
+
+  toString: function() {
+    var s = this.getName();
+    _.each(this.operands, function(op) {
+      if (op.getValue() === null)
+        s += " null";
+      else
+        s += " 0x" + op.getValue().toString(16);
+    });
+    return s;
   }
 };
 
