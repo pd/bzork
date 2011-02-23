@@ -47,8 +47,8 @@ bzork.vm.Cpu.prototype = {
     this.routineStack.push(routine);
     this.pc = routine.getFirstInstructionAddr();
 
-    bzork.Debug.group("R" + routine._addr.toString(16), "->", storeVariable,
-                      " (ret: " + returnAddr.toString(16) + ")");
+    bzork.Debug.groupCollapsed("R%s -> %d (ret: %s)", routine._addr.toString(16),
+                               storeVariable, returnAddr.toString(16));
 
     return routine;
   },
@@ -64,9 +64,9 @@ bzork.vm.Cpu.prototype = {
     if (routine.storesResult())
       this.setVariable(routine.getStoreVariable(), value);
 
-    bzork.Debug.log("%c[wrote " + value.toString(16) + " to variable " +
-                    routine.getStoreVariable() + ", returning to 0x" + this.getPC() + "]",
-                    'font-style:italic;font-weight:bold');
+    bzork.Debug.log("%c[wrote 0x%s to variable %d, returning to 0x%s]",
+                    'font-style:italic;font-weight:bold',
+                    value.toString(16), routine.getStoreVariable(), this.getPC().toString(16));
     bzork.Debug.groupEnd();
   },
 
