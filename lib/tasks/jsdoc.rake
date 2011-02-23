@@ -4,7 +4,12 @@ task :jsdoc do
 
   template = File.expand_path("vendor/jsdoc-simple")
   config   = File.expand_path("config/jsdoc.conf")
-  src_path = File.expand_path("public/javascripts")
+  bzork_js = File.expand_path("public/javascripts/bzork.js")
+  src_path = File.expand_path("public/javascripts/bzork/")
 
-  system "JSDOCDIR='#{jsdoc_path}' sh #{jsrun_path} -c='#{config}' -t='#{template}' #{src_path}"
+  command = "JSDOCDIR='#{jsdoc_path}' sh #{jsrun_path}"
+  options = "-c='#{config}' -t='#{template}'"
+  files   = "#{bzork_js} #{src_path}"
+
+  system "#{command} #{options} #{files}"
 end
