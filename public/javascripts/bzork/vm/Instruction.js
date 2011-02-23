@@ -146,6 +146,9 @@ bzork.vm.Instruction.prototype = {
     if (this.stores())
       s += ' -> ' + bzork.Util.variableName(this.getStoreVariable());
 
+    if (this.hasString())
+      s += ' "' + this.getString() + '"';
+
     return s;
   }
 };
