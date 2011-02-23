@@ -64,7 +64,9 @@ bzork.vm.Cpu.prototype = {
     if (routine.storesResult())
       this.setVariable(routine.getStoreVariable(), value);
 
-    bzork.Debug.log("  - returning to 0x" + this.getPC().toString(16));
+    bzork.Debug.log("%c[wrote " + value.toString(16) + " to variable " +
+                    routine.getStoreVariable() + ", returning to 0x" + this.getPC() + "]",
+                    'font-style:italic;font-weight:bold');
     bzork.Debug.groupEnd();
   },
 
