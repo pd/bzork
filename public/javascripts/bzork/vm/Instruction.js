@@ -162,10 +162,10 @@ bzork.vm.Instruction.prototype = {
 ///// Constants
 
 bzork.vm.Instruction.Forms = {
-  LONG:  'LONG',
-  SHORT: 'SHORT',
-  EXT:   'EXT',
-  VAR:   'VAR'
+  LONG:  0,
+  SHORT: 1,
+  EXT:   2,
+  VAR:   3
 };
 
 bzork.vm.Instruction.OpCounts = {
