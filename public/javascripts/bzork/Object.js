@@ -158,11 +158,27 @@ bzork.Object.Property = function(machine, addr) {
 
 bzork.Object.Property.prototype = {
   getNumber: function() {
-    return this._getSizeByte() - 32 * (this.getLength() - 1);
+    if (this._getVersion() < 4)
+      return this._getSizeByte() - 32 * (this.getLength() - 1);
+    else
+      return this._getSizeByte() & 0x3f;
   },
 
   getLength: function() {
-    return Math.floor(this._getSizeByte() / 32) + 1;
+    if (this._getVersion() < 4)
+      return Math.floor(this._getSizeByte() / 32) + 1;
+
+    var byte1 = this._getSizeByte(),
+        byte2 = this._getSizeByte(1);
+
+    if (this._sizeByteCount() === 2)
+      return this._getSizeByte(1) & 0x3f;
+    else if ((byte1 & 0x40) === 0x0) // bit 6 unset
+      return 1;
+    else if ((byte1 & 0x40) === 0x40) // bit 6 set
+      return 2;
+    else
+      throw "Unknown property data length of property " + this.getNumber() + " at " + this._addr;
   },
 
   // Object 1 of zork1.z3 has a length of 8. I have no idea what to do
@@ -185,14 +201,27 @@ bzork.Object.Property.prototype = {
   },
 
   getDataAddr: function() {
-    return this._addr + 1;
+    return this._addr + this._sizeByteCount();
   },
 
   nextPropertyAddr: function() {
-    return this._addr + 1 + this.getLength();
+    return this._addr + this._sizeByteCount() + this.getLength();
   },
 
-  _getSizeByte: function() {
-    return this._machine.getUint8(this._addr);
+  _getSizeByte: function(offset) {
+    if (typeof offset === "undefined")
+      offset = 0;
+    return this._machine.getUint8(this._addr + offset);
+  },
+
+  _sizeByteCount: function() {
+    if (this._getVersion() < 4)
+      return 1;
+    else
+      return ((this._getSizeByte() & 0x80) === 0x80) ? 2 : 1;
+  },
+
+  _getVersion: function() {
+    return this._machine.getZcodeVersion();
   }
 };

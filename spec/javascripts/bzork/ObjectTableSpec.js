@@ -174,6 +174,10 @@ describe("bzork.ObjectTable", function() {
       expect(this.objects.getObjectSize()).toEqual(14);
     });
 
+    it("should know the number of objects stored", function() {
+      expect(this.objects.getObjectCount()).toEqual(180);
+    });
+
     it("should retrieve objects with the correct property header address", function() {
       expect(this.objects.get(54).getPropertyHeaderAddr()).toEqual(0x1053);
     });
@@ -183,6 +187,49 @@ describe("bzork.ObjectTable", function() {
       expect(obj.getParent()).toEqual(53);
       expect(obj.getSibling()).toEqual(56);
       expect(obj.getChild()).toEqual(55);
+    });
+
+    it("should retrieve objects with the correct names", function() {
+      var obj1 = this.objects.get(1),
+          obj11 = this.objects.get(11),
+          obj42 = this.objects.get(42);
+
+      expect(obj1.getDescription()).toEqual("Class");
+      expect(obj11.getDescription()).toEqual("northeast wall");
+      expect(obj42.getDescription()).toEqual("Convention Hall");
+    });
+
+    it("should know the defined property numbers for objects", function() {
+      var obj1 = this.objects.get(1),
+          obj7 = this.objects.get(7),
+          obj20 = this.objects.get(20);
+
+      expect(obj1.getPropertyNumbers()).toEqual([]);
+      expect(obj7.getPropertyNumbers()).toEqual([26, 22, 10, 1]);
+      expect(obj20.getPropertyNumbers()).toEqual([31, 30, 29, 28, 27, 26, 21, 20, 18, 6, 5, 4]);
+    });
+
+    it("should know the defined values for properties", function() {
+      var obj7 = this.objects.get(7);
+      expect(obj7.getPropertyValue(26)).toEqual(0x0000);
+      expect(obj7.getPropertyValue(22)).toEqual(0x567d);
+      expect(obj7.getPropertyValue(1)).toEqual(0x3e1b);
+    });
+
+    it("should know the list of set attributes for an object", function() {
+      var obj20 = this.objects.get(20),
+          obj25 = this.objects.get(25),
+          obj35 = this.objects.get(35);
+
+      expect(obj20.getAttributes()).toEqual([0, 2, 16, 23]);
+      expect(obj25.getAttributes()).toEqual([]);
+      expect(obj35.getAttributes()).toEqual([4, 14, 17]);
+    });
+
+    it("should be able to set attributes on an object", function() {
+      // set an attribute > 32, since no ZTUU obj have attributes
+      // above it. we then implicitly test the increased attr size.
+      throw "TODO";
     });
   });
 });
