@@ -171,9 +171,10 @@ bzork.Object.Property.prototype = {
     var byte1 = this._getSizeByte(),
         byte2 = this._getSizeByte(1);
 
-    if (this._sizeByteCount() === 2)
-      return this._getSizeByte(1) & 0x3f;
-    else if ((byte1 & 0x40) === 0x0) // bit 6 unset
+    if (this._sizeByteCount() === 2) {
+      var size = byte2 & 0x3f;
+      return size === 0 ? 64 : size; // See Sec. 12.4.2.1.1
+    } else if ((byte1 & 0x40) === 0x0) // bit 6 unset
       return 1;
     else if ((byte1 & 0x40) === 0x40) // bit 6 set
       return 2;
