@@ -38,5 +38,8 @@ module Bzork
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
+
+    config.middleware.use(Rack::Static, :urls => ['/stories'],
+                          :root => Rails.root.join('contrib').to_s)
   end
 end
