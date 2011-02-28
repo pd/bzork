@@ -229,7 +229,17 @@ describe("bzork.ObjectTable", function() {
     it("should be able to set attributes on an object", function() {
       // set an attribute > 32, since no ZTUU obj have attributes
       // above it. we then implicitly test the increased attr size.
-      throw "TODO";
+      var obj20 = this.objects.get(20);
+      expect(obj20.testAttribute(33)).toEqual(false);
+
+      obj20.setAttribute(0, false);
+      expect(obj20.testAttribute(0)).toEqual(false);
+
+      obj20.setAttribute(33, true);
+      expect(obj20.testAttribute(33)).toEqual(true);
+
+      obj20.setAttribute(33, false);
+      expect(obj20.testAttribute(33)).toEqual(false);
     });
   });
 });

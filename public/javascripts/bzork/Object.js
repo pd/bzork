@@ -119,6 +119,23 @@ bzork.Object.prototype = {
     return _.contains(this.getAttributes(), attr);
   },
 
+  setAttribute: function(attr, bool) {
+    if (attr < 0 || attr >= this._attributesSize * 8)
+      throw "Attribute " + attr + " out of bounds!";
+
+    var bytenum = Math.floor(attr / 8),
+        bitnum = 7 - (attr % 8),
+        addr = this.getAttributesAddr() + bytenum,
+        val = this._machine.getUint8(addr);
+
+    if (bool)
+      val |= (1 << bitnum);
+    else
+      val &= ~(1 << bitnum);
+
+    this._machine.setUint8(addr, val);
+  },
+
   hasDescription: function() {
     return this._machine.getUint8(this.getPropertyHeaderAddr()) !== 0;
   },
