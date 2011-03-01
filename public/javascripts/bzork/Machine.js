@@ -10,6 +10,8 @@ bzork.Machine = function(storyBytes) {
 
   this.cpu = new bzork.vm.Cpu(this);
   this.instructionReader = new bzork.vm.InstructionReader(this);
+
+  this.useUI(bzork.ui.Dummy);
 };
 
 bzork.Machine.prototype = {
@@ -28,6 +30,11 @@ bzork.Machine.prototype = {
 
   shouldHalt: function() {
     return false;
+  },
+
+  useUI: function(obj) {
+    this.ui = new obj(this);
+    this.ui.init();
   },
 
   // CPU proxy methods

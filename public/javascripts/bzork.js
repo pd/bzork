@@ -2,6 +2,7 @@ var bzork = (function() {
   // Set up namespaces and suchlike
   return {
     vm: {},
+    ui: {},
     version: "0.1",
 
     Debug: {
