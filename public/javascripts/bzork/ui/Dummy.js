@@ -2,5 +2,7 @@ bzork.ui.Dummy = function() {
 };
 
 bzork.ui.Dummy.prototype = {
-  init: function() {}
+  init: function() {},
+  drawStatusLine: function() {},
+  print: function() {}
 };

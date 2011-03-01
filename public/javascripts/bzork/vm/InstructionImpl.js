@@ -19,7 +19,12 @@ bzork.vm.InstructionImpl = {};
   });
 
   addMethod('print', function() {
-    this._machine.ui.drawStatusLine();
+    this._machine.ui.print(this.getString());
+    this.next();
+  });
+
+  addMethod('new_line', function() {
+    this._machine.ui.print("\n");
     this.next();
   });
 
@@ -65,6 +70,19 @@ bzork.vm.InstructionImpl = {};
     this.branchOrNext(this.decrementVariable(variable) < value);
   });
 
+  addMethod('inc_chk', function() {
+    var variable = this.operands[0].getValue(),
+        value = this.operands[1].getSignedValue();
+    this.branchOrNext(this.incrementVariable(variable) > value);
+  });
+
+  addMethod('and', function() {
+    var a = this.operands[0].getValue(),
+        b = this.operands[1].getValue();
+    this.storeResult(a & b);
+    this.next();
+  });
+
   addMethod('test_attr', function() {
     var objnum = this.operands[0].getValue(),
         attr = this.operands[1].getValue();
@@ -82,6 +100,13 @@ bzork.vm.InstructionImpl = {};
     var array = this.operands[0].getValue(),
         wordIndex = this.operands[1].getValue();
     this.storeResult(this._machine.getUint16(array + wordIndex * 2));
+    this.next();
+  });
+
+  addMethod('loadb', function() {
+    var array = this.operands[0].getValue(),
+        byteIndex = this.operands[1].getValue();
+    this.storeResult(this._machine.getUint8(array + byteIndex));
     this.next();
   });
 
@@ -144,6 +169,18 @@ bzork.vm.InstructionImpl = {};
         wordIndex = this.operands[1].getValue(),
         value = this.operands[2].getValue();
     this._machine.setUint16(array + wordIndex * 2, value);
+    this.next();
+  });
+
+  addMethod('print_char', function() {
+    var code = this.operands[0].getValue();
+    this._machine.ui.print(this._machine.decodeZsciiChar(code));
+    this.next();
+  });
+
+  addMethod('print_num', function() {
+    var value = this.operands[0].getSignedValue();
+    this._machine.ui.print(value.toString());
     this.next();
   });
 
