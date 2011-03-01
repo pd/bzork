@@ -37,11 +37,11 @@ bzork.Machine.prototype = {
       });
 
       bzork.Debug.log("%d instructions executed", instrs);
-      if (caughtEx) {
-        bzork.Debug.log("Died on exception: %o", caughtEx);
-        throw caughtEx;
-      }
+      bzork.Debug.log("Died on exception: %o", caughtEx);
       bzork.Debug.disable();
+
+      if (caughtEx)
+        throw caughtEx;
     }
   },
 
