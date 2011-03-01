@@ -19,12 +19,24 @@ bzork.Object.prototype = {
     return this._getRelative(0);
   },
 
+  setParent: function(parent) {
+    this._setRelative(0, parent);
+  },
+
   getSibling: function() {
     return this._getRelative(1);
   },
 
+  setSibling: function(sibling) {
+    this._setRelative(1, sibling);
+  },
+
   getChild: function() {
     return this._getRelative(2);
+  },
+
+  setChild: function(child) {
+    this._setRelative(2, child);
   },
 
   getAttributesAddr: function() {
@@ -153,6 +165,11 @@ bzork.Object.prototype = {
   _getRelative: function(i) {
     var fn = this._idSize == 1 ? 'getUint8' : 'getUint16';
     return this._machine[fn](this._addr + this._attributesSize + (i * this._idSize));
+  },
+
+  _setRelative: function(i, objnum) {
+    var fn = this._idSize == 1 ? 'setUint8' : 'setUint16';
+    this._machine[fn](this._addr + this._attributesSize + (i * this._idSize), objnum);
   },
 
   _getProperties: function() {

@@ -48,6 +48,19 @@ describe("bzork.ObjectTable", function() {
       expect(obj89.getChild()).toEqual(87);
     });
 
+    it("should be able to set object tree information", function() {
+      var obj1 = this.objects.get(1);
+
+      obj1.setParent(0);
+      expect(obj1.getParent()).toEqual(0);
+
+      obj1.setSibling(10);
+      expect(obj1.getSibling()).toEqual(10);
+
+      obj1.setChild(89);
+      expect(obj1.getChild()).toEqual(89);
+    });
+
     it("should retrieve objects with the correct property header addresses", function() {
       expect(this.objects.get(1).getPropertyHeaderAddr()).toEqual(0x0bb8);
       expect(this.objects.get(89).getPropertyHeaderAddr()).toEqual(0x1388);
