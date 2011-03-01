@@ -31,7 +31,6 @@ bzork.Machine.prototype = {
     } catch (ex) {
       caughtEx = ex;
     } finally {
-      _.times(15, function() { bzork.Debug.groupEnd(); });
       bzork.Debug.log("%d instructions executed", instrs);
       if (caughtEx) {
         bzork.Debug.log("Died on exception: %o", caughtEx);
