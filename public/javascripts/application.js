@@ -13,4 +13,5 @@ jQuery(document).ready(function() {
   machine.useUI(bzork.ui.Browser);
 
   window.bmachine = machine;
+  machine.run('debug-mode');
 });

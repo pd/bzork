@@ -37,6 +37,29 @@ bzork.Machine.prototype = {
     this.ui.init();
   },
 
+  // Convenience methods for commonly retrieved data
+  getStatusLineText: function() {
+    var obj = this.getObject( this.getGlobal(16) );
+    return obj.getDescription();
+  },
+
+  getStatusScoreText: function() {
+    // if (this.isTimeGame()) ... TODO
+    return this.getScore() + "/" + this.getTurns();
+  },
+
+  getScore: function() {
+    return bzork.Util.toInt16(this.getGlobal(17));
+  },
+
+  getTurns: function() {
+    return this.getGlobal(18);
+  },
+
+  getTime: function() {
+    return this.getGlobal(17) + ":" + this.getGlobal(18);
+  },
+
   // CPU proxy methods
   call: function(packedAddr, returnAddr, storeVariable, args) {
     return this.cpu.callRoutine(packedAddr, returnAddr, storeVariable, args);
@@ -84,6 +107,10 @@ bzork.Machine.prototype = {
   },
 
   // Table proxy methods
+  getObject: function(i) {
+    return this.objectTable.get(i);
+  },
+
   getAbbrev: function(i) {
     return this.abbrevTable.get(i);
   },

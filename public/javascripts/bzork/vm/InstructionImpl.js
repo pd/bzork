@@ -18,6 +18,11 @@ bzork.vm.InstructionImpl = {};
     this.returnFromRoutine(0);
   });
 
+  addMethod('print', function() {
+    this._machine.ui.drawStatusLine();
+    this.next();
+  });
+
   // 1OP
   addMethod('jz', function() {
     var a = this.operands[0].getSignedValue();
