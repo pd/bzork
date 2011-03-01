@@ -64,6 +64,12 @@ bzork.vm.InstructionImpl = {};
     this.next();
   });
 
+  addMethod('print_obj', function() {
+    var obj = this._machine.getObject(this.operands[0].getValue());
+    this._machine.ui.print(obj.getDescription());
+    this.next();
+  });
+
   addMethod('ret', function() {
     this.returnFromRoutine(this.operands[0].getValue());
   });
@@ -96,6 +102,15 @@ bzork.vm.InstructionImpl = {};
     this.branchOrNext(this.incrementVariable(variable) > value);
   });
 
+  addMethod('jin', function() {
+    var obj1 = this.operands[0].getValue(),
+        obj2 = this.operands[1].getValue();
+    obj1 = this._machine.getObject(obj1);
+    obj2 = this._machine.getObject(obj2);
+
+    this.branchOrNext(obj1.getParent() === obj2.id);
+  });
+
   addMethod('and', function() {
     var a = this.operands[0].getValue(),
         b = this.operands[1].getValue();
@@ -107,6 +122,13 @@ bzork.vm.InstructionImpl = {};
     var objnum = this.operands[0].getValue(),
         attr = this.operands[1].getValue();
     this.branchOrNext(this._machine.testAttribute(objnum, attr));
+  });
+
+  addMethod('set_attr', function() {
+    var objnum = this.operands[0].getValue(),
+        attr = this.operands[1].getValue();
+    this._machine.setAttribute(objnum, attr);
+    this.next();
   });
 
   addMethod('store', function() {
