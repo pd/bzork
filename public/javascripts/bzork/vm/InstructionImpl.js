@@ -69,9 +69,7 @@ bzork.vm.InstructionImpl = {};
   });
 
   addMethod('call_1s', function() {
-    var routine = this.getOperandValue(0);
-    this._machine.call(routine, this.nextInstructionAddr(),
-                       this.getStoreVariable(), []);
+    this.callRoutine();
   });
 
   addMethod('print_obj', function() {
@@ -89,8 +87,7 @@ bzork.vm.InstructionImpl = {};
   });
 
   addMethod('call_1n', function() {
-    this._machine.call(this.getOperandValue(0), this.nextInstructionAddr(),
-                       false, []);
+    this.callRoutine();
   });
 
   // 2OP
@@ -217,29 +214,11 @@ bzork.vm.InstructionImpl = {};
 
   // VAROP
   addMethod('call', function() {
-    var operands = this.operands, args = [],
-        addr = this.getOperandValue(0);
-
-    if (addr === 0) {
-      this.storeResult(0);
-      this.next();
-      return;
-    }
-
-    for (var i = 1; i < operands.length; i++)
-      args.push(this.getOperandValue(i));
-
-    this._machine.call(addr, this.nextInstructionAddr(),
-                       this.getStoreVariable(), args);
+    this.callRoutine();
   });
 
-  addMethod('call_vs', function() { // same as call. what to do.
-    var operands = this.operands, args = [];
-    for (var i = 1; i < operands.length; i++)
-      args.push(this.getOperandValue(i));
-
-    this._machine.call(this.getOperandValue(0), this.nextInstructionAddr(),
-                       this.getStoreVariable(), args);
+  addMethod('call_vs', function() {
+    this.callRoutine();
   });
 
   addMethod('storew', function() {

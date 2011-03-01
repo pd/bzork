@@ -33,6 +33,24 @@ bzork.vm.Instruction.prototype = {
     this._machine.increasePC(this.length);
   },
 
+  callRoutine: function() {
+    var packedRoutineAddr = this.getOperandValue(0),
+        operands = this.operands, args = [],
+        store = this.stores() ? this.getStoreVariable() : false;
+
+    if (packedRoutineAddr === 0) {
+      this.storeResult(0);
+      this.next();
+      return;
+    }
+
+    for (var i = 1; i < operands.length; i++)
+      args.push(operands[i].getValue());
+
+    this._machine.call(packedRoutineAddr, this.nextInstructionAddr(),
+                       store, args);
+  },
+
   branch: function() {
     if (this.branchOffset === 0)
       this.returnFromRoutine(0);
