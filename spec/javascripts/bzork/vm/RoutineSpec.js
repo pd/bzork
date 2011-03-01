@@ -1,6 +1,6 @@
 describe("bzork.vm.Routine", function() {
   it("throws if accessing the store variable when the routine does not store", function() {
-    var machine = new bzork.Machine(bzork.spec.storyData['zork1']);
+    var machine = new bzork.Machine(bzork.spec.getStory('zork1'));
     var routine = new bzork.vm.Routine(machine, 0);
     expect(function() {
       routine.getStoreVariable()
@@ -9,7 +9,7 @@ describe("bzork.vm.Routine", function() {
 
   describe("for Zork1", function() {
     beforeEach(function() {
-      this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
+      this.machine = new bzork.Machine(bzork.spec.getStory('zork1'));
 
       // numbers taken from txd
       this.r001 = new bzork.vm.Routine(this.machine, 0x4e38);
@@ -34,7 +34,7 @@ describe("bzork.vm.Routine", function() {
 
   describe("for ZTUU", function() {
     beforeEach(function() {
-      this.machine = new bzork.Machine(bzork.spec.storyData['ztuu']);
+      this.machine = new bzork.Machine(bzork.spec.getStory('ztuu'));
       this.r003 = new bzork.vm.Routine(this.machine, 0x48a8);
     });
 

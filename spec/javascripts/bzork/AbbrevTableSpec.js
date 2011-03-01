@@ -7,7 +7,7 @@ describe("bzork.abbrevTable", function() {
 
   describe("for Zork1", function() {
     beforeEach(function() {
-      this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
+      this.machine = new bzork.Machine(bzork.spec.getStory('zork1'));
       this.abbrev  = this.machine.abbrevTable;
     });
 

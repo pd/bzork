@@ -1,7 +1,7 @@
 describe("bzork.Header", function() {
   describe("for Zork1", function() {
     beforeEach(function() {
-      this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
+      this.machine = new bzork.Machine(bzork.spec.getStory('zork1'));
       this.header  = this.machine.header;
     });
 
@@ -56,7 +56,7 @@ describe("bzork.Header", function() {
 
   describe("for ZTUU", function() {
     beforeEach(function() {
-      this.machine = new bzork.Machine(bzork.spec.storyData['ztuu']);
+      this.machine = new bzork.Machine(bzork.spec.getStory('ztuu'));
       this.header  = this.machine.header;
     });
 
@@ -67,7 +67,7 @@ describe("bzork.Header", function() {
 
   describe("for a z6 game", function() {
     beforeEach(function() {
-      this.machine = new bzork.Machine(bzork.spec.storyData['z6']);
+      this.machine = new bzork.Machine(bzork.spec.getStory('z6'));
       this.header  = this.machine.header;
     });
 

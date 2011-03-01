@@ -1,7 +1,7 @@
 describe("Z-Machine instructions", function() {
   describe("add", function() {
     beforeEach(function() {
-      this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
+      this.machine = new bzork.Machine(bzork.spec.getStory('zork1'));
 
       // zork1.z3 0x5479
       this.machine.call(0x2a43, this.machine.getPC(), 3, []);
@@ -22,7 +22,7 @@ describe("Z-Machine instructions", function() {
 
   describe("call", function() {
     beforeEach(function() {
-      this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
+      this.machine = new bzork.Machine(bzork.spec.getStory('zork1'));
     });
 
     it("calls the routine at the packed address in operand 0", function() {

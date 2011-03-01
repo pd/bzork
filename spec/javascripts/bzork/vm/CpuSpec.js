@@ -1,6 +1,6 @@
 describe("bzork.vm.Cpu", function() {
   beforeEach(function() {
-    this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
+    this.machine = new bzork.Machine(bzork.spec.getStory('zork1'));
     this.cpu = new bzork.vm.Cpu(this.machine);
   });
 
@@ -92,7 +92,7 @@ describe("bzork.vm.Cpu", function() {
 
     describe("in z5", function() {
       beforeEach(function() {
-        this.machine = new bzork.Machine(bzork.spec.storyData['ztuu']);
+        this.machine = new bzork.Machine(bzork.spec.getStory('ztuu'));
         this.cpu = this.machine.cpu;
       });
 
@@ -104,7 +104,7 @@ describe("bzork.vm.Cpu", function() {
 
     describe("in z6", function() {
       beforeEach(function() {
-        this.machine = new bzork.Machine(bzork.spec.storyData['z6']);
+        this.machine = new bzork.Machine(bzork.spec.getStory('z6'));
         this.cpu = this.machine.cpu;
       });
 
@@ -117,7 +117,7 @@ describe("bzork.vm.Cpu", function() {
 
     describe("in z8", function() {
       beforeEach(function() {
-        this.machine = new bzork.Machine(bzork.spec.storyData['z8']);
+        this.machine = new bzork.Machine(bzork.spec.getStory('z8'));
         this.cpu = this.machine.cpu;
       });
 

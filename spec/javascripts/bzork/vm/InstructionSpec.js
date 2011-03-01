@@ -346,7 +346,7 @@ describe("bzork.vm.Instruction", function() {
 
   describe("next", function() {
     beforeEach(function() {
-      this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
+      this.machine = new bzork.Machine(bzork.spec.getStory('zork1'));
       this.instr   = this.machine.readInstruction(this.machine.getStartPC());
     });
 

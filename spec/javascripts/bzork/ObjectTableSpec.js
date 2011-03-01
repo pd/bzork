@@ -3,7 +3,7 @@
 describe("bzork.ObjectTable", function() {
   describe("for Zork1", function() {
     beforeEach(function() {
-      this.machine = new bzork.Machine(bzork.spec.storyData['zork1']);
+      this.machine = new bzork.Machine(bzork.spec.getStory('zork1'));
       this.objects = this.machine.objectTable;
     });
 
@@ -175,7 +175,7 @@ describe("bzork.ObjectTable", function() {
 
   describe("for ZTUU", function() {
     beforeEach(function() {
-      this.machine = new bzork.Machine(bzork.spec.storyData['ztuu']);
+      this.machine = new bzork.Machine(bzork.spec.getStory('ztuu'));
       this.objects = this.machine.objectTable;
     });
 
