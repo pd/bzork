@@ -31,6 +31,11 @@ bzork.Machine.prototype = {
     } catch (ex) {
       caughtEx = ex;
     } finally {
+      _(10).times(function() {
+        bzork.Debug.log(""); // have to log *something* to get the groups to unwind. weird.
+        bzork.Debug.groupEnd();
+      });
+
       bzork.Debug.log("%d instructions executed", instrs);
       if (caughtEx) {
         bzork.Debug.log("Died on exception: %o", caughtEx);
