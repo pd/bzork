@@ -64,6 +64,18 @@ bzork.vm.Instruction.prototype = {
     return this.incrementVariable(i, -1);
   },
 
+  getOperandValue: function(i) {
+    return this.operands[i].getValue();
+  },
+
+  getSignedOperandValue: function(i) {
+    return this.operands[i].getSignedValue();
+  },
+
+  getObjectFromOperand: function(i) {
+    return this._machine.getObject( this.getValue(i) );
+  },
+
   getLength: function() {
     return this.length;
   },
