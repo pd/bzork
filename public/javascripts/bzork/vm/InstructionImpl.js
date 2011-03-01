@@ -19,7 +19,7 @@ bzork.vm.InstructionImpl = {};
   });
 
   addMethod('print', function() {
-    this._machine.ui.print(this.getString());
+    this.print(this.getString());
     this.next();
   });
 
@@ -28,7 +28,7 @@ bzork.vm.InstructionImpl = {};
   });
 
   addMethod('new_line', function() {
-    this._machine.ui.print("\n");
+    this.print("\n");
     this.next();
   });
 
@@ -70,7 +70,7 @@ bzork.vm.InstructionImpl = {};
 
   addMethod('print_obj', function() {
     var obj = this.getObjectFromOperand(0);
-    this._machine.ui.print(obj.getDescription());
+    this.print(obj.getDescription());
     this.next();
   });
 
@@ -244,15 +244,29 @@ bzork.vm.InstructionImpl = {};
     this.next();
   });
 
+  addMethod('put_prop', function() {
+    var objnum = this.getOperandValue(0),
+        propnum = this.getOperandValue(1),
+        value = this.getOperandValue(2);
+    this._machine.setProperty(objnum, propnum, value);
+    this.next();
+  });
+
+  addMethod('sread', function() {
+    if (this._machine.getZcodeVersion() <= 3)
+      this.drawStatusLine();
+    throw "todo";
+  });
+
   addMethod('print_char', function() {
     var code = this.getOperandValue(0);
-    this._machine.ui.print(this._machine.decodeZsciiChar(code));
+    this.print(this._machine.decodeZsciiChar(code));
     this.next();
   });
 
   addMethod('print_num', function() {
     var value = this.getSignedOperandValue(0);
-    this._machine.ui.print(value.toString());
+    this.print(value.toString());
     this.next();
   });
 
@@ -265,14 +279,6 @@ bzork.vm.InstructionImpl = {};
     var variable = this.getOperandValue(0),
         value = this._machine.pullStack();
     this._machine.setVariable(variable, value);
-    this.next();
-  });
-
-  addMethod('put_prop', function() {
-    var objnum = this.getOperandValue(0),
-        propnum = this.getOperandValue(1),
-        value = this.getOperandValue(2);
-    this._machine.setProperty(objnum, propnum, value);
     this.next();
   });
 

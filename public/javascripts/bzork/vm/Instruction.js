@@ -64,6 +64,14 @@ bzork.vm.Instruction.prototype = {
     return this.incrementVariable(i, -1);
   },
 
+  print: function(string) {
+    this._machine.ui.print(string);
+  },
+
+  drawStatusLine: function() {
+    this._machine.ui.drawStatusLine();
+  },
+
   getOperandValues: function() {
     return _.map(this.operands, function(op) { return op.getValue(); });
   },
