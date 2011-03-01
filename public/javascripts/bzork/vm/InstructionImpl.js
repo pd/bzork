@@ -68,6 +68,12 @@ bzork.vm.InstructionImpl = {};
     this.next();
   });
 
+  addMethod('call_1s', function() {
+    var routine = this.getOperandValue(0);
+    this._machine.call(routine, this.nextInstructionAddr(),
+                       this.getStoreVariable(), []);
+  });
+
   addMethod('print_obj', function() {
     var obj = this.getObjectFromOperand(0);
     this.print(obj.getDescription());
