@@ -23,6 +23,10 @@ bzork.vm.InstructionImpl = {};
     this.next();
   });
 
+  addMethod('ret_popped', function() {
+    this.returnFromRoutine(this._machine.pullStack());
+  });
+
   addMethod('new_line', function() {
     this._machine.ui.print("\n");
     this.next();
@@ -95,6 +99,12 @@ bzork.vm.InstructionImpl = {};
       foundEq = values[i] === values[i+1];
 
     this.branchOrNext(foundEq);
+  });
+
+  addMethod('jl', function() {
+    var a = this.getSignedOperandValue(0),
+        b = this.getSignedOperandValue(1);
+    this.branchOrNext(a < b);
   });
 
   addMethod('dec_chk', function() {
@@ -201,11 +211,19 @@ bzork.vm.InstructionImpl = {};
 
   // VAROP
   addMethod('call', function() {
-    var operands = this.operands, args = [];
+    var operands = this.operands, args = [],
+        addr = this.getOperandValue(0);
+
+    if (addr === 0) {
+      this.storeResult(0);
+      this.next();
+      return;
+    }
+
     for (var i = 1; i < operands.length; i++)
       args.push(this.getOperandValue(i));
 
-    this._machine.call(this.getOperandValue(0), this.nextInstructionAddr(),
+    this._machine.call(addr, this.nextInstructionAddr(),
                        this.getStoreVariable(), args);
   });
 
