@@ -73,7 +73,7 @@ bzork.vm.Instruction.prototype = {
   },
 
   getObjectFromOperand: function(i) {
-    return this._machine.getObject( this.getValue(i) );
+    return this._machine.getObject( this.getOperandValue(i) );
   },
 
   getLength: function() {
