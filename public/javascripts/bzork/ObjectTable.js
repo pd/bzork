@@ -39,6 +39,11 @@ bzork.ObjectTable.prototype = {
     return obj.testAttribute(attr);
   },
 
+  setAttribute: function(obj, attr) {
+    var obj = this.get(obj);
+    return obj.setAttribute(attr);
+  },
+
   getObjectSize: function() {
     if (this.getZcodeVersion() <= 3)
       return 9;

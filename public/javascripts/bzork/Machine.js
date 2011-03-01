@@ -155,6 +155,10 @@ bzork.Machine.prototype = {
     return this.objectTable.testAttribute(obj, attr);
   },
 
+  setAttribute: function(obj, attr) {
+    this.objectTable.setAttribute(obj, attr);
+  },
+
   // Memory proxy methods
   getUint8: function(offset) {
     return this.memory.getUint8(offset);
