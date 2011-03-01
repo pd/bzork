@@ -152,6 +152,18 @@ bzork.vm.Instruction.prototype = {
     if (this.stores())
       s += ' -> ' + bzork.Util.variableName(this.getStoreVariable());
 
+    if (this.branches()) {
+      var offset = this.getBranchOffset(),
+          branchTo;
+      if (offset === 0)
+        branchTo = 'rfalse';
+      else if (offset === 1)
+        branchTo = 'rtrue';
+      else
+        branchTo = '0x' + this.getBranchDestination().toString(16);
+      s += " => " + branchTo + " (on " + this.branchesOn() + ")";
+    }
+
     if (this.hasString())
       s += ' "' + this.getString() + '"';
 
