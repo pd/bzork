@@ -24,7 +24,7 @@ bzork.Machine.prototype = {
     try {
       while (!this.shouldHalt()) { // die early like morrison
         var instr = this.readInstruction(this.getPC());
-        bzork.Debug.log("0x%s: %s", this.getPC().toString(16), instr.toString());
+        bzork.Debug.log(_.sprintf("0x%04x: %s", this.getPC(), instr));
         instr.run();
         instrs++;
       }
