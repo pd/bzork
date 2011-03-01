@@ -116,7 +116,6 @@ bzork.vm.InstructionReader.prototype = {
       var bitfield = view.getUint8(addr + 1);
       switch (opcount) {
       case bzork.vm.Instruction.OpCounts.OP2:
-        return this._bitfieldOperandTypes(bitfield, 2);
       case bzork.vm.Instruction.OpCounts.VAR:
         return this._bitfieldOperandTypes(bitfield, 4);
       case bzork.vm.Instruction.OpCounts.OP8:

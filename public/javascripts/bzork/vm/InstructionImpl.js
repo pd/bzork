@@ -85,9 +85,16 @@ bzork.vm.InstructionImpl = {};
 
   // 2OP
   addMethod('je', function() {
-    var a = this.getSignedOperandValue(0),
-        b = this.getSignedOperandValue(1);
-    this.branchOrNext(a === b);
+    var values = this.getSignedOperandValues(),
+        foundEq = false;
+
+    if (values.length < 2)
+      throw "Insufficient operands supplied to 'je' at 0x" + this._addr.toString(16);
+
+    for (var i = 0; i < values.length - 1; i++)
+      foundEq = values[i] === values[i+1];
+
+    this.branchOrNext(foundEq);
   });
 
   addMethod('dec_chk', function() {

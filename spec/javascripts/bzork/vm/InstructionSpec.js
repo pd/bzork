@@ -174,7 +174,9 @@ describe("bzork.vm.Instruction", function() {
     it("recognizes 2OP var forms with long/var operands", function() {
       var instr = buildInstruction('mul');
       expect(instr.getOperandTypes()).toEqual([bzork.vm.Instruction.OpTypes.LARGE,
-                                               bzork.vm.Instruction.OpTypes.VAR]);
+                                               bzork.vm.Instruction.OpTypes.VAR,
+                                               bzork.vm.Instruction.OpTypes.OMIT,
+                                               bzork.vm.Instruction.OpTypes.OMIT]);
     });
 
     it("recognizes 8OP var forms", function() {
@@ -218,9 +220,9 @@ describe("bzork.vm.Instruction", function() {
       expect(opvals(instr)).toEqual([2, 0]);
     });
 
-    it("extracts the operands for 2OP var forms", function() {
+    it("extracts all 4 operands for 2OP var forms", function() {
       var instr = buildInstruction('mul');
-      expect(opvals(instr)).toEqual([0x03e8, 2]);
+      expect(opvals(instr)).toEqual([0x03e8, 2, null, null]);
     });
 
     it("extracts the operands for VAROP var forms", function() {
@@ -238,9 +240,9 @@ describe("bzork.vm.Instruction", function() {
       expect(opvals(instr)).toEqual([null, null, null, null]);
     });
 
-    it("extracts all the operands of @je with >2 args", function() {
+    it("extracts all the operands of 2OP instructions in VAR form", function() {
       var instr = buildInstruction('jelong');
-      expect(opvals(instr)).toEqual([127, 1, 0]);
+      expect(opvals(instr)).toEqual([127, 1, 0, null]);
     });
   });
 

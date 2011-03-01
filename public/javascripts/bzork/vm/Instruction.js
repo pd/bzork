@@ -64,8 +64,16 @@ bzork.vm.Instruction.prototype = {
     return this.incrementVariable(i, -1);
   },
 
+  getOperandValues: function() {
+    return _.map(this.operands, function(op) { return op.getValue(); });
+  },
+
   getOperandValue: function(i) {
     return this.operands[i].getValue();
+  },
+
+  getSignedOperandValues: function() {
+    return _.map(this.operands, function(op) { return op.getSignedValue(); });
   },
 
   getSignedOperandValue: function(i) {
