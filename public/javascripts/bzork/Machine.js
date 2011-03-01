@@ -105,6 +105,14 @@ bzork.Machine.prototype = {
     return this.instructionReader.readInstruction(addr);
   },
 
+  pushStack: function(value) {
+    this.cpu.stack.push(value);
+  },
+
+  pullStack: function() {
+    return this.cpu.stack.pop();
+  },
+
   // Header proxy methods
   getStartPC: function() {
     return this.header.getStartPC();

@@ -233,6 +233,18 @@ bzork.vm.InstructionImpl = {};
     this.next();
   });
 
+  addMethod('push', function() {
+    this._machine.pushStack(this.operands[0].getValue());
+    this.next();
+  });
+
+  addMethod('pull', function() {
+    var variable = this.operands[0].getValue(),
+        value = this._machine.pullStack();
+    this._machine.setVariable(variable, value);
+    this.next();
+  });
+
   addMethod('put_prop', function() {
     var objnum = this.operands[0].getValue(),
         propnum = this.operands[1].getValue(),
