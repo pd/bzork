@@ -16,6 +16,8 @@ bzork.Machine = function(storyBytes) {
 
 bzork.Machine.prototype = {
   run: function(debug) {
+    var instrs = 0, caughtEx = undefined;
+
     if (debug)
       bzork.Debug.enable();
 
@@ -24,8 +26,19 @@ bzork.Machine.prototype = {
         var instr = this.readInstruction(this.getPC());
         bzork.Debug.log("0x%s: %s", this.getPC().toString(16), instr.toString());
         instr.run();
+        instrs++;
       }
-    } finally { bzork.Debug.disable(); }
+    } catch (ex) {
+      caughtEx = ex;
+    } finally {
+      _.times(15, function() { bzork.Debug.groupEnd(); });
+      bzork.Debug.log("%d instructions executed", instrs);
+      if (caughtEx) {
+        bzork.Debug.log("Died on exception: %o", caughtEx);
+        throw caughtEx;
+      }
+      bzork.Debug.disable();
+    }
   },
 
   shouldHalt: function() {
