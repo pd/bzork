@@ -44,15 +44,19 @@ bzork.spec = (function() {
 
     getStory: function(name) {
       // Create a fresh copy of the story data every time
-      var data  = storyBytes[name],
-          abuf  = new ArrayBuffer(data.byteLength),
-          uint8 = new Uint8Array(data),
-          view  = new DataView(abuf);
+      var data = storyBytes[name],
+          orig = new DataView(data),
+          abuf = new ArrayBuffer(data.byteLength),
+          copy = new DataView(abuf);
 
-      for (var i = 0; i < data.byteLength; i++)
-        view.setUint8(i, uint8[i]);
+      // Deal with this if it ever arises but we're okay for now
+      if ((data.byteLength % 4) !== 0)
+        throw "Story " + name + " has length that won't work for uint32";
 
-      return view.buffer;
+      for (var i = 0; i < data.byteLength; i += 4)
+        copy.setUint32(i, orig.getUint32(i));
+
+      return copy.buffer;
     },
 
     storyFiles: storyFiles,
