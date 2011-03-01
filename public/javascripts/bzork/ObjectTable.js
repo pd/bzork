@@ -9,7 +9,7 @@ bzork.ObjectTable.prototype = {
       this._discoverBounds();
 
     if (i < 1 || i > this.getObjectCount())
-      throw "Object " + i + " out of bounds!";
+      throw _.sprintf("Object %d out of bounds!", i);;
 
     return new bzork.Object(this._machine, this, i, this.getObjectAddr(i));
   },

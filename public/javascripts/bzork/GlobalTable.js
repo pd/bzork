@@ -8,13 +8,13 @@ bzork.GlobalTable = function(machine, addr) {
 bzork.GlobalTable.prototype = {
   get: function(i) {
     if (i < 16 || i > 255)
-      throw "Global variable " + i + " out of bounds (16..255)!";
+      throw _.sprintf("Global variable %d out of bounds (16..255)!", i);
     return this._machine.getUint16(this._getVariableAddr(i));
   },
 
   set: function(i, val) {
     if (i < 16 || i > 255)
-      throw "Global variable " + i + " out of bounds (16..255)!";
+      throw _.sprintf("Global variable %d out of bounds (16..255)!", i);
     this._machine.setUint16(this._getVariableAddr(i), val);
   },
 

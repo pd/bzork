@@ -24,7 +24,7 @@ bzork.vm.Instruction.prototype = {
         method = bzork.vm.InstructionImpl[name];
 
     if (typeof method === "undefined")
-      throw "Unimplemented instruction: " + name;
+      throw _.sprintf("Unimplemented instruction: %s", name);
 
     method.apply(this);
   },

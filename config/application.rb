@@ -35,6 +35,7 @@ module Bzork
       lib/jquery-1.4.4-binary-ajax.js
       lib/underscore.js
       lib/underscore.filterObj.js
+      lib/underscore.strings.js
       lib/DataView.js
       lib/jdataview.js
     )

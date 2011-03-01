@@ -5,7 +5,7 @@ bzork.vm.InstructionImpl = {};
 
   function addMethod(opname, fn) {
     if (bzork.vm.InstructionImpl[opname])
-      throw "Can not redefine implementation of instruction " + opname;
+      throw _.sprintf("Can not redefine implementation of instruction %s", opname);
     bzork.vm.InstructionImpl[opname] = fn;
   }
 
@@ -93,7 +93,7 @@ bzork.vm.InstructionImpl = {};
         foundEq = false;
 
     if (values.length < 2)
-      throw "Insufficient operands supplied to 'je' at 0x" + this._addr.toString(16);
+      throw _.sprintf("Insufficient operands supplied to 'je' at 0x%04x", this._addr);
 
     for (var i = 0; i < values.length - 1; i++)
       foundEq = values[i] === values[i+1];

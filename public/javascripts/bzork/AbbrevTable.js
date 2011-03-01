@@ -32,7 +32,7 @@ bzork.AbbrevTable.prototype = {
 
   getAbbrevDataAddr: function(i) {
     if (i < 0 || i >= this.getAbbrevCount())
-      throw "Abbreviation " + i + " out of range!";
+      throw _.sprintf("Abbreviation %d out of range!", i);
     return this._machine.getUint16(this.getTableStartAddr() + (i * 2)) * 2;
   },
 

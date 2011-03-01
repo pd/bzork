@@ -92,13 +92,13 @@ bzork.Object.prototype = {
     if (prop)
       prop.setValue(val);
     else
-      throw "Unavailable property " + i + " for object " + this.id;
+      throw _.sprintf("Unavailable property %d for object %d", i, this.id);
   },
 
   getNextPropertyNumber: function(i) {
     var prop = this.getProperty(i);
     if (!prop)
-      throw "Unavailable property " + i + " for object " + this.id;
+      throw _.sprintf("Unavailable property %d for object %d", i, this.id);
 
     var addr = prop.nextPropertyAddr();
     if (this._machine.getUint8(addr) === 0)
@@ -127,13 +127,13 @@ bzork.Object.prototype = {
 
   testAttribute: function(attr) {
     if (attr < 0 || attr >= this._attributesSize * 8)
-      throw "Attribute " + attr + " out of bounds!";
+      throw _.sprintf("Attribute %d out of bounds!", attr);
     return _.contains(this.getAttributes(), attr);
   },
 
   setAttribute: function(attr, bool) {
     if (attr < 0 || attr >= this._attributesSize * 8)
-      throw "Attribute " + attr + " out of bounds!";
+      throw _.sprintf("Attribute %d out of bounds!", attr);
 
     var bytenum = Math.floor(attr / 8),
         bitnum = 7 - (attr % 8),
@@ -217,7 +217,8 @@ bzork.Object.Property.prototype = {
     else if ((byte1 & 0x40) === 0x40) // bit 6 set
       return 2;
     else
-      throw "Unknown property data length of property " + this.getNumber() + " at " + this._addr;
+      throw _.sprintf("Unknown property data length of property %d at 0x%04x",
+                      this.getNumber(), this._addr);
   },
 
   // Object 1 of zork1.z3 has a length of 8. I have no idea what to do

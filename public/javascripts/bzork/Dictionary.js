@@ -34,7 +34,7 @@ bzork.Dictionary.prototype = {
 
   getEntryOffset: function(i) {
     if (i < 0 || i >= this.getWordCount())
-      throw "Word " + i + " out of bounds!";
+      throw _.sprintf("Word %d out of bounds!", i);;
     return this.getFirstEntryAddr() + (this.getWordSize() * i);
   },
 

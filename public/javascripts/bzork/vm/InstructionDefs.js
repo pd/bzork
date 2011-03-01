@@ -7,7 +7,7 @@ bzork.vm.InstructionDefs = {};
   function addEntry(name, opcount, stores, branches, stringed, minVersion, maxVersion) {
     var opcode = bzork.vm.Instruction.Opcodes[name];
     if (typeof opcode === "undefined")
-      throw "Unknown opcode for instruction " + name;
+      throw _.sprintf("Unknown opcode for instruction %s", name);
 
     var key  = opcount + ":" + opcode;
     var info = {
@@ -19,7 +19,7 @@ bzork.vm.InstructionDefs = {};
     for (var v = info.minVersion; v <= info.maxVersion; v++) {
       var vkey = key + ":" + v;
       if (bzork.vm.InstructionDefs[vkey])
-        throw "Adding duplicate entry to instruction DB: " + vkey;
+        throw _.sprintf("Adding duplicate entry to instruction DB: %s", vkey);
       bzork.vm.InstructionDefs[vkey] = info;
     }
   }
