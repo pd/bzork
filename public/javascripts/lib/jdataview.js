@@ -98,7 +98,7 @@ jDataView.prototype = {
 		if (typeof byteOffset !== 'number') {
 			throw new TypeError("Type error");
 		}
-		if (length < 0 || byteOffset + length >= this.length) {
+		if (length < 0 || byteOffset + length > this.length) {
 			throw new Error("INDEX_SIZE_ERR: DOM Exception 1");
 		}
 
@@ -134,7 +134,7 @@ jDataView.prototype = {
 			if (typeof byteOffset !== 'number') {
 				throw new TypeError("Type error");
 			}
-			if (length < 0 || byteOffset + size >= this.length) {
+			if (length < 0 || byteOffset + size > this.length) {
 				throw new Error("INDEX_SIZE_ERR: DOM Exception 1");
 			}
 
@@ -153,7 +153,7 @@ jDataView.prototype = {
 		if (typeof byteOffset !== 'number') {
 			throw new TypeError("Type error");
 		}
-		if (byteOffset < 0 || byteOffset >= this.length) {
+		if (byteOffset < 0 || byteOffset + 1 > this.length) {
 			throw new Error("INDEX_SIZE_ERR: DOM Exception 1");
 		}
 
@@ -205,8 +205,8 @@ jDataView.prototype = {
 		return sign * (1 + mantissa * Math.pow(2, -23)) * Math.pow(2, exponent);
 	},
 
-	_getInt32: function (offset) {
-		var b = this._getUint8(offset);
+	_getInt32: function (offset, littleEndian) {
+		var b = this._getUint32(offset, littleEndian);
 		return b > Math.pow(2, 31) - 1 ? b - Math.pow(2, 32) : b;
 	},
 
@@ -238,7 +238,7 @@ jDataView.prototype = {
 
 	_getUint8: function (offset) {
 		if (this._isArrayBuffer) {
-			return new Uint8Array(this._buffer, offset, 1)[0];
+			return new Int8Array(this._buffer, offset, 1)[0];
 		} else {
 			return this._buffer.charCodeAt(offset) & 0xff;
 		}
@@ -286,10 +286,9 @@ for (var type in dataTypes) {
 					if (typeof byteOffset !== 'number') {
 						throw new TypeError("Type error");
 					}
-					if (byteOffset + size >= this.length) {
+					if (byteOffset + size > this.length) {
 						throw new Error("INDEX_SIZE_ERR: DOM Exception 1");
 					}
-
 					value = this['_get' + type](this._start + byteOffset, littleEndian);
 				}
 
