@@ -11,10 +11,10 @@
 #   - dist/**/*.js
 #
 src_files:
-  - public/javascripts/application.js
   - public/javascripts/lib/underscore.js
   - public/javascripts/lib/*.js
-  - public/javascripts/**/*.js
+  - public/javascripts/bzork.js
+  - public/javascripts/bzork/**/*.js
 
 # stylesheets
 #
