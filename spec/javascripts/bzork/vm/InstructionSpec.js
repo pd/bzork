@@ -12,6 +12,7 @@ describe("bzork.vm.Instruction", function() {
     'je':       [0x4188, 0x2b40], // long, 2OP var/small, branch on false
     'jet':      [0x4188, 0x2bc0], // long, 2OP var/small, branch on true
     'je2':      [0x4188, 0x2b30, 0xff00], // hand-crafted for 2-byte branch offset, prolly invalid
+    'jelong':   [0xc1ab, 0x7f01, 0x0048], // 3 argument je
     'inc_chk':  [0x0502, 0x00d4], // long, 2OP small/small
     'print':    [0xb211, 0xaa46, 0x3416, 0x459c, 0xa500], // short, 0OP + string
     'mul':      [0xd62f, 0x03e8, 0x0200], // var, 2OP large/var
@@ -42,6 +43,7 @@ describe("bzork.vm.Instruction", function() {
     expect(buildInstruction('ret').getLength()).toEqual(2);
     expect(buildInstruction('je').getLength()).toEqual(4);
     expect(buildInstruction('je2').getLength()).toEqual(5);
+    expect(buildInstruction('jelong').getLength()).toEqual(6);
     expect(buildInstruction('inc_chk').getLength()).toEqual(4);
     expect(buildInstruction('print').getLength()).toEqual(9);
     expect(buildInstruction('mul').getLength()).toEqual(6);
@@ -234,6 +236,11 @@ describe("bzork.vm.Instruction", function() {
     it("extracts the operands for ext forms", function() {
       var instr = buildInstruction('save');
       expect(opvals(instr)).toEqual([null, null, null, null]);
+    });
+
+    it("extracts all the operands of @je with >2 args", function() {
+      var instr = buildInstruction('jelong');
+      expect(opvals(instr)).toEqual([127, 1, 0]);
     });
   });
 
