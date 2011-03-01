@@ -14,6 +14,29 @@ bzork.ObjectTable.prototype = {
     return new bzork.Object(this._machine, this, i, this.getObjectAddr(i));
   },
 
+  insertObject: function(objnum, parentnum) {
+    var obj = this.get(objnum),
+        parent = this.get(parentnum),
+        origParentNum = obj.getParent();
+
+    if (origParentNum !== 0) {
+      var origParent = this.get(origParentNum),
+          childnum = origParent.getChild();
+      if (childnum === objnum) {
+        origParent.setChild(obj.getSibling());
+      } else if (childnum !== 0) {
+        var curobj = this.get(childnum);
+        while (curobj.getSibling() !== objnum && curobj.getSibling() !== 0)
+          curobj = this.get(curobj.getSibling());
+        curobj.setSibling(obj.getSibling());
+      }
+    }
+
+    obj.setSibling(parent.getChild());
+    obj.setParent(parentnum);
+    parent.setChild(objnum);
+  },
+
   getProperty: function(obj, prop) {
     var obj = this.get(obj);
     return obj.getPropertyValue(prop);

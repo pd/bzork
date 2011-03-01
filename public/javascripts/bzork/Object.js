@@ -164,12 +164,16 @@ bzork.Object.prototype = {
 
   _getRelative: function(i) {
     var fn = this._idSize == 1 ? 'getUint8' : 'getUint16';
-    return this._machine[fn](this._addr + this._attributesSize + (i * this._idSize));
+    return this._machine[fn](this._relativeAddr(i));
   },
 
   _setRelative: function(i, objnum) {
     var fn = this._idSize == 1 ? 'setUint8' : 'setUint16';
-    this._machine[fn](this._addr + this._attributesSize + (i * this._idSize), objnum);
+    this._machine[fn](this._relativeAddr(i), objnum);
+  },
+
+  _relativeAddr: function(i) {
+    return this._addr + this._attributesSize + (i * this._idSize);
   },
 
   _getProperties: function() {

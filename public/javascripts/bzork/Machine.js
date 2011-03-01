@@ -123,6 +123,10 @@ bzork.Machine.prototype = {
     return this.objectTable.get(i);
   },
 
+  insertObject: function(objnum, parentnum) {
+    this.objectTable.insertObject(objnum, parentnum);
+  },
+
   getAbbrev: function(i) {
     return this.abbrevTable.get(i);
   },

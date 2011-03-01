@@ -34,6 +34,26 @@ bzork.vm.InstructionImpl = {};
     this.branchOrNext(a === 0);
   });
 
+  addMethod('get_sibling', function() {
+    var obj = this._machine.getObject(this.operands[0].getValue()),
+        sibling = obj.getSibling();
+    this.storeResult(sibling);
+    this.branchOrNext(sibling !== 0);
+  });
+
+  addMethod('get_parent', function() {
+    var obj = this._machine.getObject(this.operands[0].getValue());
+    this.storeResult(obj.getParent());
+    this.next();
+  });
+
+  addMethod('get_child', function() {
+    var obj = this._machine.getObject(this.operands[0].getValue()),
+        child = obj.getChild();
+    this.storeResult(child);
+    this.branchOrNext(child !== 0);
+  });
+
   addMethod('inc', function() {
     this.incrementVariable(this.operands[0].getValue());
     this.next();
@@ -93,6 +113,13 @@ bzork.vm.InstructionImpl = {};
     var variable = this.operands[0].getValue(),
         value = this.operands[1].getValue();
     this._machine.setVariable(variable, value);
+    this.next();
+  });
+
+  addMethod('insert_obj', function() {
+    var objnum = this.operands[0].getValue(),
+        parentnum = this.operands[1].getValue();
+    this._machine.insertObject(objnum, parentnum);
     this.next();
   });
 

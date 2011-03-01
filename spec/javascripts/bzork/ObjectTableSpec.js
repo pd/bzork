@@ -171,6 +171,53 @@ describe("bzork.ObjectTable", function() {
       expect(obj1.testAttribute(14)).toEqual(true);
       expect(obj1.testAttribute(20)).toEqual(false);
     });
+
+    describe("insertObject", function() {
+      beforeEach(function() {
+        this.west = this.objects.get(180);
+        this.door = this.objects.get(181);
+        this.mailbox = this.objects.get(160);
+        this.leaflet = this.objects.get(161);
+      });
+
+      it("should update the object's parent", function() {
+        this.objects.insertObject(this.leaflet.id, this.west.id);
+        expect(this.leaflet.getParent()).toEqual(this.west.id);
+      });
+
+      it("should make the object the parent's first child", function() {
+        this.objects.insertObject(this.leaflet.id, this.west.id);
+        expect(this.west.getChild()).toEqual(this.leaflet.id);
+      });
+
+      it("should make the parent's original child the object's sibling", function() {
+        this.objects.insertObject(this.leaflet.id, this.west.id);
+        expect(this.leaflet.getSibling()).toEqual(this.door.id);
+      });
+
+      it("should render the original parent childless if the object was the only child", function() {
+        this.objects.insertObject(this.leaflet.id, this.west.id);
+        expect(this.mailbox.getChild()).toEqual(0);
+      });
+
+      it("should set the original parent's child to the object's sibling", function() {
+        var bat = this.objects.get(223),
+            jade = this.objects.get(170),
+            room = this.objects.get(222);
+
+        this.objects.insertObject(bat.id, this.mailbox.id);
+        expect(room.getChild()).toEqual(jade.id);
+      });
+
+      it("should set the previous object's sibling to the object's sibling", function() {
+        var lantern = this.objects.get(164),
+            wooden  = this.objects.get(111),
+            trap    = this.objects.get(183);
+
+        this.objects.insertObject(lantern.id, this.mailbox.id);
+        expect(wooden.getSibling()).toEqual(trap.id);
+      });
+    });
   });
 
   describe("for ZTUU", function() {
