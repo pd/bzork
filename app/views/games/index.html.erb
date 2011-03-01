@@ -1,0 +1,5 @@
+<ul>
+<% @games.each do |game| %>
+  <li><%= link_to game, play_path(:story => game) %></li>
+<% end %>
+</ul>

@@ -31,7 +31,17 @@ module Bzork
     # config.i18n.default_locale = :de
 
     # JavaScript files you want as :defaults (application.js is always included).
-    config.action_view.javascript_expansions[:defaults] = %w()
+    config.action_view.javascript_expansions[:defaults] = %w(
+      lib/jquery-1.4.4-binary-ajax.js
+      lib/underscore.js
+      lib/underscore.filterObj.js
+      lib/DataView.js
+      lib/jdataview.js
+    )
+    config.action_view.javascript_expansions[:bzork] = ['bzork.js'] +
+      Dir[Rails.root.join('public', 'javascripts', 'bzork', '**', '*.js').to_s].map { |file|
+        file.sub(/^.+bzork\//, 'bzork/')
+      }.sort
 
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = "utf-8"
